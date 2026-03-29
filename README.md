@@ -23,6 +23,9 @@ cd ./source
 # マイグレーション
 ./vendor/bin/sail artisan migrate
 
+# シード
+./vendor/bin/sail artisan db:seed
+
 # フロント
 pnpm dev
 
