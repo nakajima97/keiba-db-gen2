@@ -5,11 +5,11 @@
 ├──
 ├──docs/                  # ドキュメント
 ├──public/                # 静的ファイル
-└──src/                   # ソースコード
-    ├── app/              # ルート定義
-    │   ├── page.tsx         # '/' に対応
+└──resources/js/           # ソースコード
+    ├── pages/              # Inertia ページコンポーネント（ルートは routes/web.php で定義）
+    │   ├── index.tsx         # '/' に対応
     │   └── users/
-    │       ├── page.tsx     # '/users' に対応
+    │       ├── index.tsx     # '/users' に対応
     ├── components/        # 再利用可能な UI コンポーネント (アプリ全体で共有)
     │   ├── shadcn/        # shadcn/ui コンポーネント
     │   │   ├── ui/        # shadcn/ui の基本コンポーネント
