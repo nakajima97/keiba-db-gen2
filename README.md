@@ -20,7 +20,7 @@ https://github.com/nakajima97/ai-driven-development
 | 対象 | ツール |
 |------|--------|
 | PHP | Composer |
-| JavaScript | npm |
+| JavaScript | pnpm |
 
 ## フレームワーク・ライブラリ
 
@@ -54,7 +54,7 @@ https://github.com/nakajima97/ai-driven-development
 | 項目 | 内容 |
 |------|------|
 | ホスティング | レンタルサーバー（PHP対応） |
-| ビルドパイプライン | GitHub Actions で `npm run build` を実行し、生成した dist をサーバーにデプロイ |
+| ビルドパイプライン | GitHub Actions で `pnpm run build` を実行し、生成した dist をサーバーにデプロイ |
 | サーバー上での Node.js 実行 | 不可（ビルドは CI のみ） |
 
 ## 使用禁止ライブラリ
