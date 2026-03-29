@@ -79,6 +79,7 @@ export default function Welcome({
 												fill="none"
 												xmlns="http://www.w3.org/2000/svg"
 												className="h-2.5 w-2.5"
+												aria-hidden="true"
 											>
 												<path
 													d="M7.70833 6.95834V2.79167H3.54167M2.5 8L7.5 3.00001"
@@ -111,6 +112,7 @@ export default function Welcome({
 												fill="none"
 												xmlns="http://www.w3.org/2000/svg"
 												className="h-2.5 w-2.5"
+												aria-hidden="true"
 											>
 												<path
 													d="M7.70833 6.95834V2.79167H3.54167M2.5 8L7.5 3.00001"
@@ -142,6 +144,7 @@ export default function Welcome({
 								viewBox="0 0 438 104"
 								fill="none"
 								xmlns="http://www.w3.org/2000/svg"
+								aria-hidden="true"
 							>
 								<path
 									d="M17.2036 -3H0V102.197H49.5189V86.7187H17.2036V-3Z"
@@ -176,6 +179,7 @@ export default function Welcome({
 								viewBox="0 0 440 392"
 								fill="none"
 								xmlns="http://www.w3.org/2000/svg"
+								aria-hidden="true"
 							>
 								<g className="text-[#1B1B18] opacity-100 mix-blend-darken transition-all delay-300 duration-750 dark:text-black dark:mix-blend-normal starting:opacity-0">
 									<mask
@@ -387,11 +391,11 @@ export default function Welcome({
 									/>
 								</g>
 							</svg>
-							<div className="absolute inset-0 rounded-t-lg shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] lg:rounded-t-none lg:rounded-r-lg dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]"></div>
+							<div className="absolute inset-0 rounded-t-lg shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] lg:rounded-t-none lg:rounded-r-lg dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]" />
 						</div>
 					</main>
 				</div>
-				<div className="hidden h-14.5 lg:block"></div>
+				<div className="hidden h-14.5 lg:block" />
 			</div>
 		</>
 	);

@@ -58,7 +58,11 @@ const subscribe = (callback: () => void) => {
 	return () => listeners.delete(callback);
 };
 
-const notify = (): void => listeners.forEach((listener) => listener());
+const notify = (): void => {
+	for (const listener of listeners) {
+		listener();
+	}
+};
 
 const mediaQuery = (): MediaQueryList | null => {
 	if (typeof window === "undefined") {

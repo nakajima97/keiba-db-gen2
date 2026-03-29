@@ -86,7 +86,11 @@ export default function TwoFactorChallenge() {
 										>
 											<InputOTPGroup>
 												{Array.from({ length: OTP_MAX_LENGTH }, (_, index) => (
-													<InputOTPSlot key={index} index={index} />
+													<InputOTPSlot
+														// biome-ignore lint/suspicious/noArrayIndexKey: index はOTPスロットの位置を表す意味的なキー
+														key={index}
+														index={index}
+													/>
 												))}
 											</InputOTPGroup>
 										</InputOTP>

@@ -78,7 +78,8 @@ function TwoFactorSetupStep({
 								{qrCodeSvg ? (
 									<div
 										className="aspect-square w-full rounded-lg bg-white p-2 [&_svg]:size-full"
-										dangerouslySetInnerHTML={{
+										// biome-ignore lint/security/noDangerouslySetInnerHtml: QRコードSVGはサーバーが生成した信頼済みコンテンツ
+									dangerouslySetInnerHTML={{
 											__html: qrCodeSvg,
 										}}
 										style={{
@@ -123,6 +124,7 @@ function TwoFactorSetupStep({
 										className="h-full w-full bg-background p-3 text-foreground outline-none"
 									/>
 									<button
+										type="button"
 										onClick={() => copy(manualSetupKey)}
 										className="border-l border-border px-3 hover:bg-muted"
 									>
@@ -181,7 +183,11 @@ function TwoFactorVerificationStep({
 							>
 								<InputOTPGroup>
 									{Array.from({ length: OTP_MAX_LENGTH }, (_, index) => (
-										<InputOTPSlot key={index} index={index} />
+										<InputOTPSlot
+											// biome-ignore lint/suspicious/noArrayIndexKey: index はOTPスロットの位置を表す意味的なキー
+											key={index}
+											index={index}
+										/>
 									))}
 								</InputOTPGroup>
 							</InputOTP>

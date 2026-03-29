@@ -24,7 +24,7 @@ export default function TwoFactorRecoveryCodes({
 	errors,
 }: Props) {
 	const [codesAreVisible, setCodesAreVisible] = useState<boolean>(false);
-	const codesSectionRef = useRef<HTMLDivElement | null>(null);
+	const codesSectionRef = useRef<HTMLUListElement | null>(null);
 	const canRegenerateCodes = recoveryCodesList.length > 0 && codesAreVisible;
 
 	const toggleCodesVisibility = useCallback(async () => {
@@ -105,17 +105,16 @@ export default function TwoFactorRecoveryCodes({
 							<AlertError errors={errors} />
 						) : (
 							<>
-								<div
+								<ul
 									ref={codesSectionRef}
 									className="grid gap-1 rounded-lg bg-muted p-4 font-mono text-sm"
-									role="list"
 									aria-label="Recovery codes"
 								>
 									{recoveryCodesList.length ? (
-										recoveryCodesList.map((code, index) => (
-											<div key={index} role="listitem" className="select-text">
+										recoveryCodesList.map((code) => (
+											<li key={code} className="select-text">
 												{code}
-											</div>
+											</li>
 										))
 									) : (
 										<div
@@ -124,6 +123,7 @@ export default function TwoFactorRecoveryCodes({
 										>
 											{Array.from({ length: 8 }, (_, index) => (
 												<div
+													// biome-ignore lint/suspicious/noArrayIndexKey: スケルトン表示用の静的なindex
 													key={index}
 													className="h-4 animate-pulse rounded bg-muted-foreground/20"
 													aria-hidden="true"
@@ -131,7 +131,7 @@ export default function TwoFactorRecoveryCodes({
 											))}
 										</div>
 									)}
-								</div>
+								</ul>
 
 								<div className="text-xs text-muted-foreground select-none">
 									<p id="regenerate-warning">
