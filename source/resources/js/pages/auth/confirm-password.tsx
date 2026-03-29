@@ -1,9 +1,9 @@
 import { Form, Head } from '@inertiajs/react';
-import InputError from '@/components/input-error';
-import PasswordInput from '@/components/password-input';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Spinner } from '@/components/ui/spinner';
+import InputError from '@/components/presentational/InputError';
+import PasswordInput from '@/components/presentational/PasswordInput';
+import { Button } from '@/components/shadcn/ui/button';
+import { Label } from '@/components/shadcn/ui/label';
+import { Spinner } from '@/components/shadcn/ui/spinner';
 import { store } from '@/routes/password/confirm';
 
 export default function ConfirmPassword() {

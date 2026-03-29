@@ -1,9 +1,9 @@
 import { Link } from '@inertiajs/react';
 import { BookOpen, FolderGit2, LayoutGrid } from 'lucide-react';
-import AppLogo from '@/components/app-logo';
-import { NavFooter } from '@/components/nav-footer';
-import { NavMain } from '@/components/nav-main';
-import { NavUser } from '@/components/nav-user';
+import AppLogo from '@/components/presentational/AppLogo';
+import { NavFooter } from '@/components/presentational/NavFooter';
+import { NavMain } from '@/components/presentational/NavMain';
+import { NavUser } from '@/components/presentational/NavUser';
 import {
     Sidebar,
     SidebarContent,
@@ -12,7 +12,7 @@ import {
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
-} from '@/components/ui/sidebar';
+} from '@/components/shadcn/ui/sidebar';
 import { dashboard } from '@/routes';
 import type { NavItem } from '@/types';
 

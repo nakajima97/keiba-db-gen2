@@ -1,11 +1,11 @@
 // Components
 import { Form, Head } from '@inertiajs/react';
 import { LoaderCircle } from 'lucide-react';
-import InputError from '@/components/input-error';
-import TextLink from '@/components/text-link';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import InputError from '@/components/presentational/InputError';
+import TextLink from '@/components/presentational/TextLink';
+import { Button } from '@/components/shadcn/ui/button';
+import { Input } from '@/components/shadcn/ui/input';
+import { Label } from '@/components/shadcn/ui/label';
 import { login } from '@/routes';
 import { email } from '@/routes/password';
 

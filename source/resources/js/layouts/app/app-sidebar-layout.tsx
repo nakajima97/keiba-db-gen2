@@ -1,7 +1,7 @@
-import { AppContent } from '@/components/app-content';
-import { AppShell } from '@/components/app-shell';
-import { AppSidebar } from '@/components/app-sidebar';
-import { AppSidebarHeader } from '@/components/app-sidebar-header';
+import { AppContent } from '@/components/presentational/AppContent';
+import { AppShell } from '@/components/presentational/AppShell';
+import { AppSidebar } from '@/components/presentational/AppSidebar';
+import { AppSidebarHeader } from '@/components/presentational/AppSidebarHeader';
 import type { AppLayoutProps } from '@/types';
 
 export default function AppSidebarLayout({

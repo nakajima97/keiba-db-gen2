@@ -4,15 +4,15 @@ import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from '@/components/shadcn/ui/dropdown-menu';
 import {
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
     useSidebar,
-} from '@/components/ui/sidebar';
-import { UserInfo } from '@/components/user-info';
-import { UserMenuContent } from '@/components/user-menu-content';
+} from '@/components/shadcn/ui/sidebar';
+import { UserInfo } from '@/components/presentational/UserInfo';
+import { UserMenuContent } from '@/components/presentational/UserMenuContent';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 export function NavUser() {
