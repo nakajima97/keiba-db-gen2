@@ -11,13 +11,15 @@
         "lint": "biome lint --write resources/",
         "lint:check": "biome lint resources/",
         "check": "biome check --write resources/",
-        "tc": "tsc --noEmit"
+        "tc": "tsc --noEmit",
+        "test": "vitest"
     },
     "devDependencies": {
         "@biomejs/biome": "^1.9.4",
         "@laravel/vite-plugin-wayfinder": "^0.1.3",
         "@types/node": "^22.13.5",
-        "babel-plugin-react-compiler": "^1.0.0"
+        "babel-plugin-react-compiler": "^1.0.0",
+        "vitest": "^4.1.2"
     },
     "dependencies": {
         "@headlessui/react": "^2.2.0",
