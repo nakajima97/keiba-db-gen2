@@ -49,5 +49,5 @@ jobs:
       - name: migrate
         run: php artisan migrate
 
-      - name: run phpstan
+      - name: run pint
         run: composer run-script lint:check
