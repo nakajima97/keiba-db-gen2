@@ -37,8 +37,5 @@ jobs:
       - name: generate wayfinder
         run: php artisan wayfinder:generate --with-form
 
-      - name: generate ziggy routes
-        run: php artisan ziggy:generate resources/js/routes.ts
-
       - name: typecheck
         run: pnpm tc
