@@ -25,5 +25,23 @@ jobs:
       - name: install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: build assets
+      # routesにPHPのコードが混ざっているため、PHPのセットアップも必要
+      - name: setup php
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.3
+
+      - name: install dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: generate key
+        run: php artisan key:generate
+
+      - name: generate wayfinder
+        run: php artisan wayfinder:generate --with-form
+
+      - name: generate ziggy routes
+        run: php artisan ziggy:generate resources/js/routes.ts
+
+      - name: typecheck
         run: pnpm tc
