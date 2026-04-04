@@ -1,4 +1,4 @@
-name: pest
+name: biome
 
 on:
   pull_request
@@ -21,9 +21,6 @@ jobs:
 
       - name: enable pnpm
         run: corepack enable
-
-      - name: generate wayfinder
-        run: php artisan wayfinder:generate --with-form
 
       - name: install dependencies
         run: pnpm install --frozen-lockfile
