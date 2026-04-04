@@ -1,7 +1,14 @@
 name: biome
 
 on:
-  pull_request
+  pull_request:
+    paths:
+      - 'source/**/*.ts'
+      - 'source/**/*.tsx'
+      - 'source/**/*.js'
+      - 'source/**/*.vue'
+      - 'source/package.json'
+      - 'source/pnpm-lock.yaml'
 
 jobs:
   phpstan:
