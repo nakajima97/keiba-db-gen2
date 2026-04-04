@@ -11,7 +11,7 @@
         "lint": "biome lint --write resources/",
         "lint:check": "biome lint resources/",
         "check": "biome check --write resources/",
-        "types:check": "tsc --noEmit"
+        "tc": "tsc --noEmit"
     },
     "devDependencies": {
         "@biomejs/biome": "^1.9.4",

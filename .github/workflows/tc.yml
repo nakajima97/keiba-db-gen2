@@ -1,0 +1,29 @@
+name: tc
+
+on:
+  pull_request
+
+jobs:
+  phpstan:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: source
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: enable pnpm
+        run: corepack enable
+
+      - name: install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: build assets
+        run: pnpm tc
