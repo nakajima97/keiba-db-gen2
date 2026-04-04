@@ -7,6 +7,10 @@ jobs:
   phpstan:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: source
+
     services:
       mysql:
         image: mysql:8
