@@ -1,0 +1,41 @@
+name: tc
+
+on:
+  pull_request
+
+jobs:
+  phpstan:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: source
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: enable pnpm
+        run: corepack enable
+
+      - name: install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # routesにPHPのコードが混ざっているため、PHPのセットアップも必要
+      - name: setup php
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.3
+
+      - name: install dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: generate wayfinder
+        run: php artisan wayfinder:generate --with-form
+
+      - name: typecheck
+        run: pnpm tc
