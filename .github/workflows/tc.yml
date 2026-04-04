@@ -34,9 +34,6 @@ jobs:
       - name: install dependencies
         run: composer install --no-interaction --prefer-dist
 
-      - name: generate key
-        run: php artisan key:generate
-
       - name: generate wayfinder
         run: php artisan wayfinder:generate --with-form
 
