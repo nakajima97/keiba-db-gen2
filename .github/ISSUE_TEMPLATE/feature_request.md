@@ -1,3 +1,12 @@
+---
+name: Feature request
+about: Suggest an idea for this project
+title: ''
+labels: ''
+assignees: ''
+
+---
+
 ## 概要
 <!--
   この機能追加の目的・背景・解決したい課題を2〜3行で箇条書きにする。
