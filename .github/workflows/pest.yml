@@ -1,0 +1,53 @@
+name: pest
+
+on:
+  pull_request
+
+jobs:
+  phpstan:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: source
+
+    services:
+      mysql:
+        image: mysql:8
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: laravel
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: setup php
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.3
+
+      - name: copy env
+        run: |
+          cp .env.example .env
+          sed -i 's/DB_DATABASE=.*/DB_DATABASE=testing/' .env
+          sed -i 's/DB_USERNAME=.*/DB_USERNAME=root/' .env
+          sed -i 's/DB_PASSWORD=.*/DB_PASSWORD=root/' .env
+
+      - name: install dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: generate key
+        run: php artisan key:generate
+
+      - name: migrate
+        run: php artisan migrate
+
+      - name: run pest
+        run: composer run-script test
