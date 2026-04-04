@@ -1,7 +1,11 @@
 name: pest
 
 on:
-  pull_request
+  pull_request:
+    paths:
+      - 'source/**/*.php'
+      - 'source/composer.json'
+      - 'source/composer.lock'
 
 jobs:
   phpstan:
