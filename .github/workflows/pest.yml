@@ -49,5 +49,22 @@ jobs:
       - name: migrate
         run: php artisan migrate
 
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+
+      - name: install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: build assets
+        run: pnpm build
+
       - name: run pest
         run: composer run-script test
