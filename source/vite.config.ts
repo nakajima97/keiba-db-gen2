@@ -5,6 +5,8 @@ import react from '@vitejs/plugin-react';
 import laravel from 'laravel-vite-plugin';
 import { defineConfig } from 'vite';
 
+const isCI = process.env.CI === 'true';
+
 export default defineConfig({
     plugins: [
         laravel({
@@ -18,7 +20,7 @@ export default defineConfig({
             },
         }),
         tailwindcss(),
-        wayfinder({
+        !isCI && wayfinder({
             formVariants: true,
             command: './vendor/bin/sail artisan wayfinder:generate --with-form',
         }),
