@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('buy_types', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->comment('single/nagashi/box/formation');
+            $table->string('name')->unique()->comment('single/nagashi/box/formation');
             $table->string('label')->comment('通常/流し/ボックス/フォーメーション');
             $table->unsignedTinyInteger('sort_order');
             $table->timestamps();

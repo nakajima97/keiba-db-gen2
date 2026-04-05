@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('ticket_types', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->comment('tansho/fukusho/wakuren/umaren/umatan/wide/sanrenpuku/sanrentan');
+            $table->string('name')->unique()->comment('tansho/fukusho/wakuren/umaren/umatan/wide/sanrenpuku/sanrentan');
             $table->string('label')->comment('単勝/複勝/枠連/馬連/馬単/ワイド/三連複/三連単');
             $table->unsignedTinyInteger('sort_order');
             $table->timestamps();

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('venues', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->comment('東京/中山/阪神/京都/新潟/福島/小倉/函館/札幌/中京');
+            $table->string('name')->unique()->comment('東京/中山/阪神/京都/新潟/福島/小倉/函館/札幌/中京');
             $table->timestamps();
         });
     }
