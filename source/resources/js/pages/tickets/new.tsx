@@ -1,11 +1,15 @@
 import { Head } from "@inertiajs/react";
-import AppLayout from "@/layouts/app-layout";
 import { Button } from "@/components/shadcn/ui/button";
 import { Input } from "@/components/shadcn/ui/input";
 import { Label } from "@/components/shadcn/ui/label";
 import { Badge } from "@/components/shadcn/ui/badge";
-import type { BreadcrumbItem } from "@/types";
-
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/shadcn/ui/select";
 // ---------------------------------------------------------------------------
 // 静的データ（UI構造確認用）
 // ---------------------------------------------------------------------------
@@ -177,10 +181,6 @@ function HorseGrid({ label, selectedHorses, groupKey }: HorseGridProps) {
 // ページコンポーネント
 // ---------------------------------------------------------------------------
 
-const breadcrumbs: BreadcrumbItem[] = [
-	{ title: "馬券登録", href: "/tickets/new" },
-];
-
 export default function TicketsNew() {
 	// デフォルト表示用の静的値
 	const selectedTicket = STATIC_SELECTED_TICKET;
@@ -189,7 +189,7 @@ export default function TicketsNew() {
 	const horseInputConfig = HORSE_INPUT_CONFIG[selectedBuyType];
 
 	return (
-		<AppLayout breadcrumbs={breadcrumbs}>
+		<>
 			<Head title="馬券登録" />
 
 			<div className="mx-auto max-w-2xl space-y-8 p-4">
@@ -200,24 +200,19 @@ export default function TicketsNew() {
 					<div className="space-y-4">
 						{/* 開催場所 */}
 						<div className="space-y-2">
-							<Label>開催場所</Label>
-							<div className="flex flex-wrap gap-2">
-								{VENUES.map((venue) => (
-									<Button
-										key={venue}
-										type="button"
-										variant={
-											venue === STATIC_SELECTED_VENUE
-												? "default"
-												: "outline"
-										}
-										size="sm"
-										aria-pressed={venue === STATIC_SELECTED_VENUE}
-									>
-										{venue}
-									</Button>
-								))}
-							</div>
+							<Label htmlFor="venue">開催場所</Label>
+							<Select defaultValue={STATIC_SELECTED_VENUE}>
+								<SelectTrigger id="venue" className="w-40">
+									<SelectValue placeholder="選択してください" />
+								</SelectTrigger>
+								<SelectContent>
+									{VENUES.map((venue) => (
+										<SelectItem key={venue} value={venue}>
+											{venue}
+										</SelectItem>
+									))}
+								</SelectContent>
+							</Select>
 						</div>
 
 						{/* 開催日 */}
@@ -366,6 +361,6 @@ export default function TicketsNew() {
 					</Button>
 				</div>
 			</div>
-		</AppLayout>
+		</>
 	);
 }
