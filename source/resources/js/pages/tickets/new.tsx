@@ -76,18 +76,34 @@ const BUY_TYPE_MAP: Record<TicketTypeId, { id: string; label: string }[]> = {
 
 // 買い方ごとの馬番入力ラベル設定
 type HorseInputConfig = {
-	// 入力グループのラベルと対応するキー
 	groups: { key: string; label: string }[];
 };
 
+// 券種ごとのグリッドサイズ（枠連は枠番1〜8、それ以外は馬番1〜18）
+const GRID_SIZE: Partial<Record<TicketTypeId, number>> = {
+	wakuren: 8,
+};
+
+const getGridSize = (ticketTypeId: TicketTypeId): number =>
+	GRID_SIZE[ticketTypeId] ?? 18;
+
+// 買い方 × 軸頭数 ごとのグループ構成
 const HORSE_INPUT_CONFIG: Record<string, HorseInputConfig> = {
 	// ①複数頭選択のみ（single / box）
 	single: { groups: [{ key: "horses", label: "馬番" }] },
 	box: { groups: [{ key: "horses", label: "馬番" }] },
-	// ②軸1頭+相手複数（nagashi — デフォルト表示は1軸）
-	nagashi: {
+	// ②軸1頭+相手複数（nagashi・1頭軸）
+	nagashi_axis1: {
 		groups: [
 			{ key: "axis", label: "軸" },
+			{ key: "others", label: "相手" },
+		],
+	},
+	// ③軸2頭+相手複数（nagashi・2頭軸 — 三連複のみ）
+	nagashi_axis2: {
+		groups: [
+			{ key: "axis1", label: "軸1" },
+			{ key: "axis2", label: "軸2" },
 			{ key: "others", label: "相手" },
 		],
 	},
@@ -101,10 +117,16 @@ const HORSE_INPUT_CONFIG: Record<string, HorseInputConfig> = {
 	},
 };
 
+// 三連複のnagashiのみ軸頭数を選択できる
+const AXIS_COUNT_SELECTABLE: Partial<Record<TicketTypeId, boolean>> = {
+	sanrenpuku: true,
+};
+
 // 静的な表示用デフォルト選択値
 const STATIC_SELECTED_VENUE: Venue = "東京";
 const STATIC_SELECTED_TICKET: TicketTypeId = "umaren";
 const STATIC_SELECTED_BUY_TYPE = "nagashi";
+const STATIC_SELECTED_AXIS_COUNT: 1 | 2 = 1;
 const STATIC_SELECTED_RACE_NUMBER = 1;
 // 各グループで選択済みの馬番（表示確認用）
 const STATIC_SELECTED_HORSES: Record<string, number[]> = {
@@ -136,9 +158,10 @@ type HorseGridProps = {
 	label: string;
 	selectedHorses: number[];
 	groupKey: string;
+	gridSize: number;
 };
 
-function HorseGrid({ label, selectedHorses, groupKey }: HorseGridProps) {
+function HorseGrid({ label, selectedHorses, groupKey, gridSize }: HorseGridProps) {
 	return (
 		<div className="space-y-2">
 			<div className="flex items-center gap-2">
@@ -153,7 +176,7 @@ function HorseGrid({ label, selectedHorses, groupKey }: HorseGridProps) {
 				/>
 			</div>
 			<div className="grid grid-cols-6 gap-1.5 sm:grid-cols-9">
-				{Array.from({ length: 18 }, (_, i) => i + 1).map((num) => {
+				{Array.from({ length: gridSize }, (_, i) => i + 1).map((num) => {
 					const isSelected = selectedHorses.includes(num);
 					return (
 						<button
@@ -185,8 +208,16 @@ export default function TicketsNew() {
 	// デフォルト表示用の静的値
 	const selectedTicket = STATIC_SELECTED_TICKET;
 	const selectedBuyType = STATIC_SELECTED_BUY_TYPE;
+	const selectedAxisCount = STATIC_SELECTED_AXIS_COUNT;
 	const buyTypes = BUY_TYPE_MAP[selectedTicket];
-	const horseInputConfig = HORSE_INPUT_CONFIG[selectedBuyType];
+	const gridSize = getGridSize(selectedTicket);
+	const showAxisCountSelector =
+		selectedBuyType === "nagashi" && AXIS_COUNT_SELECTABLE[selectedTicket];
+	const horseInputConfigKey =
+		selectedBuyType === "nagashi"
+			? `nagashi_axis${selectedAxisCount}`
+			: selectedBuyType;
+	const horseInputConfig = HORSE_INPUT_CONFIG[horseInputConfigKey];
 
 	return (
 		<>
@@ -305,11 +336,31 @@ export default function TicketsNew() {
 				---------------------------------------------------------------- */}
 				<Section title="馬番">
 					<div className="space-y-6">
+						{/* 三連複 nagashi のみ表示：軸頭数セレクター */}
+						{showAxisCountSelector && (
+							<div className="space-y-2">
+								<Label>軸の頭数</Label>
+								<div className="flex gap-2">
+									{([1, 2] as const).map((count) => (
+										<Button
+											key={count}
+											type="button"
+											variant={count === selectedAxisCount ? "default" : "outline"}
+											size="sm"
+											aria-pressed={count === selectedAxisCount}
+										>
+											{count}頭軸
+										</Button>
+									))}
+								</div>
+							</div>
+						)}
 						{horseInputConfig.groups.map(({ key, label }) => (
 							<HorseGrid
 								key={key}
 								groupKey={key}
 								label={label}
+								gridSize={gridSize}
 								selectedHorses={STATIC_SELECTED_HORSES[key] ?? []}
 							/>
 						))}
