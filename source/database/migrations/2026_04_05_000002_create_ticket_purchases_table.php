@@ -18,8 +18,8 @@ return new class extends Migration
             $table->foreignId('ticket_type_id')->constrained()->restrictOnDelete();
             $table->foreignId('buy_type_id')->constrained()->restrictOnDelete();
             $table->json('selections')->comment(
-                'box/single: {"horses":[1,3,5]} | ' .
-                'nagashi: {"axis":[3],"others":[1,5,7]} | ' .
+                'box/single: {"horses":[1,3,5]} | '.
+                'nagashi: {"axis":[3],"others":[1,5,7]} | '.
                 'formation: {"columns":[[1,2],[3,4],[5,6,7]]}'
             );
             $table->unsignedInteger('amount')->nullable()->comment('購入金額（円）');
