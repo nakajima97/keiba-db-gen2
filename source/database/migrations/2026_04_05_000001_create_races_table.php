@@ -13,11 +13,12 @@ return new class extends Migration
     {
         Schema::create('races', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('venue_id')->nullable()->constrained()->nullOnDelete();
-            $table->date('race_date')->nullable();
-            $table->unsignedTinyInteger('race_number')->nullable()->comment('1〜12');
+            $table->foreignId('venue_id')->constrained()->restrictOnDelete();
+            $table->date('race_date');
+            $table->unsignedTinyInteger('race_number')->comment('1〜12');
             $table->timestamps();
+
+            $table->unique(['venue_id', 'race_date', 'race_number']);
         });
     }
 

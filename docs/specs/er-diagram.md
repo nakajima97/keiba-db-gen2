@@ -21,10 +21,9 @@ erDiagram
 
     races {
         bigint id PK
-        bigint user_id FK
-        bigint venue_id FK "nullable"
-        date race_date "nullable"
-        tinyint race_number "1〜12 (nullable)"
+        bigint venue_id FK
+        date race_date
+        tinyint race_number "1〜12"
         timestamp created_at
         timestamp updated_at
     }
@@ -59,7 +58,6 @@ erDiagram
         timestamp updated_at
     }
 
-    users ||--o{ races : "has"
     users ||--o{ ticket_purchases : "has"
     venues ||--o{ races : "has"
     races ||--o{ ticket_purchases : "has"
