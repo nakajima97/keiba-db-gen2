@@ -226,10 +226,19 @@ export default function TicketsNew() {
 							/>
 						</div>
 
-						{/* R番号 */}
+						{/* レース番号 */}
 						<div className="space-y-2">
-							<Label>R番号</Label>
-							<div className="flex flex-wrap items-center gap-2">
+							<Label htmlFor="race-number">レース番号</Label>
+							<div className="space-y-2">
+								<Input
+									id="race-number"
+									type="number"
+									min={1}
+									max={12}
+									defaultValue={STATIC_SELECTED_RACE_NUMBER}
+									className="h-8 w-16 text-center"
+									aria-label="レース番号を直接入力"
+								/>
 								<div className="flex flex-wrap gap-1.5">
 									{Array.from({ length: 12 }, (_, i) => i + 1).map((r) => (
 										<Button
@@ -248,14 +257,6 @@ export default function TicketsNew() {
 										</Button>
 									))}
 								</div>
-								<Input
-									type="number"
-									min={1}
-									max={12}
-									defaultValue={STATIC_SELECTED_RACE_NUMBER}
-									className="h-8 w-16 text-center"
-									aria-label="R番号を直接入力"
-								/>
 							</div>
 						</div>
 					</div>
