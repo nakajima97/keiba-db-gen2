@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('race_id')->nullable()->constrained()->cascadeOnDelete();
-            $table->string('ticket_type')->comment('tansho/fukusho/wakuren/umaren/umatan/wide/sanrenpuku/sanrentan');
-            $table->string('buy_type')->comment('single/nagashi/box/formation');
+            $table->foreignId('ticket_type_id')->constrained()->restrictOnDelete();
+            $table->foreignId('buy_type_id')->constrained()->restrictOnDelete();
             $table->json('selections')->comment(
                 'box/single: {"horses":[1,3,5]} | ' .
                 'nagashi: {"axis":[3],"others":[1,5,7]} | ' .

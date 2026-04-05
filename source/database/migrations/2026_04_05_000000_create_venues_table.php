@@ -11,12 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('races', function (Blueprint $table) {
+        Schema::create('venues', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('venue_id')->nullable()->constrained()->nullOnDelete();
-            $table->date('race_date')->nullable();
-            $table->unsignedTinyInteger('race_number')->nullable()->comment('1〜12');
+            $table->string('name')->comment('東京/中山/阪神/京都/新潟/福島/小倉/函館/札幌/中京');
             $table->timestamps();
         });
     }
@@ -26,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('races');
+        Schema::dropIfExists('venues');
     }
 };

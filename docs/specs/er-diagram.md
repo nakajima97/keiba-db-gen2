@@ -12,12 +12,37 @@ erDiagram
         timestamp updated_at
     }
 
+    venues {
+        bigint id PK
+        string name "東京/中山/阪神/京都/新潟/福島/小倉/函館/札幌/中京"
+        timestamp created_at
+        timestamp updated_at
+    }
+
     races {
         bigint id PK
         bigint user_id FK
-        string venue "東京/中山/阪神/京都/新潟/福島/小倉/函館/札幌/中京 (nullable)"
+        bigint venue_id FK "nullable"
         date race_date "nullable"
         tinyint race_number "1〜12 (nullable)"
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    ticket_types {
+        bigint id PK
+        string name "tansho/fukusho/wakuren/umaren/umatan/wide/sanrenpuku/sanrentan"
+        string label "単勝/複勝/枠連/馬連/馬単/ワイド/三連複/三連単"
+        tinyint sort_order
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    buy_types {
+        bigint id PK
+        string name "single/nagashi/box/formation"
+        string label "通常/流し/ボックス/フォーメーション"
+        tinyint sort_order
         timestamp created_at
         timestamp updated_at
     }
@@ -26,8 +51,8 @@ erDiagram
         bigint id PK
         bigint user_id FK
         bigint race_id FK "nullable"
-        string ticket_type "tansho/fukusho/wakuren/umaren/umatan/wide/sanrenpuku/sanrentan"
-        string buy_type "single/nagashi/box/formation"
+        bigint ticket_type_id FK
+        bigint buy_type_id FK
         json selections "馬番選択情報"
         int amount "購入金額（円）nullable"
         timestamp created_at
@@ -36,7 +61,10 @@ erDiagram
 
     users ||--o{ races : "has"
     users ||--o{ ticket_purchases : "has"
+    venues ||--o{ races : "has"
     races ||--o{ ticket_purchases : "has"
+    ticket_types ||--o{ ticket_purchases : "has"
+    buy_types ||--o{ ticket_purchases : "has"
 ```
 
 ## selectionsカラムのJSONフォーマット

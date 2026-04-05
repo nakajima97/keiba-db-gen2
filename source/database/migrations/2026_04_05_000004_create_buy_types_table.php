@@ -11,12 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('races', function (Blueprint $table) {
+        Schema::create('buy_types', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('venue_id')->nullable()->constrained()->nullOnDelete();
-            $table->date('race_date')->nullable();
-            $table->unsignedTinyInteger('race_number')->nullable()->comment('1〜12');
+            $table->string('name')->comment('single/nagashi/box/formation');
+            $table->string('label')->comment('通常/流し/ボックス/フォーメーション');
+            $table->unsignedTinyInteger('sort_order');
             $table->timestamps();
         });
     }
@@ -26,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('races');
+        Schema::dropIfExists('buy_types');
     }
 };
