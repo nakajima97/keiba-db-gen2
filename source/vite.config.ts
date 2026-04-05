@@ -20,7 +20,7 @@ export default defineConfig({
             },
         }),
         tailwindcss(),
-        !isCI && wayfinder({
+        !isCI && !process.env.STORYBOOK && wayfinder({
             formVariants: true,
             command: './vendor/bin/sail artisan wayfinder:generate --with-form',
         }),
