@@ -122,11 +122,17 @@ const AXIS_COUNT_SELECTABLE: Partial<Record<TicketTypeId, boolean>> = {
 	sanrenpuku: true,
 };
 
+// 三連単のnagashiのみ流し方向（着順）を選択できる
+const NAGASHI_DIRECTION_SELECTABLE: Partial<Record<TicketTypeId, boolean>> = {
+	sanrentan: true,
+};
+
 // 静的な表示用デフォルト選択値
 const STATIC_SELECTED_VENUE: Venue = "東京";
 const STATIC_SELECTED_TICKET: TicketTypeId = "umaren";
 const STATIC_SELECTED_BUY_TYPE = "nagashi";
 const STATIC_SELECTED_AXIS_COUNT: 1 | 2 = 1;
+const STATIC_SELECTED_NAGASHI_DIRECTION: 1 | 2 | 3 = 1;
 const STATIC_SELECTED_RACE_NUMBER = 1;
 // 各グループで選択済みの馬番（表示確認用）
 const STATIC_SELECTED_HORSES: Record<string, number[]> = {
@@ -209,13 +215,18 @@ export default function TicketsNew() {
 	const selectedTicket = STATIC_SELECTED_TICKET;
 	const selectedBuyType = STATIC_SELECTED_BUY_TYPE;
 	const selectedAxisCount = STATIC_SELECTED_AXIS_COUNT;
+	const selectedNagashiDirection = STATIC_SELECTED_NAGASHI_DIRECTION;
 	const buyTypes = BUY_TYPE_MAP[selectedTicket];
 	const gridSize = getGridSize(selectedTicket);
 	const showAxisCountSelector =
 		selectedBuyType === "nagashi" && AXIS_COUNT_SELECTABLE[selectedTicket];
+	const showNagashiDirectionSelector =
+		selectedBuyType === "nagashi" && NAGASHI_DIRECTION_SELECTABLE[selectedTicket];
 	const horseInputConfigKey =
 		selectedBuyType === "nagashi"
-			? `nagashi_axis${selectedAxisCount}`
+			? showNagashiDirectionSelector
+				? "formation" // 三連単流しはパターン④（1着・2着・3着）
+				: `nagashi_axis${selectedAxisCount}`
 			: selectedBuyType;
 	const horseInputConfig = HORSE_INPUT_CONFIG[horseInputConfigKey];
 
@@ -350,6 +361,25 @@ export default function TicketsNew() {
 											aria-pressed={count === selectedAxisCount}
 										>
 											{count}頭軸
+										</Button>
+									))}
+								</div>
+							</div>
+						)}
+						{/* 三連単 nagashi のみ表示：流し方向セレクター */}
+						{showNagashiDirectionSelector && (
+							<div className="space-y-2">
+								<Label>流し方向</Label>
+								<div className="flex gap-2">
+									{([1, 2, 3] as const).map((pos) => (
+										<Button
+											key={pos}
+											type="button"
+											variant={pos === selectedNagashiDirection ? "default" : "outline"}
+											size="sm"
+											aria-pressed={pos === selectedNagashiDirection}
+										>
+											{pos}着流し
 										</Button>
 									))}
 								</div>
