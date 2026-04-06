@@ -1,4 +1,5 @@
 import { createInertiaApp } from "@inertiajs/react";
+import { Toaster } from "sonner";
 import { TooltipProvider } from "@/components/shadcn/ui/tooltip";
 import { initializeTheme } from "@/hooks/use-appearance";
 import AppLayout from "@/layouts/app-layout";
@@ -23,7 +24,12 @@ createInertiaApp({
 	},
 	strictMode: true,
 	withApp(app) {
-		return <TooltipProvider delayDuration={0}>{app}</TooltipProvider>;
+		return (
+				<TooltipProvider delayDuration={0}>
+					{app}
+					<Toaster richColors position="top-right" />
+				</TooltipProvider>
+			);
 	},
 	progress: {
 		color: "#4B5563",

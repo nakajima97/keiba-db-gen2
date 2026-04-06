@@ -44,7 +44,9 @@ export default function Welcome({
 				<main className="flex flex-1 items-center justify-center p-6 lg:p-8">
 					<div className="text-center">
 						<h1 className="mb-4 text-2xl font-semibold">keiba-db</h1>
-						<p className="text-muted-foreground">個人利用目的の競馬データベース</p>
+						<p className="text-muted-foreground">
+							個人利用目的の競馬データベース
+						</p>
 					</div>
 				</main>
 			</div>

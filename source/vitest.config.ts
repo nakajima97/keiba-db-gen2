@@ -9,6 +9,11 @@ const dirname = typeof __dirname !== 'undefined' ? __dirname : path.dirname(file
 
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig({
+  resolve: {
+    alias: {
+      '@': path.resolve(dirname, './resources/js'),
+    },
+  },
   plugins: [react({
     babel: {
       plugins: ['babel-plugin-react-compiler']
@@ -19,6 +24,7 @@ export default defineConfig({
       extends: true,
       test: {
         environment: 'jsdom',
+        globals: true,
         setupFiles: ['./vitest.setup.ts']
       }
     }, {
