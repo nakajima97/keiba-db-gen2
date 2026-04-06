@@ -20,6 +20,15 @@ const baseArgs: TicketPurchaseFormProps = {
 	selectedNagashiDirection: 1,
 	selectedHorses: { axis: [3], others: [1, 5, 7] },
 	amount: 100,
+	onVenueChange: () => {},
+	onRaceDateChange: () => {},
+	onRaceNumberChange: () => {},
+	onTicketTypeChange: () => {},
+	onBuyTypeChange: () => {},
+	onAxisCountChange: () => {},
+	onNagashiDirectionChange: () => {},
+	onHorsesChange: () => {},
+	onAmountChange: () => {},
 };
 
 // ① 複数頭選択のみ
