@@ -1,4 +1,5 @@
 import { Link } from "@inertiajs/react";
+import { Button } from "@/components/shadcn/ui/button";
 import { Spinner } from "@/components/shadcn/ui/spinner";
 import { newMethod } from "@/routes/tickets";
 import type { TicketPurchaseListProps } from "./types";
@@ -14,7 +15,9 @@ export default function TicketPurchaseList({
 		<div className="flex flex-col gap-4 p-4">
 			<div className="flex items-center justify-between">
 				<h1 className="text-xl font-semibold">購入馬券一覧</h1>
-				<Link href={newMethod.url()}>馬券を登録する</Link>
+				{purchases.length > 0 && (
+					<Link href={newMethod.url()}>馬券を登録する</Link>
+				)}
 			</div>
 
 			{purchases.length === 0 ? (

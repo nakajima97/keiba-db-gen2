@@ -83,8 +83,7 @@ test('purchases property contains only the authenticated user\'s data', function
         ->component('tickets/index')
         ->where('purchases', function ($purchases) use ($user, $otherUser) {
             expect(count($purchases))->toBe(1);
-            expect($purchases[0]['user_id'] ?? null)->toBeNull()
-                ->or(fn () => expect(true)->toBeTrue());
+            expect($purchases[0]['user_id'] ?? null)->toBeNull();
 
             return true;
         })

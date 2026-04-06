@@ -10,6 +10,7 @@ Route::inertia('/', 'welcome', [
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('dashboard', 'dashboard')->name('dashboard');
+    Route::get('/tickets', [TicketPurchaseController::class, 'index'])->name('tickets.index');
     Route::get('/tickets/new', [TicketPurchaseController::class, 'create'])->name('tickets.new');
     Route::post('/tickets', [TicketPurchaseController::class, 'store'])->name('tickets.store');
 });
