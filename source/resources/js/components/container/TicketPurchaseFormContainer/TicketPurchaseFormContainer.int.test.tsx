@@ -31,6 +31,7 @@ describe("TicketPurchaseFormContainer", () => {
 	});
 
 	it("ハッピーパス: 登録ボタンをクリックすると router.post が呼ばれ、成功後に同じレース情報を引き継いで遷移する", async () => {
+		// Arrange
 		const user = userEvent.setup();
 
 		vi.mocked(router.post).mockImplementation((_url, _data, options) => {
@@ -40,8 +41,11 @@ describe("TicketPurchaseFormContainer", () => {
 		render(<TicketPurchaseFormContainer {...defaultProps} />);
 
 		const submitButton = screen.getByRole("button", { name: "登録する" });
+
+		// Act
 		await user.click(submitButton);
 
+		// Assert
 		expect(router.post).toHaveBeenCalledTimes(1);
 		expect(router.post).toHaveBeenCalledWith(
 			expect.stringContaining("tickets"),

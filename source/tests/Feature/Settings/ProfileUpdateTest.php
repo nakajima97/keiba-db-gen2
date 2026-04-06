@@ -3,18 +3,23 @@
 use App\Models\User;
 
 test('profile page is displayed', function () {
+    // Arrange
     $user = User::factory()->create();
 
+    // Act
     $response = $this
         ->actingAs($user)
         ->get(route('profile.edit'));
 
+    // Assert
     $response->assertOk();
 });
 
 test('profile information can be updated', function () {
+    // Arrange
     $user = User::factory()->create();
 
+    // Act
     $response = $this
         ->actingAs($user)
         ->patch(route('profile.update'), [
@@ -22,6 +27,7 @@ test('profile information can be updated', function () {
             'email' => 'test@example.com',
         ]);
 
+    // Assert
     $response
         ->assertSessionHasNoErrors()
         ->assertRedirect(route('profile.edit'));
@@ -34,8 +40,10 @@ test('profile information can be updated', function () {
 });
 
 test('email verification status is unchanged when the email address is unchanged', function () {
+    // Arrange
     $user = User::factory()->create();
 
+    // Act
     $response = $this
         ->actingAs($user)
         ->patch(route('profile.update'), [
@@ -43,6 +51,7 @@ test('email verification status is unchanged when the email address is unchanged
             'email' => $user->email,
         ]);
 
+    // Assert
     $response
         ->assertSessionHasNoErrors()
         ->assertRedirect(route('profile.edit'));
@@ -51,14 +60,17 @@ test('email verification status is unchanged when the email address is unchanged
 });
 
 test('user can delete their account', function () {
+    // Arrange
     $user = User::factory()->create();
 
+    // Act
     $response = $this
         ->actingAs($user)
         ->delete(route('profile.destroy'), [
             'password' => 'password',
         ]);
 
+    // Assert
     $response
         ->assertSessionHasNoErrors()
         ->assertRedirect(route('home'));
@@ -68,8 +80,10 @@ test('user can delete their account', function () {
 });
 
 test('correct password must be provided to delete account', function () {
+    // Arrange
     $user = User::factory()->create();
 
+    // Act
     $response = $this
         ->actingAs($user)
         ->from(route('profile.edit'))
@@ -77,6 +91,7 @@ test('correct password must be provided to delete account', function () {
             'password' => 'wrong-password',
         ]);
 
+    // Assert
     $response
         ->assertSessionHasErrors('password')
         ->assertRedirect(route('profile.edit'));

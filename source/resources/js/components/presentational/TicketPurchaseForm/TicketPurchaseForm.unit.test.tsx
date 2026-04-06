@@ -34,7 +34,10 @@ const baseProps: TicketPurchaseFormProps = {
 describe("TicketPurchaseForm", () => {
 	describe("レンダリング", () => {
 		it("レース情報セクション（開催場所・開催日・レース番号）が表示される", () => {
+			// Act
 			render(<TicketPurchaseForm {...baseProps} />);
+
+			// Assert
 			expect(screen.getByText("レース情報")).toBeInTheDocument();
 			expect(screen.getByLabelText("開催場所")).toBeInTheDocument();
 			expect(screen.getByLabelText("開催日")).toBeInTheDocument();
@@ -42,7 +45,10 @@ describe("TicketPurchaseForm", () => {
 		});
 
 		it("券種セクション（8種類のボタン）が表示される", () => {
+			// Act
 			render(<TicketPurchaseForm {...baseProps} />);
+
+			// Assert
 			expect(screen.getByText("券種")).toBeInTheDocument();
 			expect(TICKET_TYPES).toHaveLength(8);
 			for (const { label } of TICKET_TYPES) {
@@ -51,7 +57,10 @@ describe("TicketPurchaseForm", () => {
 		});
 
 		it("買い方セクション（券種に対応したボタン群）が表示される", () => {
+			// Act
 			render(<TicketPurchaseForm {...baseProps} />);
+
+			// Assert
 			expect(screen.getByText("買い方")).toBeInTheDocument();
 			const buyTypes = BUY_TYPE_MAP[baseProps.selectedTicketTypeId];
 			for (const { label } of buyTypes) {
@@ -60,12 +69,18 @@ describe("TicketPurchaseForm", () => {
 		});
 
 		it("馬番セクションが表示される", () => {
+			// Act
 			render(<TicketPurchaseForm {...baseProps} />);
+
+			// Assert
 			expect(screen.getByText("馬番")).toBeInTheDocument();
 		});
 
 		it("金額セクション（入力欄・±ボタン・プリセット）が表示される", () => {
+			// Act
 			render(<TicketPurchaseForm {...baseProps} />);
+
+			// Assert
 			expect(screen.getByText("金額")).toBeInTheDocument();
 			expect(screen.getByLabelText("購入金額（円）")).toBeInTheDocument();
 			expect(screen.getByLabelText("100円減らす")).toBeInTheDocument();
@@ -76,7 +91,10 @@ describe("TicketPurchaseForm", () => {
 		});
 
 		it("登録ボタン・キャンセルボタンが表示される", () => {
+			// Act
 			render(<TicketPurchaseForm {...baseProps} />);
+
+			// Assert
 			expect(
 				screen.getByRole("button", { name: "登録する" }),
 			).toBeInTheDocument();
@@ -88,9 +106,12 @@ describe("TicketPurchaseForm", () => {
 
 	describe("選択状態の表示", () => {
 		it("selectedTicketTypeId に対応する券種ボタンだけ aria-pressed=true になる", () => {
+			// Act
 			render(
 				<TicketPurchaseForm {...baseProps} selectedTicketTypeId="sanrenpuku" />,
 			);
+
+			// Assert
 			for (const { id, label } of TICKET_TYPES) {
 				const button = screen.getByRole("button", { name: label });
 				if (id === "sanrenpuku") {
@@ -102,6 +123,7 @@ describe("TicketPurchaseForm", () => {
 		});
 
 		it("selectedBuyTypeId に対応する買い方ボタンだけ aria-pressed=true になる", () => {
+			// Act
 			render(
 				<TicketPurchaseForm
 					{...baseProps}
@@ -109,6 +131,8 @@ describe("TicketPurchaseForm", () => {
 					selectedBuyTypeId="box"
 				/>,
 			);
+
+			// Assert
 			const buyTypes = BUY_TYPE_MAP.umatan;
 			for (const { id, label } of buyTypes) {
 				const button = screen.getByRole("button", { name: label });
@@ -121,7 +145,10 @@ describe("TicketPurchaseForm", () => {
 		});
 
 		it("selectedRaceNumber に対応するレース番号ボタンだけ aria-pressed=true になる", () => {
+			// Act
 			render(<TicketPurchaseForm {...baseProps} selectedRaceNumber={5} />);
+
+			// Assert
 			const raceButton5 = screen.getByRole("button", { name: "5R" });
 			expect(raceButton5).toHaveAttribute("aria-pressed", "true");
 			const raceButton1 = screen.getByRole("button", { name: "1R" });
@@ -131,6 +158,7 @@ describe("TicketPurchaseForm", () => {
 
 	describe("馬番グリッド", () => {
 		it("枠連（wakuren）のグリッドは 1〜8 の 8 個表示される", () => {
+			// Act
 			render(
 				<TicketPurchaseForm
 					{...baseProps}
@@ -140,6 +168,8 @@ describe("TicketPurchaseForm", () => {
 					selectedHorses={{ axis: [], others: [] }}
 				/>,
 			);
+
+			// Assert
 			for (let i = 1; i <= 8; i++) {
 				expect(
 					screen.getAllByRole("button", { name: `${i}番` }).length,
@@ -151,6 +181,7 @@ describe("TicketPurchaseForm", () => {
 		});
 
 		it("枠連以外のグリッドは 1〜18 の 18 個表示される", () => {
+			// Act
 			render(
 				<TicketPurchaseForm
 					{...baseProps}
@@ -160,6 +191,8 @@ describe("TicketPurchaseForm", () => {
 					selectedHorses={{ axis: [], others: [] }}
 				/>,
 			);
+
+			// Assert
 			for (let i = 1; i <= 18; i++) {
 				expect(
 					screen.getAllByRole("button", { name: `${i}番` }).length,
@@ -171,6 +204,7 @@ describe("TicketPurchaseForm", () => {
 		});
 
 		it("selectedHorses に含まれる馬番ボタンが aria-pressed=true になる", () => {
+			// Act
 			render(
 				<TicketPurchaseForm
 					{...baseProps}
@@ -179,6 +213,8 @@ describe("TicketPurchaseForm", () => {
 					selectedHorses={{ horses: [3, 7] }}
 				/>,
 			);
+
+			// Assert
 			expect(screen.getByRole("button", { name: "3番" })).toHaveAttribute(
 				"aria-pressed",
 				"true",
@@ -196,6 +232,7 @@ describe("TicketPurchaseForm", () => {
 
 	describe("条件付き UI 要素", () => {
 		it("三連複（sanrenpuku）+ 流し（nagashi）のとき「軸の頭数」セレクタが表示される", () => {
+			// Act
 			render(
 				<TicketPurchaseForm
 					{...baseProps}
@@ -205,12 +242,15 @@ describe("TicketPurchaseForm", () => {
 					selectedHorses={{ axis: [], others: [] }}
 				/>,
 			);
+
+			// Assert
 			expect(screen.getByText("軸の頭数")).toBeInTheDocument();
 			expect(screen.getByRole("button", { name: "1頭軸" })).toBeInTheDocument();
 			expect(screen.getByRole("button", { name: "2頭軸" })).toBeInTheDocument();
 		});
 
 		it("三連単（sanrentan）+ 流し（nagashi）のとき「流し方向」セレクタが表示される", () => {
+			// Act
 			render(
 				<TicketPurchaseForm
 					{...baseProps}
@@ -220,6 +260,8 @@ describe("TicketPurchaseForm", () => {
 					selectedHorses={{ col1: [], col2: [], col3: [] }}
 				/>,
 			);
+
+			// Assert
 			expect(screen.getByText("流し方向")).toBeInTheDocument();
 			expect(
 				screen.getByRole("button", { name: "1着流し" }),
@@ -233,6 +275,7 @@ describe("TicketPurchaseForm", () => {
 		});
 
 		it("上記以外の組み合わせでは「軸の頭数」「流し方向」セレクタが表示されない", () => {
+			// Act
 			render(
 				<TicketPurchaseForm
 					{...baseProps}
@@ -241,6 +284,8 @@ describe("TicketPurchaseForm", () => {
 					selectedHorses={{ axis: [], others: [] }}
 				/>,
 			);
+
+			// Assert
 			expect(screen.queryByText("軸の頭数")).not.toBeInTheDocument();
 			expect(screen.queryByText("流し方向")).not.toBeInTheDocument();
 		});
@@ -249,34 +294,50 @@ describe("TicketPurchaseForm", () => {
 
 describe("getHorseInputConfigKey", () => {
 	it("buyTypeId が single のとき single を返す", () => {
-		expect(getHorseInputConfigKey("tansho", "single", 1, 1)).toBe("single");
+		// Act
+		const result = getHorseInputConfigKey("tansho", "single", 1, 1);
+
+		// Assert
+		expect(result).toBe("single");
 	});
 
 	it("buyTypeId が box のとき box を返す", () => {
-		expect(getHorseInputConfigKey("umaren", "box", 1, 1)).toBe("box");
+		// Act
+		const result = getHorseInputConfigKey("umaren", "box", 1, 1);
+
+		// Assert
+		expect(result).toBe("box");
 	});
 
 	it("nagashi + umaren（axisCount=1）のとき nagashi_axis1 を返す", () => {
-		expect(getHorseInputConfigKey("umaren", "nagashi", 1, 1)).toBe(
-			"nagashi_axis1",
-		);
+		// Act
+		const result = getHorseInputConfigKey("umaren", "nagashi", 1, 1);
+
+		// Assert
+		expect(result).toBe("nagashi_axis1");
 	});
 
 	it("nagashi + sanrenpuku + axisCount=2 のとき nagashi_axis2 を返す", () => {
-		expect(getHorseInputConfigKey("sanrenpuku", "nagashi", 2, 1)).toBe(
-			"nagashi_axis2",
-		);
+		// Act
+		const result = getHorseInputConfigKey("sanrenpuku", "nagashi", 2, 1);
+
+		// Assert
+		expect(result).toBe("nagashi_axis2");
 	});
 
 	it("nagashi + sanrentan のとき formation を返す", () => {
-		expect(getHorseInputConfigKey("sanrentan", "nagashi", 1, 1)).toBe(
-			"formation",
-		);
+		// Act
+		const result = getHorseInputConfigKey("sanrentan", "nagashi", 1, 1);
+
+		// Assert
+		expect(result).toBe("formation");
 	});
 
 	it("buyTypeId が formation のとき formation を返す", () => {
-		expect(getHorseInputConfigKey("sanrentan", "formation", 1, 1)).toBe(
-			"formation",
-		);
+		// Act
+		const result = getHorseInputConfigKey("sanrentan", "formation", 1, 1);
+
+		// Assert
+		expect(result).toBe("formation");
 	});
 });

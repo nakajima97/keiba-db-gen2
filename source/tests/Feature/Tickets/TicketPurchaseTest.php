@@ -4,6 +4,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
 test('authenticated user can purchase a ticket', function () {
+    // Arrange
     $user = User::factory()->create();
 
     $now = now();
@@ -30,6 +31,7 @@ test('authenticated user can purchase a ticket', function () {
         'updated_at' => $now,
     ]);
 
+    // Act
     $response = $this->actingAs($user)->post(route('tickets.store'), [
         'venue' => '東京',
         'race_date' => '2026-04-05',
@@ -40,6 +42,7 @@ test('authenticated user can purchase a ticket', function () {
         'amount' => 100,
     ]);
 
+    // Assert
     $response->assertRedirect(route('tickets.new'));
 
     $race = DB::table('races')->where('race_date', '2026-04-05')->where('race_number', 1)->first();

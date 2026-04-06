@@ -20,7 +20,10 @@ vi.mock("@inertiajs/react", () => ({
 
 describe("TicketsNew ページ", () => {
 	it("ハッピーパス: ページが正常にレンダリングされ、TicketPurchaseForm が表示される", () => {
+		// Act
 		render(<TicketsNew />);
+
+		// Assert
 		expect(screen.getByText("レース情報")).toBeInTheDocument();
 		expect(screen.getByText("券種")).toBeInTheDocument();
 		expect(screen.getByText("買い方")).toBeInTheDocument();
