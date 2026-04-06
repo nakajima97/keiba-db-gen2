@@ -1,5 +1,4 @@
 ---
-description: シーダーの実装方針
 paths: ["source/database/seeders/**/*.php"]
 ---
 
