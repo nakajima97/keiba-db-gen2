@@ -1,11 +1,12 @@
 <?php
 
 use App\Models\User;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Inertia\Testing\AssertableInertia as Assert;
 
 /**
- * @return array{venueId: int, ticketTypeId: int, buyTypeId: int, now: \Illuminate\Support\Carbon}
+ * @return array{venueId: int, ticketTypeId: int, buyTypeId: int, now: Carbon}
  */
 function createMasterData(): array
 {
@@ -33,10 +34,7 @@ function createMasterData(): array
     return compact('venueId', 'ticketTypeId', 'buyTypeId', 'now');
 }
 
-/**
- * @param \Illuminate\Support\Carbon $now
- */
-function createRace(int $venueId, string $date, int $raceNumber, $now): int
+function createRace(int $venueId, string $date, int $raceNumber, Carbon $now): int
 {
     return DB::table('races')->insertGetId([
         'venue_id' => $venueId,
@@ -47,10 +45,7 @@ function createRace(int $venueId, string $date, int $raceNumber, $now): int
     ]);
 }
 
-/**
- * @param \Illuminate\Support\Carbon $now
- */
-function createTicketPurchase(int $userId, int $raceId, int $ticketTypeId, int $buyTypeId, $now, int $amount = 100): void
+function createTicketPurchase(int $userId, int $raceId, int $ticketTypeId, int $buyTypeId, Carbon $now, int $amount = 100): void
 {
     DB::table('ticket_purchases')->insert([
         'user_id' => $userId,
