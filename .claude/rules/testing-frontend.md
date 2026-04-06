@@ -46,6 +46,25 @@ vitest run --include "**/*.unit.test.ts" --coverage
 - **カスタムhooks**
 - **ページコンポーネント**
 
+## AAAパターン
+
+テストコードはArrange（準備）/ Act（実行）/ Assert（検証）の3フェーズに分けて記述し、各フェーズに以下のコメントを付ける。
+
+```ts
+it("テスト名", () => {
+    // Arrange
+    const props = { ... };
+
+    // Act
+    render(<Component {...props} />);
+
+    // Assert
+    expect(screen.getByText("...")).toBeInTheDocument();
+});
+```
+
+ArrangeのないテストはActとAssertのみコメントを付ける。
+
 ## テストを書くときの注意点
 
 ### 単体テストの場合

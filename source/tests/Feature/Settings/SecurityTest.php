@@ -8,6 +8,7 @@ use Laravel\Fortify\Features;
 test('security page is displayed', function () {
     $this->skipUnlessFortifyHas(Features::twoFactorAuthentication());
 
+    // Arrange
     Features::twoFactorAuthentication([
         'confirm' => true,
         'confirmPassword' => true,
@@ -15,6 +16,7 @@ test('security page is displayed', function () {
 
     $user = User::factory()->create();
 
+    // Act + Assert
     $this->actingAs($user)
         ->withSession(['auth.password_confirmed_at' => time()])
         ->get(route('security.edit'))
@@ -28,6 +30,7 @@ test('security page is displayed', function () {
 test('security page requires password confirmation when enabled', function () {
     $this->skipUnlessFortifyHas(Features::twoFactorAuthentication());
 
+    // Arrange
     $user = User::factory()->create();
 
     Features::twoFactorAuthentication([
@@ -35,15 +38,18 @@ test('security page requires password confirmation when enabled', function () {
         'confirmPassword' => true,
     ]);
 
+    // Act
     $response = $this->actingAs($user)
         ->get(route('security.edit'));
 
+    // Assert
     $response->assertRedirect(route('password.confirm'));
 });
 
 test('security page does not require password confirmation when disabled', function () {
     $this->skipUnlessFortifyHas(Features::twoFactorAuthentication());
 
+    // Arrange
     $user = User::factory()->create();
 
     Features::twoFactorAuthentication([
@@ -51,6 +57,7 @@ test('security page does not require password confirmation when disabled', funct
         'confirmPassword' => false,
     ]);
 
+    // Act + Assert
     $this->actingAs($user)
         ->get(route('security.edit'))
         ->assertOk()
@@ -62,10 +69,11 @@ test('security page does not require password confirmation when disabled', funct
 test('security page renders without two factor when feature is disabled', function () {
     $this->skipUnlessFortifyHas(Features::twoFactorAuthentication());
 
+    // Arrange
     config(['fortify.features' => []]);
-
     $user = User::factory()->create();
 
+    // Act + Assert
     $this->actingAs($user)
         ->get(route('security.edit'))
         ->assertOk()
@@ -78,8 +86,10 @@ test('security page renders without two factor when feature is disabled', functi
 });
 
 test('password can be updated', function () {
+    // Arrange
     $user = User::factory()->create();
 
+    // Act
     $response = $this
         ->actingAs($user)
         ->from(route('security.edit'))
@@ -89,6 +99,7 @@ test('password can be updated', function () {
             'password_confirmation' => 'new-password',
         ]);
 
+    // Assert
     $response
         ->assertSessionHasNoErrors()
         ->assertRedirect(route('security.edit'));
@@ -97,8 +108,10 @@ test('password can be updated', function () {
 });
 
 test('correct password must be provided to update password', function () {
+    // Arrange
     $user = User::factory()->create();
 
+    // Act
     $response = $this
         ->actingAs($user)
         ->from(route('security.edit'))
@@ -108,6 +121,7 @@ test('correct password must be provided to update password', function () {
             'password_confirmation' => 'new-password',
         ]);
 
+    // Assert
     $response
         ->assertSessionHasErrors('current_password')
         ->assertRedirect(route('security.edit'));

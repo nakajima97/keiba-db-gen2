@@ -10,10 +10,11 @@ beforeEach(function () {
 });
 
 test('sends verification notification', function () {
+    // Arrange
     Notification::fake();
-
     $user = User::factory()->unverified()->create();
 
+    // Act + Assert
     $this->actingAs($user)
         ->post(route('verification.send'))
         ->assertRedirect(route('home'));
@@ -22,10 +23,11 @@ test('sends verification notification', function () {
 });
 
 test('does not send verification notification if email is verified', function () {
+    // Arrange
     Notification::fake();
-
     $user = User::factory()->create();
 
+    // Act + Assert
     $this->actingAs($user)
         ->post(route('verification.send'))
         ->assertRedirect(route('dashboard', absolute: false));

@@ -9,12 +9,15 @@ beforeEach(function () {
 });
 
 test('two factor challenge redirects to login when not authenticated', function () {
+    // Act
     $response = $this->get(route('two-factor.login'));
 
+    // Assert
     $response->assertRedirect(route('login'));
 });
 
 test('two factor challenge can be rendered', function () {
+    // Arrange
     Features::twoFactorAuthentication([
         'confirm' => true,
         'confirmPassword' => true,
@@ -33,6 +36,7 @@ test('two factor challenge can be rendered', function () {
         'password' => 'password',
     ]);
 
+    // Act + Assert
     $this->get(route('two-factor.login'))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
