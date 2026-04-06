@@ -4,6 +4,13 @@ import TicketsNew from "./new";
 
 vi.mock("@inertiajs/react", () => ({
 	Head: ({ title }: { title: string }) => <title>{title}</title>,
+	usePage: () => ({
+		props: {
+			lastVenue: "東京",
+			lastRaceDate: "2026-04-05",
+			lastRaceNumber: 1,
+		},
+	}),
 	router: {
 		post: vi.fn(),
 		visit: vi.fn(),
