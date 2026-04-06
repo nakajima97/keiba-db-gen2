@@ -54,10 +54,5 @@ describe("TicketPurchaseFormContainer", () => {
 				onSuccess: expect.any(Function),
 			}),
 		);
-
-		const visitOrReloadCalled =
-			vi.mocked(router.visit).mock.calls.length > 0 ||
-			vi.mocked(router.reload).mock.calls.length > 0;
-		expect(visitOrReloadCalled).toBe(true);
 	});
 });

@@ -32,7 +32,7 @@ test('authenticated user can purchase a ticket', function () {
         'amount' => 100,
     ]);
 
-    $response->assertCreated();
+    $response->assertRedirect(route('tickets.new'));
 
     $this->assertDatabaseHas('ticket_purchases', [
         'user_id' => $user->id,

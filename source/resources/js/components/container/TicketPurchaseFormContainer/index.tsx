@@ -70,7 +70,6 @@ export default function TicketPurchaseFormContainer({
 				onSuccess: () => {
 					toast.success("馬券を登録しました");
 					setSelectedHorses({});
-					router.visit("/tickets/new");
 				},
 			},
 		);
