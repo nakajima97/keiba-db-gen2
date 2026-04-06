@@ -28,6 +28,7 @@ const baseProps: TicketPurchaseFormProps = {
 	onNagashiDirectionChange: noop,
 	onHorsesChange: noop,
 	onAmountChange: noop,
+	processing: false,
 };
 
 describe("TicketPurchaseForm", () => {

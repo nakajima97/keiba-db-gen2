@@ -29,6 +29,7 @@ const baseArgs: TicketPurchaseFormProps = {
 	onNagashiDirectionChange: () => {},
 	onHorsesChange: () => {},
 	onAmountChange: () => {},
+	processing: false,
 };
 
 // ① 複数頭選択のみ
