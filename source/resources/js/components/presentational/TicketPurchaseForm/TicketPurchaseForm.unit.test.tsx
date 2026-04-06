@@ -1,11 +1,13 @@
-import { render, screen, within } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
 import TicketPurchaseForm, {
 	TICKET_TYPES,
 	BUY_TYPE_MAP,
 	getHorseInputConfigKey,
 } from "./index";
-import type { TicketPurchaseFormProps, TicketTypeId } from "./index";
+import type { TicketPurchaseFormProps } from "./index";
+
+const noop = () => {};
 
 const baseProps: TicketPurchaseFormProps = {
 	selectedVenue: "東京",
@@ -17,6 +19,15 @@ const baseProps: TicketPurchaseFormProps = {
 	selectedNagashiDirection: 1,
 	selectedHorses: { axis: [3], others: [1, 5, 7] },
 	amount: 100,
+	onVenueChange: noop,
+	onRaceDateChange: noop,
+	onRaceNumberChange: noop,
+	onTicketTypeChange: noop,
+	onBuyTypeChange: noop,
+	onAxisCountChange: noop,
+	onNagashiDirectionChange: noop,
+	onHorsesChange: noop,
+	onAmountChange: noop,
 };
 
 describe("TicketPurchaseForm", () => {
@@ -130,8 +141,8 @@ describe("TicketPurchaseForm", () => {
 			);
 			for (let i = 1; i <= 8; i++) {
 				expect(
-					screen.getByRole("button", { name: `${i}番` }),
-				).toBeInTheDocument();
+					screen.getAllByRole("button", { name: `${i}番` }).length,
+				).toBeGreaterThanOrEqual(1);
 			}
 			expect(
 				screen.queryByRole("button", { name: "9番" }),

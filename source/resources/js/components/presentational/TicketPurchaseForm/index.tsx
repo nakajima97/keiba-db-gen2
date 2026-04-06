@@ -101,6 +101,27 @@ const HORSE_INPUT_CONFIG: Record<string, { key: string; label: string }[]> = {
 };
 
 // ---------------------------------------------------------------------------
+// 純粋関数: horseInputConfigKey の計算
+// ---------------------------------------------------------------------------
+
+export function getHorseInputConfigKey(
+	ticketTypeId: TicketTypeId,
+	buyTypeId: string,
+	axisCount: 1 | 2,
+	_nagashiDirection: 1 | 2 | 3,
+): string {
+	const showNagashiDirectionSelector =
+		buyTypeId === "nagashi" && ticketTypeId === "sanrentan";
+
+	if (buyTypeId === "nagashi") {
+		return showNagashiDirectionSelector
+			? "formation"
+			: `nagashi_axis${axisCount}`;
+	}
+	return buyTypeId;
+}
+
+// ---------------------------------------------------------------------------
 // Props
 // ---------------------------------------------------------------------------
 
@@ -120,6 +141,16 @@ export type TicketPurchaseFormProps = {
 	selectedHorses: Record<string, number[]>;
 	// 金額
 	amount: number;
+	// コールバック
+	onVenueChange: (venue: string) => void;
+	onRaceDateChange: (date: string) => void;
+	onRaceNumberChange: (num: number) => void;
+	onTicketTypeChange: (id: TicketTypeId) => void;
+	onBuyTypeChange: (id: string) => void;
+	onAxisCountChange: (count: 1 | 2) => void;
+	onNagashiDirectionChange: (pos: 1 | 2 | 3) => void;
+	onHorsesChange: (groupKey: string, horses: number[]) => void;
+	onAmountChange: (amount: number) => void;
 };
 
 // ---------------------------------------------------------------------------
@@ -147,6 +178,8 @@ type HorseGridProps = {
 	groupKey: string;
 	gridSize: number;
 	selectedHorses: number[];
+	onToggle: (num: number) => void;
+	onTextChange: (text: string) => void;
 };
 
 function HorseGrid({
@@ -154,6 +187,8 @@ function HorseGrid({
 	groupKey,
 	gridSize,
 	selectedHorses,
+	onToggle,
+	onTextChange,
 }: HorseGridProps) {
 	return (
 		<div className="space-y-2">
@@ -162,10 +197,11 @@ function HorseGrid({
 				<Input
 					type="text"
 					placeholder="例: 1 3 5 または 1,3,5"
-					defaultValue={selectedHorses.join(", ")}
+					value={selectedHorses.join(", ")}
 					className="h-8 w-48 text-sm"
 					aria-label={`${label}の馬番テキスト入力`}
 					data-group={groupKey}
+					onChange={(e) => onTextChange(e.target.value)}
 				/>
 			</div>
 			<div className="grid grid-cols-6 gap-1.5 sm:grid-cols-9">
@@ -177,6 +213,7 @@ function HorseGrid({
 							type="button"
 							aria-pressed={isSelected}
 							aria-label={`${num}番`}
+							onClick={() => onToggle(num)}
 							className={[
 								"flex h-10 w-10 items-center justify-center rounded-lg border text-sm font-bold transition-colors",
 								isSelected
@@ -207,6 +244,15 @@ export default function TicketPurchaseForm({
 	selectedNagashiDirection,
 	selectedHorses,
 	amount,
+	onVenueChange,
+	onRaceDateChange,
+	onRaceNumberChange,
+	onTicketTypeChange,
+	onBuyTypeChange,
+	onAxisCountChange,
+	onNagashiDirectionChange,
+	onHorsesChange,
+	onAmountChange,
 }: TicketPurchaseFormProps) {
 	const buyTypes = BUY_TYPE_MAP[selectedTicketTypeId];
 	const gridSize = GRID_SIZE[selectedTicketTypeId] ?? 18;
@@ -219,14 +265,30 @@ export default function TicketPurchaseForm({
 	const showNagashiDirectionSelector =
 		selectedBuyTypeId === "nagashi" && selectedTicketTypeId === "sanrentan";
 
-	const horseInputConfigKey =
-		selectedBuyTypeId === "nagashi"
-			? showNagashiDirectionSelector
-				? "formation" // 三連単流しはパターン④（1着・2着・3着）
-				: `nagashi_axis${selectedAxisCount}`
-			: selectedBuyTypeId;
+	const horseInputConfigKey = getHorseInputConfigKey(
+		selectedTicketTypeId,
+		selectedBuyTypeId,
+		selectedAxisCount,
+		selectedNagashiDirection,
+	);
 
 	const horseGroups = HORSE_INPUT_CONFIG[horseInputConfigKey] ?? [];
+
+	const handleHorseToggle = (groupKey: string, num: number) => {
+		const current = selectedHorses[groupKey] ?? [];
+		const next = current.includes(num)
+			? current.filter((n) => n !== num)
+			: [...current, num];
+		onHorsesChange(groupKey, next);
+	};
+
+	const handleHorseTextChange = (groupKey: string, text: string) => {
+		const nums = text
+			.split(/[\s,]+/)
+			.map(Number)
+			.filter((n) => Number.isInteger(n) && n >= 1 && n <= gridSize);
+		onHorsesChange(groupKey, nums);
+	};
 
 	return (
 		<div className="mx-auto max-w-2xl space-y-8 p-4">
@@ -238,7 +300,7 @@ export default function TicketPurchaseForm({
 					{/* 開催場所 */}
 					<div className="space-y-2">
 						<Label htmlFor="venue">開催場所</Label>
-						<Select defaultValue={selectedVenue}>
+						<Select value={selectedVenue} onValueChange={onVenueChange}>
 							<SelectTrigger id="venue" className="w-40">
 								<SelectValue placeholder="選択してください" />
 							</SelectTrigger>
@@ -258,8 +320,9 @@ export default function TicketPurchaseForm({
 						<Input
 							id="race-date"
 							type="date"
-							defaultValue={selectedRaceDate}
+							value={selectedRaceDate}
 							className="w-48"
+							onChange={(e) => onRaceDateChange(e.target.value)}
 						/>
 					</div>
 
@@ -272,9 +335,13 @@ export default function TicketPurchaseForm({
 								type="number"
 								min={1}
 								max={12}
-								defaultValue={selectedRaceNumber}
+								value={selectedRaceNumber}
 								className="h-8 w-16 text-center"
 								aria-label="レース番号を直接入力"
+								onChange={(e) => {
+									const n = Number.parseInt(e.target.value, 10);
+									if (n >= 1 && n <= 12) onRaceNumberChange(n);
+								}}
 							/>
 							<div className="flex flex-wrap gap-1.5">
 								{Array.from({ length: 12 }, (_, i) => i + 1).map((r) => (
@@ -285,6 +352,7 @@ export default function TicketPurchaseForm({
 										size="sm"
 										aria-pressed={r === selectedRaceNumber}
 										className="w-10"
+										onClick={() => onRaceNumberChange(r)}
 									>
 										{r}R
 									</Button>
@@ -307,6 +375,7 @@ export default function TicketPurchaseForm({
 							variant={id === selectedTicketTypeId ? "default" : "outline"}
 							size="sm"
 							aria-pressed={id === selectedTicketTypeId}
+							onClick={() => onTicketTypeChange(id)}
 						>
 							{label}
 						</Button>
@@ -326,6 +395,7 @@ export default function TicketPurchaseForm({
 							variant={id === selectedBuyTypeId ? "default" : "outline"}
 							size="sm"
 							aria-pressed={id === selectedBuyTypeId}
+							onClick={() => onBuyTypeChange(id)}
 						>
 							{label}
 						</Button>
@@ -352,6 +422,7 @@ export default function TicketPurchaseForm({
 										}
 										size="sm"
 										aria-pressed={count === selectedAxisCount}
+										onClick={() => onAxisCountChange(count)}
 									>
 										{count}頭軸
 									</Button>
@@ -373,6 +444,7 @@ export default function TicketPurchaseForm({
 										}
 										size="sm"
 										aria-pressed={pos === selectedNagashiDirection}
+										onClick={() => onNagashiDirectionChange(pos)}
 									>
 										{pos}着流し
 									</Button>
@@ -387,6 +459,8 @@ export default function TicketPurchaseForm({
 							label={label}
 							gridSize={gridSize}
 							selectedHorses={selectedHorses[key] ?? []}
+							onToggle={(num) => handleHorseToggle(key, num)}
+							onTextChange={(text) => handleHorseTextChange(key, text)}
 						/>
 					))}
 				</div>
@@ -402,6 +476,7 @@ export default function TicketPurchaseForm({
 						variant="outline"
 						size="icon"
 						aria-label="100円減らす"
+						onClick={() => onAmountChange(Math.max(100, amount - 100))}
 					>
 						−
 					</Button>
@@ -409,9 +484,13 @@ export default function TicketPurchaseForm({
 						type="number"
 						min={100}
 						step={100}
-						defaultValue={amount}
+						value={amount}
 						className="w-28 text-center"
 						aria-label="購入金額（円）"
+						onChange={(e) => {
+							const n = Number.parseInt(e.target.value, 10);
+							if (n >= 100) onAmountChange(n);
+						}}
 					/>
 					<span className="text-sm text-muted-foreground">円</span>
 					<Button
@@ -419,6 +498,7 @@ export default function TicketPurchaseForm({
 						variant="outline"
 						size="icon"
 						aria-label="100円増やす"
+						onClick={() => onAmountChange(amount + 100)}
 					>
 						＋
 					</Button>
@@ -428,6 +508,7 @@ export default function TicketPurchaseForm({
 								key={preset}
 								variant="secondary"
 								className="cursor-pointer select-none px-2 py-1 text-xs"
+								onClick={() => onAmountChange(preset)}
 							>
 								{preset.toLocaleString()}円
 							</Badge>
