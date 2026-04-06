@@ -23,7 +23,7 @@ class StoreTicketPurchaseRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'venue' => ['required', 'string'],
+            'venue' => ['required', 'string', 'exists:venues,name'],
             'race_date' => ['nullable', 'date'],
             'race_number' => ['nullable', 'integer', 'min:1', 'max:12'],
             'ticket_type' => ['required', 'string', 'exists:ticket_types,name'],
