@@ -97,7 +97,7 @@ describe("TicketPurchaseForm", () => {
 					selectedBuyTypeId="box"
 				/>,
 			);
-			const buyTypes = BUY_TYPE_MAP["umatan"];
+			const buyTypes = BUY_TYPE_MAP.umatan;
 			for (const { id, label } of buyTypes) {
 				const button = screen.getByRole("button", { name: label });
 				if (id === "box") {
