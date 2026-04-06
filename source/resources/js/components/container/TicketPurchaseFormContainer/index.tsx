@@ -52,7 +52,7 @@ export default function TicketPurchaseFormContainer({
 		setSelectedHorses({});
 	};
 
-	const handleSubmit = (e: { preventDefault: () => void }) => {
+	const handleSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
 		router.post(
