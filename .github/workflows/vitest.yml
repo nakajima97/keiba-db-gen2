@@ -11,7 +11,7 @@ on:
       - 'source/pnpm-lock.yaml'
 
 jobs:
-  phpstan:
+  vitest:
     runs-on: ubuntu-latest
 
     defaults:

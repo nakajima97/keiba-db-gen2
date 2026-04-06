@@ -10,7 +10,7 @@ on:
       - 'source/pnpm-lock.yaml'
 
 jobs:
-  phpstan:
+  tc:
     runs-on: ubuntu-latest
 
     defaults:
