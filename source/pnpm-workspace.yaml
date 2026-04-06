@@ -1,2 +1,4 @@
 ignoredBuiltDependencies:
   - '@biomejs/biome'
+
+minimumReleaseAge: 10080 # 7日（分単位）
