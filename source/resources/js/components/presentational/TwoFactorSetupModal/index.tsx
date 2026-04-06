@@ -79,7 +79,7 @@ function TwoFactorSetupStep({
 									<div
 										className="aspect-square w-full rounded-lg bg-white p-2 [&_svg]:size-full"
 										// biome-ignore lint/security/noDangerouslySetInnerHtml: QRコードSVGはサーバーが生成した信頼済みコンテンツ
-									dangerouslySetInnerHTML={{
+										dangerouslySetInnerHTML={{
 											__html: qrCodeSvg,
 										}}
 										style={{

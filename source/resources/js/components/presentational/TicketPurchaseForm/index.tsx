@@ -40,7 +40,10 @@ export const TICKET_TYPES = [
 
 export type TicketTypeId = (typeof TICKET_TYPES)[number]["id"];
 
-export const BUY_TYPE_MAP: Record<TicketTypeId, { id: string; label: string }[]> = {
+export const BUY_TYPE_MAP: Record<
+	TicketTypeId,
+	{ id: string; label: string }[]
+> = {
 	tansho: [{ id: "single", label: "通常" }],
 	fukusho: [{ id: "single", label: "通常" }],
 	wakuren: [
@@ -146,7 +149,12 @@ type HorseGridProps = {
 	selectedHorses: number[];
 };
 
-function HorseGrid({ label, groupKey, gridSize, selectedHorses }: HorseGridProps) {
+function HorseGrid({
+	label,
+	groupKey,
+	gridSize,
+	selectedHorses,
+}: HorseGridProps) {
 	return (
 		<div className="space-y-2">
 			<div className="flex items-center gap-2">
@@ -339,7 +347,9 @@ export default function TicketPurchaseForm({
 									<Button
 										key={count}
 										type="button"
-										variant={count === selectedAxisCount ? "default" : "outline"}
+										variant={
+											count === selectedAxisCount ? "default" : "outline"
+										}
 										size="sm"
 										aria-pressed={count === selectedAxisCount}
 									>
@@ -358,7 +368,9 @@ export default function TicketPurchaseForm({
 									<Button
 										key={pos}
 										type="button"
-										variant={pos === selectedNagashiDirection ? "default" : "outline"}
+										variant={
+											pos === selectedNagashiDirection ? "default" : "outline"
+										}
 										size="sm"
 										aria-pressed={pos === selectedNagashiDirection}
 									>
@@ -385,7 +397,12 @@ export default function TicketPurchaseForm({
 			---------------------------------------------------------------- */}
 			<Section title="金額">
 				<div className="flex items-center gap-2">
-					<Button type="button" variant="outline" size="icon" aria-label="100円減らす">
+					<Button
+						type="button"
+						variant="outline"
+						size="icon"
+						aria-label="100円減らす"
+					>
 						−
 					</Button>
 					<Input
@@ -397,7 +414,12 @@ export default function TicketPurchaseForm({
 						aria-label="購入金額（円）"
 					/>
 					<span className="text-sm text-muted-foreground">円</span>
-					<Button type="button" variant="outline" size="icon" aria-label="100円増やす">
+					<Button
+						type="button"
+						variant="outline"
+						size="icon"
+						aria-label="100円増やす"
+					>
 						＋
 					</Button>
 					<div className="ml-4 flex gap-1.5">

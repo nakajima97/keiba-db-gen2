@@ -29,7 +29,6 @@ export default function Register() {
 									type="text"
 									required
 									autoFocus
-
 									autoComplete="name"
 									name="name"
 									placeholder="Full name"
@@ -43,7 +42,6 @@ export default function Register() {
 									id="email"
 									type="email"
 									required
-
 									autoComplete="email"
 									name="email"
 									placeholder="email@example.com"
@@ -56,7 +54,6 @@ export default function Register() {
 								<PasswordInput
 									id="password"
 									required
-
 									autoComplete="new-password"
 									name="password"
 									placeholder="Password"
@@ -69,7 +66,6 @@ export default function Register() {
 								<PasswordInput
 									id="password_confirmation"
 									required
-
 									autoComplete="new-password"
 									name="password_confirmation"
 									placeholder="Confirm password"
@@ -89,9 +85,7 @@ export default function Register() {
 
 						<div className="text-center text-sm text-muted-foreground">
 							Already have an account?{" "}
-							<TextLink href={login()}>
-								Log in
-							</TextLink>
+							<TextLink href={login()}>Log in</TextLink>
 						</div>
 					</>
 				)}

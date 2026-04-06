@@ -42,7 +42,6 @@ export default function Login({
 									name="email"
 									required
 									autoFocus
-
 									autoComplete="email"
 									placeholder="email@example.com"
 								/>
@@ -53,10 +52,7 @@ export default function Login({
 								<div className="flex items-center">
 									<Label htmlFor="password">Password</Label>
 									{canResetPassword && (
-										<TextLink
-											href={request()}
-											className="ml-auto text-sm"
-										>
+										<TextLink href={request()} className="ml-auto text-sm">
 											Forgot password?
 										</TextLink>
 									)}
@@ -90,9 +86,7 @@ export default function Login({
 						{canRegister && (
 							<div className="text-center text-sm text-muted-foreground">
 								Don't have an account?{" "}
-								<TextLink href={register()}>
-									Sign up
-								</TextLink>
+								<TextLink href={register()}>Sign up</TextLink>
 							</div>
 						)}
 					</>
