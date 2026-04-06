@@ -71,6 +71,11 @@ export default function TicketPurchaseFormContainer({
 					toast.success("馬券を登録しました");
 					setSelectedHorses({});
 				},
+				onError: (errors) => {
+					for (const message of Object.values(errors)) {
+						toast.error(message);
+					}
+				},
 			},
 		);
 	};
