@@ -8,7 +8,7 @@ on:
       - 'source/composer.lock'
 
 jobs:
-  phpstan:
+  pint:
     runs-on: ubuntu-latest
 
     defaults:
