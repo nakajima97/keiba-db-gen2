@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { router } from "@inertiajs/react";
+import { toast } from "sonner";
 import TicketPurchaseForm from "@/components/presentational/TicketPurchaseForm";
 import {
 	BUY_TYPE_MAP,
@@ -67,6 +68,7 @@ export default function TicketPurchaseFormContainer({
 			},
 			{
 				onSuccess: () => {
+					toast.success("馬券を登録しました");
 					setSelectedHorses({});
 					router.visit("/tickets/new");
 				},
