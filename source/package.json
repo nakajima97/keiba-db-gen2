@@ -13,8 +13,8 @@
         "check": "biome check --write resources/",
         "tc": "tsc --noEmit",
         "test": "vitest",
-        "storybook": "storybook dev -p 6006",
-        "build-storybook": "storybook build --no-open"
+        "storybook": "storybook dev -p 6006 --no-open",
+        "build-storybook": "storybook build"
     },
     "devDependencies": {
         "@biomejs/biome": "^1.9.4",
