@@ -13,9 +13,9 @@ class TicketPurchaseController extends Controller
     public function create(): Response
     {
         return Inertia::render('tickets/new', [
-            'lastVenue' => session('last_venue', '東京'),
-            'lastRaceDate' => session('last_race_date', now()->toDateString()),
-            'lastRaceNumber' => session('last_race_number', 1),
+            'lastVenue' => session('last_venue') ?? '東京',
+            'lastRaceDate' => session('last_race_date') ?? now()->toDateString(),
+            'lastRaceNumber' => session('last_race_number') ?? 1,
         ]);
     }
 
