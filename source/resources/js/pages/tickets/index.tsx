@@ -16,7 +16,6 @@ export default function TicketsIndex() {
 				hasMore={false}
 				isLoading={false}
 				onLoadMore={() => {}}
-				onRegister={() => {}}
 			/>
 		</>
 	);

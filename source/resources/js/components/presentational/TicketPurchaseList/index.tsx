@@ -1,5 +1,6 @@
-import { Button } from "@/components/shadcn/ui/button";
+import { Link } from "@inertiajs/react";
 import { Spinner } from "@/components/shadcn/ui/spinner";
+import { newMethod } from "@/routes/tickets";
 import type { TicketPurchaseListProps } from "./types";
 import { formatSelections } from "./utils";
 
@@ -8,21 +9,18 @@ export default function TicketPurchaseList({
 	hasMore,
 	isLoading,
 	onLoadMore,
-	onRegister,
 }: TicketPurchaseListProps) {
 	return (
 		<div className="flex flex-col gap-4 p-4">
 			<div className="flex items-center justify-between">
 				<h1 className="text-xl font-semibold">購入馬券一覧</h1>
-				<Button onClick={onRegister}>馬券を登録する</Button>
+				<Link href={newMethod.url()}>馬券を登録する</Link>
 			</div>
 
 			{purchases.length === 0 ? (
 				<div className="flex flex-col items-center justify-center gap-4 py-16 text-muted-foreground">
 					<p>まだ購入記録がありません</p>
-					<Button variant="outline" onClick={onRegister}>
-						馬券を登録する
-					</Button>
+					<Link href={newMethod.url()}>馬券を登録する</Link>
 				</div>
 			) : (
 				<>

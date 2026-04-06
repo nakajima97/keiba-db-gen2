@@ -10,11 +10,10 @@ const meta: Meta<typeof TicketPurchaseList> = {
 export default meta;
 type Story = StoryObj<typeof TicketPurchaseList>;
 
-const baseArgs: Pick<TicketPurchaseListProps, "hasMore" | "isLoading" | "onLoadMore" | "onRegister"> = {
+const baseArgs: Pick<TicketPurchaseListProps, "hasMore" | "isLoading" | "onLoadMore"> = {
 	hasMore: false,
 	isLoading: false,
 	onLoadMore: () => {},
-	onRegister: () => {},
 };
 
 const samplePurchases: TicketPurchaseListProps["purchases"] = [

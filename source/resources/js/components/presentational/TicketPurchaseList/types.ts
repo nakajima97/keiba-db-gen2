@@ -19,5 +19,4 @@ export type TicketPurchaseListProps = {
 	hasMore: boolean;
 	isLoading: boolean;
 	onLoadMore: () => void;
-	onRegister: () => void;
 };
