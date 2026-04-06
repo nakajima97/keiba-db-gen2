@@ -8,7 +8,7 @@ on:
       - 'source/composer.lock'
 
 jobs:
-  phpstan:
+  pest:
     runs-on: ubuntu-latest
 
     defaults:
