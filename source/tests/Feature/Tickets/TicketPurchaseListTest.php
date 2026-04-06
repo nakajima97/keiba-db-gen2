@@ -1,12 +1,12 @@
 <?php
 
 use App\Models\User;
-use Illuminate\Support\Carbon;
+use Carbon\CarbonInterface;
 use Illuminate\Support\Facades\DB;
 use Inertia\Testing\AssertableInertia as Assert;
 
 /**
- * @return array{venueId: int, ticketTypeId: int, buyTypeId: int, now: Carbon}
+ * @return array{venueId: int, ticketTypeId: int, buyTypeId: int, now: CarbonInterface}
  */
 function createMasterData(): array
 {
@@ -34,7 +34,7 @@ function createMasterData(): array
     return compact('venueId', 'ticketTypeId', 'buyTypeId', 'now');
 }
 
-function createRace(int $venueId, string $date, int $raceNumber, Carbon $now): int
+function createRace(int $venueId, string $date, int $raceNumber, CarbonInterface $now): int
 {
     return DB::table('races')->insertGetId([
         'venue_id' => $venueId,
@@ -45,7 +45,7 @@ function createRace(int $venueId, string $date, int $raceNumber, Carbon $now): i
     ]);
 }
 
-function createTicketPurchase(int $userId, int $raceId, int $ticketTypeId, int $buyTypeId, Carbon $now, int $amount = 100): void
+function createTicketPurchase(int $userId, int $raceId, int $ticketTypeId, int $buyTypeId, CarbonInterface $now, int $amount = 100): void
 {
     DB::table('ticket_purchases')->insert([
         'user_id' => $userId,
