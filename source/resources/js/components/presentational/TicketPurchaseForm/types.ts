@@ -16,6 +16,8 @@ export type TicketPurchaseFormProps = {
 	selectedHorses: Record<string, number[]>;
 	// 金額
 	amount: number;
+	// 送信中フラグ
+	processing: boolean;
 	// コールバック
 	onVenueChange: (venue: string) => void;
 	onRaceDateChange: (date: string) => void;

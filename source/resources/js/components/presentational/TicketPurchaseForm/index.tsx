@@ -22,6 +22,7 @@ import { getHorseInputConfigKey } from "./utils";
 
 // テストファイルおよびStorybookから./indexを参照しているため、互換性のためにre-exportする
 export { TICKET_TYPES, BUY_TYPE_MAP } from "./constants";
+export type { TicketTypeId } from "./constants";
 export { getHorseInputConfigKey } from "./utils";
 export type { TicketPurchaseFormProps } from "./types";
 
@@ -35,6 +36,7 @@ export default function TicketPurchaseForm({
 	selectedNagashiDirection,
 	selectedHorses,
 	amount,
+	processing,
 	onVenueChange,
 	onRaceDateChange,
 	onRaceNumberChange,
@@ -298,8 +300,8 @@ export default function TicketPurchaseForm({
 
 			{/* 6. 登録ボタン */}
 			<div className="flex gap-3 pt-2">
-				<Button type="submit" className="flex-1">
-					登録する
+				<Button type="submit" className="flex-1" disabled={processing}>
+					{processing ? "送信中..." : "登録する"}
 				</Button>
 				<Button type="button" variant="outline">
 					キャンセル

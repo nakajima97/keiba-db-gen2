@@ -39,6 +39,7 @@ export default function TicketPurchaseFormContainer({
 	const [selectedNagashiDirection, setSelectedNagashiDirection] = useState<1 | 2 | 3>(initialNagashiDirection);
 	const [selectedHorses, setSelectedHorses] = useState<Record<string, number[]>>(initialHorses);
 	const [amount, setAmount] = useState(initialAmount);
+	const [processing, setProcessing] = useState(false);
 
 	const handleTicketTypeChange = (id: TicketTypeId) => {
 		setSelectedTicketTypeId(id);
@@ -55,6 +56,7 @@ export default function TicketPurchaseFormContainer({
 	const handleSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
+		setProcessing(true);
 		router.post(
 			"/tickets",
 			{
@@ -76,6 +78,9 @@ export default function TicketPurchaseFormContainer({
 						toast.error(message);
 					}
 				},
+				onFinish: () => {
+					setProcessing(false);
+				},
 			},
 		);
 	};
@@ -92,6 +97,7 @@ export default function TicketPurchaseFormContainer({
 				selectedNagashiDirection={selectedNagashiDirection}
 				selectedHorses={selectedHorses}
 				amount={amount}
+				processing={processing}
 				onVenueChange={setSelectedVenue}
 				onRaceDateChange={setSelectedRaceDate}
 				onRaceNumberChange={setSelectedRaceNumber}
