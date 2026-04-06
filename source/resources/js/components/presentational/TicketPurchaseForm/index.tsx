@@ -1,7 +1,6 @@
 import { Button } from "@/components/shadcn/ui/button";
 import { Input } from "@/components/shadcn/ui/input";
 import { Label } from "@/components/shadcn/ui/label";
-import { Badge } from "@/components/shadcn/ui/badge";
 import {
 	Select,
 	SelectContent,
@@ -504,14 +503,15 @@ export default function TicketPurchaseForm({
 					</Button>
 					<div className="ml-4 flex gap-1.5">
 						{[100, 500, 1000].map((preset) => (
-							<Badge
+							<Button
 								key={preset}
+								type="button"
 								variant="secondary"
-								className="cursor-pointer select-none px-2 py-1 text-xs"
+								size="sm"
 								onClick={() => onAmountChange(preset)}
 							>
 								{preset.toLocaleString()}円
-							</Badge>
+							</Button>
 						))}
 					</div>
 				</div>
