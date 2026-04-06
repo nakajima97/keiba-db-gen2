@@ -12,11 +12,12 @@ class BuyTypeSeeder extends Seeder
      */
     public function run(): void
     {
+        $now = now();
         $types = [
-            ['name' => 'single', 'label' => '通常', 'sort_order' => 1],
-            ['name' => 'nagashi', 'label' => '流し', 'sort_order' => 2],
-            ['name' => 'box', 'label' => 'ボックス', 'sort_order' => 3],
-            ['name' => 'formation', 'label' => 'フォーメーション', 'sort_order' => 4],
+            ['name' => 'single', 'label' => '通常', 'sort_order' => 1, 'created_at' => $now, 'updated_at' => $now],
+            ['name' => 'nagashi', 'label' => '流し', 'sort_order' => 2, 'created_at' => $now, 'updated_at' => $now],
+            ['name' => 'box', 'label' => 'ボックス', 'sort_order' => 3, 'created_at' => $now, 'updated_at' => $now],
+            ['name' => 'formation', 'label' => 'フォーメーション', 'sort_order' => 4, 'created_at' => $now, 'updated_at' => $now],
         ];
 
         DB::table('buy_types')->insert($types);
