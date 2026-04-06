@@ -8,230 +8,22 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/shadcn/ui/select";
+import {
+	BUY_TYPE_MAP,
+	GRID_SIZE,
+	HORSE_INPUT_CONFIG,
+	TICKET_TYPES,
+	VENUES,
+} from "./constants";
+import { HorseGrid } from "./HorseGrid";
+import { Section } from "./Section";
+import type { TicketPurchaseFormProps } from "./types";
+import { getHorseInputConfigKey } from "./utils";
 
-// ---------------------------------------------------------------------------
-// 静的マスタデータ
-// ---------------------------------------------------------------------------
-
-export const VENUES = [
-	"東京",
-	"中山",
-	"阪神",
-	"京都",
-	"新潟",
-	"福島",
-	"小倉",
-	"函館",
-	"札幌",
-	"中京",
-] as const;
-
-export const TICKET_TYPES = [
-	{ id: "tansho", label: "単勝" },
-	{ id: "fukusho", label: "複勝" },
-	{ id: "wakuren", label: "枠連" },
-	{ id: "umaren", label: "馬連" },
-	{ id: "umatan", label: "馬単" },
-	{ id: "wide", label: "ワイド" },
-	{ id: "sanrenpuku", label: "三連複" },
-	{ id: "sanrentan", label: "三連単" },
-] as const;
-
-export type TicketTypeId = (typeof TICKET_TYPES)[number]["id"];
-
-export const BUY_TYPE_MAP: Record<
-	TicketTypeId,
-	{ id: string; label: string }[]
-> = {
-	tansho: [{ id: "single", label: "通常" }],
-	fukusho: [{ id: "single", label: "通常" }],
-	wakuren: [
-		{ id: "nagashi", label: "流し" },
-		{ id: "box", label: "ボックス" },
-	],
-	umaren: [
-		{ id: "nagashi", label: "流し" },
-		{ id: "box", label: "ボックス" },
-	],
-	umatan: [
-		{ id: "nagashi", label: "流し" },
-		{ id: "box", label: "ボックス" },
-		{ id: "formation", label: "フォーメーション" },
-	],
-	wide: [
-		{ id: "nagashi", label: "流し" },
-		{ id: "box", label: "ボックス" },
-	],
-	sanrenpuku: [
-		{ id: "nagashi", label: "流し" },
-		{ id: "box", label: "ボックス" },
-	],
-	sanrentan: [
-		{ id: "nagashi", label: "流し" },
-		{ id: "box", label: "ボックス" },
-		{ id: "formation", label: "フォーメーション" },
-	],
-};
-
-// 券種ごとのグリッドサイズ（枠連は枠番1〜8、それ以外は馬番1〜18）
-const GRID_SIZE: Partial<Record<TicketTypeId, number>> = {
-	wakuren: 8,
-};
-
-// 買い方 × 軸頭数ごとのグループ構成
-const HORSE_INPUT_CONFIG: Record<string, { key: string; label: string }[]> = {
-	single: [{ key: "horses", label: "馬番" }],
-	box: [{ key: "horses", label: "馬番" }],
-	nagashi_axis1: [
-		{ key: "axis", label: "軸" },
-		{ key: "others", label: "相手" },
-	],
-	nagashi_axis2: [
-		{ key: "axis1", label: "軸1" },
-		{ key: "axis2", label: "軸2" },
-		{ key: "others", label: "相手" },
-	],
-	// 三連単流し・全券種フォーメーション（パターン④）
-	formation: [
-		{ key: "col1", label: "1着" },
-		{ key: "col2", label: "2着" },
-		{ key: "col3", label: "3着" },
-	],
-};
-
-// ---------------------------------------------------------------------------
-// 純粋関数: horseInputConfigKey の計算
-// ---------------------------------------------------------------------------
-
-export function getHorseInputConfigKey(
-	ticketTypeId: TicketTypeId,
-	buyTypeId: string,
-	axisCount: 1 | 2,
-	_nagashiDirection: 1 | 2 | 3,
-): string {
-	const showNagashiDirectionSelector =
-		buyTypeId === "nagashi" && ticketTypeId === "sanrentan";
-
-	if (buyTypeId === "nagashi") {
-		return showNagashiDirectionSelector
-			? "formation"
-			: `nagashi_axis${axisCount}`;
-	}
-	return buyTypeId;
-}
-
-// ---------------------------------------------------------------------------
-// Props
-// ---------------------------------------------------------------------------
-
-export type TicketPurchaseFormProps = {
-	// レース情報
-	selectedVenue: string;
-	selectedRaceDate: string;
-	selectedRaceNumber: number;
-	// 券種・買い方
-	selectedTicketTypeId: TicketTypeId;
-	selectedBuyTypeId: string;
-	// 軸頭数（三連複nagashiのみ有効）
-	selectedAxisCount: 1 | 2;
-	// 流し方向（三連単nagashiのみ有効）
-	selectedNagashiDirection: 1 | 2 | 3;
-	// 馬番選択
-	selectedHorses: Record<string, number[]>;
-	// 金額
-	amount: number;
-	// コールバック
-	onVenueChange: (venue: string) => void;
-	onRaceDateChange: (date: string) => void;
-	onRaceNumberChange: (num: number) => void;
-	onTicketTypeChange: (id: TicketTypeId) => void;
-	onBuyTypeChange: (id: string) => void;
-	onAxisCountChange: (count: 1 | 2) => void;
-	onNagashiDirectionChange: (pos: 1 | 2 | 3) => void;
-	onHorsesChange: (groupKey: string, horses: number[]) => void;
-	onAmountChange: (amount: number) => void;
-};
-
-// ---------------------------------------------------------------------------
-// サブコンポーネント
-// ---------------------------------------------------------------------------
-
-type SectionProps = {
-	title: string;
-	children: React.ReactNode;
-};
-
-function Section({ title, children }: SectionProps) {
-	return (
-		<section className="space-y-3">
-			<h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-				{title}
-			</h2>
-			<div>{children}</div>
-		</section>
-	);
-}
-
-type HorseGridProps = {
-	label: string;
-	groupKey: string;
-	gridSize: number;
-	selectedHorses: number[];
-	onToggle: (num: number) => void;
-	onTextChange: (text: string) => void;
-};
-
-function HorseGrid({
-	label,
-	groupKey,
-	gridSize,
-	selectedHorses,
-	onToggle,
-	onTextChange,
-}: HorseGridProps) {
-	return (
-		<div className="space-y-2">
-			<div className="flex items-center gap-2">
-				<Label className="text-sm font-medium">{label}</Label>
-				<Input
-					type="text"
-					placeholder="例: 1 3 5 または 1,3,5"
-					value={selectedHorses.join(", ")}
-					className="h-8 w-48 text-sm"
-					aria-label={`${label}の馬番テキスト入力`}
-					data-group={groupKey}
-					onChange={(e) => onTextChange(e.target.value)}
-				/>
-			</div>
-			<div className="grid grid-cols-6 gap-1.5 sm:grid-cols-9">
-				{Array.from({ length: gridSize }, (_, i) => i + 1).map((num) => {
-					const isSelected = selectedHorses.includes(num);
-					return (
-						<button
-							key={num}
-							type="button"
-							aria-pressed={isSelected}
-							aria-label={`${num}番`}
-							onClick={() => onToggle(num)}
-							className={[
-								"flex h-10 w-10 items-center justify-center rounded-lg border text-sm font-bold transition-colors",
-								isSelected
-									? "border-primary bg-primary text-primary-foreground"
-									: "border-border bg-background text-foreground hover:bg-accent",
-							].join(" ")}
-						>
-							{num}
-						</button>
-					);
-				})}
-			</div>
-		</div>
-	);
-}
-
-// ---------------------------------------------------------------------------
-// メインコンポーネント
-// ---------------------------------------------------------------------------
+// テストファイルおよびStorybookから./indexを参照しているため、互換性のためにre-exportする
+export { TICKET_TYPES, BUY_TYPE_MAP } from "./constants";
+export { getHorseInputConfigKey } from "./utils";
+export type { TicketPurchaseFormProps } from "./types";
 
 export default function TicketPurchaseForm({
 	selectedVenue,
@@ -291,12 +83,9 @@ export default function TicketPurchaseForm({
 
 	return (
 		<div className="mx-auto max-w-2xl space-y-8 p-4">
-			{/* ----------------------------------------------------------------
-			    1. レース情報
-			---------------------------------------------------------------- */}
+			{/* 1. レース情報 */}
 			<Section title="レース情報">
 				<div className="space-y-4">
-					{/* 開催場所 */}
 					<div className="space-y-2">
 						<Label htmlFor="venue">開催場所</Label>
 						<Select value={selectedVenue} onValueChange={onVenueChange}>
@@ -313,7 +102,6 @@ export default function TicketPurchaseForm({
 						</Select>
 					</div>
 
-					{/* 開催日 */}
 					<div className="space-y-2">
 						<Label htmlFor="race-date">開催日</Label>
 						<Input
@@ -325,7 +113,6 @@ export default function TicketPurchaseForm({
 						/>
 					</div>
 
-					{/* レース番号 */}
 					<div className="space-y-2">
 						<Label htmlFor="race-number">レース番号</Label>
 						<div className="space-y-2">
@@ -362,9 +149,7 @@ export default function TicketPurchaseForm({
 				</div>
 			</Section>
 
-			{/* ----------------------------------------------------------------
-			    2. 券種選択
-			---------------------------------------------------------------- */}
+			{/* 2. 券種選択 */}
 			<Section title="券種">
 				<div className="flex flex-wrap gap-2">
 					{TICKET_TYPES.map(({ id, label }) => (
@@ -382,9 +167,7 @@ export default function TicketPurchaseForm({
 				</div>
 			</Section>
 
-			{/* ----------------------------------------------------------------
-			    3. 買い方選択
-			---------------------------------------------------------------- */}
+			{/* 3. 買い方選択 */}
 			<Section title="買い方">
 				<div className="flex flex-wrap gap-2">
 					{buyTypes.map(({ id, label }) => (
@@ -402,9 +185,7 @@ export default function TicketPurchaseForm({
 				</div>
 			</Section>
 
-			{/* ----------------------------------------------------------------
-			    4. 馬番入力
-			---------------------------------------------------------------- */}
+			{/* 4. 馬番入力 */}
 			<Section title="馬番">
 				<div className="space-y-6">
 					{/* 三連複nagashiのみ：軸頭数セレクター */}
@@ -465,9 +246,7 @@ export default function TicketPurchaseForm({
 				</div>
 			</Section>
 
-			{/* ----------------------------------------------------------------
-			    5. 金額入力
-			---------------------------------------------------------------- */}
+			{/* 5. 金額入力 */}
 			<Section title="金額">
 				<div className="flex items-center gap-2">
 					<Button
@@ -517,9 +296,7 @@ export default function TicketPurchaseForm({
 				</div>
 			</Section>
 
-			{/* ----------------------------------------------------------------
-			    6. 登録ボタン
-			---------------------------------------------------------------- */}
+			{/* 6. 登録ボタン */}
 			<div className="flex gap-3 pt-2">
 				<Button type="submit" className="flex-1">
 					登録する
