@@ -18,6 +18,7 @@ export default function TicketsIndex() {
 			only: ["purchases", "nextCursor"],
 			data: { cursor: nextCursor },
 			onFinish: () => setIsLoading(false),
+			onError: () => setIsLoading(false),
 		});
 	};
 

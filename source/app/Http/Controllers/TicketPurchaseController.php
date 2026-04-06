@@ -21,24 +21,27 @@ class TicketPurchaseController extends Controller
             ->join('ticket_types', 'ticket_purchases.ticket_type_id', '=', 'ticket_types.id')
             ->join('buy_types', 'ticket_purchases.buy_type_id', '=', 'buy_types.id')
             ->select([
-                'ticket_purchases.*',
-                'races.race_date as race_date_sort',
-                'venues.name as venue_name_sort',
-                'races.race_number as race_number_sort',
+                'ticket_purchases.id',
+                'ticket_purchases.selections',
+                'ticket_purchases.amount',
+                'races.race_date',
+                'venues.name as venue_name',
+                'races.race_number',
+                'ticket_types.label as ticket_type_label',
+                'buy_types.name as buy_type_name',
             ])
-            ->orderByDesc('race_date_sort')
-            ->orderByDesc('venue_name_sort')
-            ->orderByDesc('race_number_sort')
-            ->with(['race.venue', 'ticketType', 'buyType'])
+            ->orderByDesc('race_date')
+            ->orderByDesc('venue_name')
+            ->orderByDesc('race_number')
             ->cursorPaginate(30);
 
         $purchases = $paginator->map(fn (TicketPurchase $purchase) => [
             'id' => $purchase->id,
-            'race_date' => $purchase->race?->race_date,
-            'venue_name' => $purchase->race?->venue?->name,
-            'race_number' => $purchase->race?->race_number,
-            'ticket_type_label' => $purchase->ticketType->label,
-            'buy_type_name' => $purchase->buyType->name,
+            'race_date' => $purchase->race_date,
+            'venue_name' => $purchase->venue_name,
+            'race_number' => $purchase->race_number,
+            'ticket_type_label' => $purchase->ticket_type_label,
+            'buy_type_name' => $purchase->buy_type_name,
             'selections' => $purchase->selections,
             'amount' => $purchase->amount,
         ]);
