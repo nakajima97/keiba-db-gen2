@@ -6,14 +6,14 @@ model: sonnet
 
 ## 概要
 
-`.github/ISSUE_TEMPLATE/feature_request.md` のテンプレート構造を使って GitHub PR を作成する。
+`.github/pull_request_template.md` のテンプレート構造を使って GitHub PR を作成する。
 会話の流れ・git の差分・コミット履歴から内容を推論し、不足している項目だけをユーザーに確認する。
 
 ## 手順
 
 ### 1. テンプレートを読む
 
-`.github/ISSUE_TEMPLATE/feature_request.md` を読み、セクション構造を把握する。
+`.github/pull_request_template.md` を読み、セクション構造を把握する。
 テンプレートのセクション名・順序は変えずにそのまま使う。HTML コメント（`<!-- -->`）は本文に含めない。
 
 ### 2. 現在のブランチ状態を把握する
