@@ -5,6 +5,8 @@ export type Selections =
 
 export type TicketPurchaseListItem = {
 	id: number;
+	race_uid: string | null;
+	has_race_result: boolean;
 	race_date: string | null;
 	venue_name: string | null;
 	race_number: number | null;

@@ -21,6 +21,7 @@ erDiagram
 
     races {
         bigint id PK
+        string uid UK "URL用nanoid"
         bigint venue_id FK
         date race_date
         tinyint race_number "1〜12"
@@ -58,11 +59,33 @@ erDiagram
         timestamp updated_at
     }
 
+    race_payouts {
+        bigint id PK
+        bigint race_id FK
+        bigint ticket_type_id FK
+        int payout_amount "払い戻し金額（円）"
+        tinyint popularity "人気順位"
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    race_payout_horses {
+        bigint id PK
+        bigint race_payout_id FK
+        tinyint horse_number "馬番（枠連は枠番）"
+        tinyint sort_order "馬単・三連単は着順、それ以外は昇順"
+        timestamp created_at
+        timestamp updated_at
+    }
+
     users ||--o{ ticket_purchases : "has"
     venues ||--o{ races : "has"
     races ||--o{ ticket_purchases : "has"
     ticket_types ||--o{ ticket_purchases : "has"
     buy_types ||--o{ ticket_purchases : "has"
+    races ||--o{ race_payouts : "has"
+    ticket_types ||--o{ race_payouts : "classified by"
+    race_payouts ||--|{ race_payout_horses : "has"
 ```
 
 ## selectionsカラムのJSONフォーマット

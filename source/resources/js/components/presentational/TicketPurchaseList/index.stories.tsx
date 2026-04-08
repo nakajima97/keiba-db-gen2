@@ -19,6 +19,8 @@ const baseArgs: Pick<TicketPurchaseListProps, "hasMore" | "isLoading" | "onLoadM
 const samplePurchases: TicketPurchaseListProps["purchases"] = [
 	{
 		id: 1,
+		race_uid: "abc123",
+		has_race_result: true,
 		race_date: "2026-04-05",
 		venue_name: "東京",
 		race_number: 1,
@@ -29,9 +31,11 @@ const samplePurchases: TicketPurchaseListProps["purchases"] = [
 	},
 	{
 		id: 2,
+		race_uid: "abc123",
+		has_race_result: true,
 		race_date: "2026-04-05",
 		venue_name: "東京",
-		race_number: 2,
+		race_number: 1,
 		ticket_type_label: "三連複",
 		buy_type_name: "box",
 		selections: { horses: [1, 3, 5] },
@@ -39,6 +43,8 @@ const samplePurchases: TicketPurchaseListProps["purchases"] = [
 	},
 	{
 		id: 3,
+		race_uid: "def456",
+		has_race_result: false,
 		race_date: "2026-04-05",
 		venue_name: "中山",
 		race_number: 11,
@@ -49,6 +55,8 @@ const samplePurchases: TicketPurchaseListProps["purchases"] = [
 	},
 	{
 		id: 4,
+		race_uid: "ghi789",
+		has_race_result: false,
 		race_date: "2026-04-04",
 		venue_name: "阪神",
 		race_number: 8,
@@ -59,6 +67,8 @@ const samplePurchases: TicketPurchaseListProps["purchases"] = [
 	},
 	{
 		id: 5,
+		race_uid: null,
+		has_race_result: false,
 		race_date: null,
 		venue_name: null,
 		race_number: null,

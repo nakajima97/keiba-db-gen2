@@ -5,3 +5,6 @@
 | GET | `/tickets` | 購入馬券一覧取得（カーソルページネーション、30件/回、日付・レース場・レース番号降順） | 要 |
 | GET | `/tickets/new` | 馬券登録画面（前回入力値をセッションから取得） | 要 |
 | POST | `/tickets` | 馬券登録 | 要 |
+| GET | `/races/{uid}/result/new` | レース結果入力画面 | 要 |
+| POST | `/races/{uid}/result` | レース結果登録（払い戻し情報のペーストテキストを受け取り保存） | 要 |
+| GET | `/races/{uid}/result/edit` | レース結果確認・編集画面 | 要 |

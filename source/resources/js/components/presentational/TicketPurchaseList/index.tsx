@@ -49,6 +49,9 @@ export default function TicketPurchaseList({
 									<th className="px-4 py-3 text-right font-medium text-muted-foreground">
 										購入金額
 									</th>
+									<th className="px-4 py-3 text-left font-medium text-muted-foreground">
+										レース結果
+									</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -78,6 +81,27 @@ export default function TicketPurchaseList({
 											{purchase.amount != null
 												? `¥${purchase.amount.toLocaleString()}`
 												: "-"}
+										</td>
+										<td className="px-4 py-3">
+											{purchase.race_uid != null ? (
+												purchase.has_race_result ? (
+													<Link
+														href={`/races/${purchase.race_uid}/result/edit`}
+														className="text-sm underline"
+													>
+														確認・編集
+													</Link>
+												) : (
+													<Link
+														href={`/races/${purchase.race_uid}/result/new`}
+														className="text-sm underline"
+													>
+														結果入力
+													</Link>
+												)
+											) : (
+												"-"
+											)}
 										</td>
 									</tr>
 								))}
