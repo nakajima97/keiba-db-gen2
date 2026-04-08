@@ -8,6 +8,9 @@
 - ライブラリの使い方はContext7かLaravel Boostをまず第一に確認すること
   - 上記で解決しない場合のみソースコードやWebサイトを確認する
   - 上記を行う際にはユーザの承認を必ず得ること
+- ライブラリをインストールする際は必ずユーザーの承認を得ること
+  - 対象: `npm install <pkg>`, `yarn add <pkg>`, `pnpm add <pkg>`, `bun add <pkg>`, `composer require <pkg>`
+  - ロックファイルからの復元（`npm install` のみ・`composer install` のみ）は承認不要
 - サンドボックスの影響で操作できないことは人間に操作を依頼すること
   - 絶対にサンドボックスを無効化しない
 
