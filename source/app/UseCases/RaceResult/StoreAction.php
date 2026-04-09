@@ -2,6 +2,7 @@
 
 namespace App\UseCases\RaceResult;
 
+use App\Models\Race;
 use App\Models\RacePayout;
 use App\Models\RacePayoutHorse;
 use Illuminate\Support\Facades\DB;
@@ -42,8 +43,11 @@ class StoreAction
     /**
      * @param  array{text: string}  $data
      */
-    public function execute(array $data, int $raceId): void
+    public function execute(array $data, string $uid): void
     {
+        $race = Race::where('uid', $uid)->firstOrFail();
+        $raceId = $race->id;
+
         $entries = $this->parse($data['text']);
         $this->validateAllTypesPresent($entries);
 
