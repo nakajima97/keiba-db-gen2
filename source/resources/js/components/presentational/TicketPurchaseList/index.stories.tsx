@@ -10,7 +10,10 @@ const meta: Meta<typeof TicketPurchaseList> = {
 export default meta;
 type Story = StoryObj<typeof TicketPurchaseList>;
 
-const baseArgs: Pick<TicketPurchaseListProps, "hasMore" | "isLoading" | "onLoadMore"> = {
+const baseArgs: Pick<
+	TicketPurchaseListProps,
+	"hasMore" | "isLoading" | "onLoadMore"
+> = {
 	hasMore: false,
 	isLoading: false,
 	onLoadMore: () => {},
@@ -50,7 +53,13 @@ const samplePurchases: TicketPurchaseListProps["purchases"] = [
 		race_number: 11,
 		ticket_type_label: "三連単",
 		buy_type_name: "formation",
-		selections: { columns: [[1, 2], [3, 4], [5, 6, 7]] },
+		selections: {
+			columns: [
+				[1, 2],
+				[3, 4],
+				[5, 6, 7],
+			],
+		},
 		amount: 600,
 	},
 	{

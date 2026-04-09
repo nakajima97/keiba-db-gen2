@@ -12,7 +12,12 @@ type Story = StoryObj<typeof RaceResultForm>;
 
 const baseArgs: Pick<
 	RaceResultFormProps,
-	"venueName" | "raceDate" | "raceNumber" | "onPasteChange" | "onSubmit" | "isSubmitting"
+	| "venueName"
+	| "raceDate"
+	| "raceNumber"
+	| "onPasteChange"
+	| "onSubmit"
+	| "isSubmitting"
 > = {
 	venueName: "東京",
 	raceDate: "2026-04-08",
@@ -45,7 +50,8 @@ export const WithParseError: Story = {
 	args: {
 		...baseArgs,
 		pasteValue: "不正なデータ形式のテキスト",
-		parseError: "データの形式が認識できません。JRA公式サイトの払い戻し情報をコピーしてペーストしてください。",
+		parseError:
+			"データの形式が認識できません。JRA公式サイトの払い戻し情報をコピーしてペーストしてください。",
 	},
 };
 

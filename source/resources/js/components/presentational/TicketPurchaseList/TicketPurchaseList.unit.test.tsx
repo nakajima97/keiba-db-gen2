@@ -43,9 +43,7 @@ describe("TicketPurchaseList", () => {
 			render(<TicketPurchaseList {...baseProps} purchases={[]} />);
 
 			// Assert
-			expect(
-				screen.getByText("まだ購入記録がありません"),
-			).toBeInTheDocument();
+			expect(screen.getByText("まだ購入記録がありません")).toBeInTheDocument();
 		});
 
 		it("「馬券を登録する」リンクが表示される", () => {

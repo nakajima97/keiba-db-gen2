@@ -56,9 +56,7 @@ describe("RaceResultForm", () => {
 			render(<RaceResultForm {...baseProps} parseError={null} />);
 
 			// Assert
-			expect(
-				screen.queryByRole("alert"),
-			).not.toBeInTheDocument();
+			expect(screen.queryByRole("alert")).not.toBeInTheDocument();
 		});
 	});
 
@@ -101,9 +99,7 @@ describe("RaceResultForm", () => {
 			);
 
 			// Assert
-			expect(
-				screen.getByRole("button", { name: "保存中..." }),
-			).toBeDisabled();
+			expect(screen.getByRole("button", { name: "保存中..." })).toBeDisabled();
 		});
 	});
 });

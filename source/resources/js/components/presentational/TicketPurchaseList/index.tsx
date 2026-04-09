@@ -65,15 +65,9 @@ export default function TicketPurchaseList({
 												? purchase.race_date.replace(/-/g, "/")
 												: "-"}
 										</td>
-										<td className="px-4 py-3">
-											{purchase.venue_name ?? "-"}
-										</td>
-										<td className="px-4 py-3">
-											{purchase.race_number ?? "-"}
-										</td>
-										<td className="px-4 py-3">
-											{purchase.ticket_type_label}
-										</td>
+										<td className="px-4 py-3">{purchase.venue_name ?? "-"}</td>
+										<td className="px-4 py-3">{purchase.race_number ?? "-"}</td>
+										<td className="px-4 py-3">{purchase.ticket_type_label}</td>
 										<td className="px-4 py-3">
 											{formatSelections(purchase.selections)}
 										</td>
