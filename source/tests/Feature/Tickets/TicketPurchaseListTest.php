@@ -3,6 +3,7 @@
 use App\Models\User;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Inertia\Testing\AssertableInertia as Assert;
 
 /**
@@ -37,6 +38,7 @@ function createMasterData(): array
 function createRace(int $venueId, string $date, int $raceNumber, CarbonInterface $now): int
 {
     return DB::table('races')->insertGetId([
+        'uid' => Str::random(21),
         'venue_id' => $venueId,
         'race_date' => $date,
         'race_number' => $raceNumber,
