@@ -92,6 +92,7 @@ describe("TicketPurchaseList", () => {
 			const purchaseWithNullDate: TicketPurchaseListItem = {
 				...samplePurchase,
 				race_date: null,
+				race_uid: "sample-uid",
 			};
 
 			// Act
@@ -111,6 +112,7 @@ describe("TicketPurchaseList", () => {
 			const purchaseWithNullAmount: TicketPurchaseListItem = {
 				...samplePurchase,
 				amount: null,
+				race_uid: "sample-uid",
 			};
 
 			// Act
