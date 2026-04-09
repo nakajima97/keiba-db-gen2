@@ -20,6 +20,8 @@ const noop = () => {};
 
 const samplePurchase: TicketPurchaseListItem = {
 	id: 1,
+	race_uid: null,
+	has_race_result: false,
 	race_date: "2026-04-05",
 	venue_name: "東京",
 	race_number: 1,
