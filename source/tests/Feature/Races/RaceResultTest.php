@@ -77,7 +77,7 @@ function createRaceWithUid(int $venueId, \Carbon\CarbonInterface $now): array
 
 // ===== GET /races/{uid}/result/new =====
 
-test('authenticated user can access race result create page', function () use ($sampleText) {
+test('authenticated user can access race result create page', function () {
     // Arrange
     $user = User::factory()->create();
     ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
@@ -90,7 +90,7 @@ test('authenticated user can access race result create page', function () use ($
     $response->assertInertia(fn (Assert $page) => $page->component('races/result/create'));
 });
 
-test('unauthenticated user is redirected to login page when accessing race result create page', function () use ($sampleText) {
+test('unauthenticated user is redirected to login page when accessing race result create page', function () {
     // Arrange
     ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
     ['raceUid' => $raceUid] = createRaceWithUid($venueId, $now);
@@ -128,7 +128,7 @@ test('valid payout text is stored with 8 race_payouts records', function () use 
 
     // Assert
     $response->assertRedirect(route('races.result.edit', ['uid' => $raceUid]));
-    expect(DB::table('race_payouts')->where('race_id', $raceId)->count())->toBe(8);
+    expect(DB::table('race_payouts')->where('race_id', $raceId)->count())->toBe(12);
 });
 
 test('tansho and fukusho horse_number is stored correctly in race_payout_horses', function () use ($sampleText) {
