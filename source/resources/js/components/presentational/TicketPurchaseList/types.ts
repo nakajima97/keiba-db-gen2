@@ -1,10 +1,14 @@
 export type Selections =
 	| { horses: number[] }
-	| { axis: number[]; others: number[] }
+	| { axis: number[]; others?: number[] }
+	| { axis1: number[]; axis2?: number[]; others?: number[] }
+	| { col1: number[]; col2?: number[]; col3?: number[] }
 	| { columns: number[][] };
 
 export type TicketPurchaseListItem = {
 	id: number;
+	race_uid: string | null;
+	has_race_result: boolean;
 	race_date: string | null;
 	venue_name: string | null;
 	race_number: number | null;

@@ -20,6 +20,8 @@ const noop = () => {};
 
 const samplePurchase: TicketPurchaseListItem = {
 	id: 1,
+	race_uid: null,
+	has_race_result: false,
 	race_date: "2026-04-05",
 	venue_name: "東京",
 	race_number: 1,
@@ -43,9 +45,7 @@ describe("TicketPurchaseList", () => {
 			render(<TicketPurchaseList {...baseProps} purchases={[]} />);
 
 			// Assert
-			expect(
-				screen.getByText("まだ購入記録がありません"),
-			).toBeInTheDocument();
+			expect(screen.getByText("まだ購入記録がありません")).toBeInTheDocument();
 		});
 
 		it("「馬券を登録する」リンクが表示される", () => {
@@ -92,6 +92,7 @@ describe("TicketPurchaseList", () => {
 			const purchaseWithNullDate: TicketPurchaseListItem = {
 				...samplePurchase,
 				race_date: null,
+				race_uid: "sample-uid",
 			};
 
 			// Act
@@ -111,6 +112,7 @@ describe("TicketPurchaseList", () => {
 			const purchaseWithNullAmount: TicketPurchaseListItem = {
 				...samplePurchase,
 				amount: null,
+				race_uid: "sample-uid",
 			};
 
 			// Act

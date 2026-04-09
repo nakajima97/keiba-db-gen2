@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use App\Support\NanoId;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Facades\DB;
 use Inertia\Testing\AssertableInertia as Assert;
@@ -37,6 +38,7 @@ function createMasterData(): array
 function createRace(int $venueId, string $date, int $raceNumber, CarbonInterface $now): int
 {
     return DB::table('races')->insertGetId([
+        'uid' => NanoId::generate(),
         'venue_id' => $venueId,
         'race_date' => $date,
         'race_number' => $raceNumber,

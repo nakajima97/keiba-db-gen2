@@ -24,12 +24,14 @@ class TicketPurchaseController extends Controller
                 'ticket_purchases.id',
                 'ticket_purchases.selections',
                 'ticket_purchases.amount',
+                'races.uid as race_uid',
                 'races.race_date',
                 'venues.name as venue_name',
                 'races.race_number',
                 'ticket_types.label as ticket_type_label',
                 'buy_types.name as buy_type_name',
             ])
+            ->selectRaw('EXISTS(SELECT 1 FROM race_payouts WHERE race_payouts.race_id = races.id) as has_race_result')
             ->orderByDesc('race_date')
             ->orderByDesc('venue_name')
             ->orderByDesc('race_number')
@@ -37,6 +39,8 @@ class TicketPurchaseController extends Controller
 
         $purchases = $paginator->map(fn (TicketPurchase $purchase) => [
             'id' => $purchase->id,
+            'race_uid' => $purchase->race_uid,
+            'has_race_result' => (bool) $purchase->has_race_result,
             'race_date' => $purchase->race_date,
             'venue_name' => $purchase->venue_name,
             'race_number' => $purchase->race_number,

@@ -32,12 +32,19 @@ export default function TicketPurchaseFormContainer({
 }: TicketPurchaseFormContainerProps) {
 	const [selectedVenue, setSelectedVenue] = useState(initialVenue);
 	const [selectedRaceDate, setSelectedRaceDate] = useState(initialRaceDate);
-	const [selectedRaceNumber, setSelectedRaceNumber] = useState(initialRaceNumber);
-	const [selectedTicketTypeId, setSelectedTicketTypeId] = useState<TicketTypeId>(initialTicketTypeId);
+	const [selectedRaceNumber, setSelectedRaceNumber] =
+		useState(initialRaceNumber);
+	const [selectedTicketTypeId, setSelectedTicketTypeId] =
+		useState<TicketTypeId>(initialTicketTypeId);
 	const [selectedBuyTypeId, setSelectedBuyTypeId] = useState(initialBuyTypeId);
-	const [selectedAxisCount, setSelectedAxisCount] = useState<1 | 2>(initialAxisCount);
-	const [selectedNagashiDirection, setSelectedNagashiDirection] = useState<1 | 2 | 3>(initialNagashiDirection);
-	const [selectedHorses, setSelectedHorses] = useState<Record<string, number[]>>(initialHorses);
+	const [selectedAxisCount, setSelectedAxisCount] = useState<1 | 2>(
+		initialAxisCount,
+	);
+	const [selectedNagashiDirection, setSelectedNagashiDirection] = useState<
+		1 | 2 | 3
+	>(initialNagashiDirection);
+	const [selectedHorses, setSelectedHorses] =
+		useState<Record<string, number[]>>(initialHorses);
 	const [amount, setAmount] = useState(initialAmount);
 	const [processing, setProcessing] = useState(false);
 
