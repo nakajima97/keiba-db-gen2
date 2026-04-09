@@ -40,7 +40,7 @@ class StoreAction
     ];
 
     /**
-     * @param array{text: string} $data
+     * @param  array{text: string}  $data
      */
     public function execute(array $data, int $raceId): void
     {
@@ -117,6 +117,7 @@ class StoreAction
                     );
                 }
                 $currentTicketType = self::TICKET_TYPE_MAP[$ticketLabel];
+
                 continue;
             }
 
@@ -226,7 +227,7 @@ class StoreAction
     /**
      * パース結果に全8券種が揃っていることを検証する。
      *
-     * @param array<int, array{ticket_type: string, horse_numbers: array<int, int>, amount: int, popularity: int}> $entries
+     * @param  array<int, array{ticket_type: string, horse_numbers: array<int, int>, amount: int, popularity: int}>  $entries
      *
      * @throws \InvalidArgumentException
      */

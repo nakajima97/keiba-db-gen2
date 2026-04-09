@@ -6,7 +6,7 @@ final class NanoId
 {
     private const ALPHABET =
         '_-0123456789abcdefghijklmnopqrstuvwxyz'
-        . 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        .'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
     public static function generate(int $size = 21): string
     {

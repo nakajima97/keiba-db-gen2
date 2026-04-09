@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use Carbon\CarbonInterface;
 use Illuminate\Support\Facades\DB;
 use Inertia\Testing\AssertableInertia as Assert;
 
@@ -44,7 +45,7 @@ $jraSampleText = implode("\n", [
 ]);
 
 /**
- * @return array{venueId: int, now: \Carbon\CarbonInterface}
+ * @return array{venueId: int, now: CarbonInterface}
  */
 function createRaceResultMasterData(): array
 {
@@ -84,9 +85,9 @@ function createRaceResultMasterData(): array
 /**
  * @return array{raceId: int, raceUid: string}
  */
-function createRaceWithUid(int $venueId, \Carbon\CarbonInterface $now): array
+function createRaceWithUid(int $venueId, CarbonInterface $now): array
 {
-    $raceUid = 'test-uid-' . uniqid();
+    $raceUid = 'test-uid-'.uniqid();
     $raceId = DB::table('races')->insertGetId([
         'uid' => $raceUid,
         'venue_id' => $venueId,
