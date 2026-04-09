@@ -1,6 +1,8 @@
 export type Selections =
 	| { horses: number[] }
-	| { axis: number[]; others: number[] }
+	| { axis: number[]; others?: number[] }
+	| { axis1: number[]; axis2?: number[]; others?: number[] }
+	| { col1: number[]; col2?: number[]; col3?: number[] }
 	| { columns: number[][] };
 
 export type TicketPurchaseListItem = {

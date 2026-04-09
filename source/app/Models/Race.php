@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Str;
+use App\Support\NanoId;
 
 class Race extends Model
 {
@@ -20,7 +20,7 @@ class Race extends Model
     {
         static::creating(function (Race $race): void {
             if (empty($race->uid)) {
-                $race->uid = Str::random(21);
+                $race->uid = NanoId::generate();
             }
         });
     }
