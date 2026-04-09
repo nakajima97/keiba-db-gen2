@@ -35,7 +35,7 @@ class RaceResultController extends Controller
             return redirect()->back()->withErrors(['text' => $e->getMessage()])->withInput();
         }
 
-        return redirect()->route('races.result.edit', ['uid' => $uid]);
+        return redirect()->route('tickets.index');
     }
 
     public function edit(string $uid): Response

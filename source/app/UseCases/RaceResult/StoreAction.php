@@ -101,28 +101,48 @@ class StoreAction
         $currentTicketType = null;
 
         foreach ($lines as $lineNumber => $line) {
-            $line = trim($line);
+            $line = rtrim($line);
             if ($line === '') {
                 continue;
             }
 
             $columns = explode("\t", $line);
-
-            if (count($columns) < 3) {
-                throw new \InvalidArgumentException(
-                    sprintf('%d行目: データの形式が認識できません。', $lineNumber + 1)
-                );
-            }
-
-            // 券種名の判定
             $ticketLabel = trim($columns[0]);
-            if ($ticketLabel !== '') {
+
+            // JRAコピペフォーマット: 券種名のみの行（例: "単勝"）
+            if (count($columns) === 1) {
                 if (! isset(self::TICKET_TYPE_MAP[$ticketLabel])) {
                     throw new \InvalidArgumentException(
-                        sprintf('%d行目: 不明な券種「%s」です。', $lineNumber + 1, $ticketLabel)
+                        sprintf('%d行目: データの形式が認識できません。', $lineNumber + 1)
                     );
                 }
                 $currentTicketType = self::TICKET_TYPE_MAP[$ticketLabel];
+                continue;
+            }
+
+            // JRAコピペフォーマット: データ行（例: "3\t610円\t2番人気"）
+            if (count($columns) === 3 && ! isset(self::TICKET_TYPE_MAP[$ticketLabel])) {
+                $horseCol = $columns[0];
+                $amountCol = $columns[1];
+                $popularityCol = $columns[2];
+            }
+            // インライン / 継続フォーマット（例: "単勝\t3\t610円\t2番人気" or "\t6\t110円\t1番人気"）
+            elseif (count($columns) >= 4) {
+                if ($ticketLabel !== '') {
+                    if (! isset(self::TICKET_TYPE_MAP[$ticketLabel])) {
+                        throw new \InvalidArgumentException(
+                            sprintf('%d行目: 不明な券種「%s」です。', $lineNumber + 1, $ticketLabel)
+                        );
+                    }
+                    $currentTicketType = self::TICKET_TYPE_MAP[$ticketLabel];
+                }
+                $horseCol = $columns[1] ?? '';
+                $amountCol = $columns[2] ?? '';
+                $popularityCol = $columns[3] ?? '';
+            } else {
+                throw new \InvalidArgumentException(
+                    sprintf('%d行目: データの形式が認識できません。', $lineNumber + 1)
+                );
             }
 
             if ($currentTicketType === null) {
@@ -130,10 +150,6 @@ class StoreAction
                     sprintf('%d行目: 券種名が特定できません。', $lineNumber + 1)
                 );
             }
-
-            $horseCol = $columns[1] ?? '';
-            $amountCol = $columns[2] ?? '';
-            $popularityCol = $columns[3] ?? '';
 
             $entries[] = [
                 'ticket_type' => $currentTicketType,

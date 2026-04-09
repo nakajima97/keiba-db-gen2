@@ -19,6 +19,30 @@ $sampleText = implode("\n", [
     "3連単\t3-6-11\t8,820円\t16番人気",
 ]);
 
+// JRA公式サイトからコピーしたフォーマット（券種名が別行のヘッダー）
+$jraSampleText = implode("\n", [
+    "単勝\t",
+    "3\t610円\t2番人気",
+    "複勝\t",
+    "3\t170円\t2番人気",
+    "6\t110円\t1番人気",
+    "11\t170円\t3番人気",
+    "枠連\t",
+    "2-4\t680円\t2番人気",
+    "ワイド\t",
+    "3-6\t330円\t1番人気",
+    "3-11\t710円\t8番人気",
+    "6-11\t340円\t2番人気",
+    "馬連\t",
+    "3-6\t700円\t1番人気",
+    "馬単\t",
+    "3-6\t1,730円\t4番人気",
+    "3連複\t",
+    "3-6-11\t1,550円\t2番人気",
+    "3連単\t",
+    "3-6-11\t8,820円\t16番人気",
+]);
+
 /**
  * @return array{venueId: int, now: \Carbon\CarbonInterface}
  */
@@ -127,7 +151,7 @@ test('valid payout text is stored with 8 race_payouts records', function () use 
     ]);
 
     // Assert
-    $response->assertRedirect(route('races.result.edit', ['uid' => $raceUid]));
+    $response->assertRedirect(route('tickets.index'));
     expect(DB::table('race_payouts')->where('race_id', $raceId)->count())->toBe(12);
 });
 
@@ -259,7 +283,7 @@ test('successful post redirects to race result edit page', function () use ($sam
     ]);
 
     // Assert
-    $response->assertRedirect(route('races.result.edit', ['uid' => $raceUid]));
+    $response->assertRedirect(route('tickets.index'));
 });
 
 test('empty text returns validation error and nothing is stored', function () {
@@ -315,6 +339,22 @@ test('missing ticket types in text returns error and nothing is stored', functio
     // Assert
     $response->assertSessionHasErrors();
     expect(DB::table('race_payouts')->where('race_id', $raceId)->count())->toBe(0);
+});
+
+test('JRA format payout text (ticket type on separate header line) is stored correctly', function () use ($jraSampleText) {
+    // Arrange
+    $user = User::factory()->create();
+    ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
+    ['raceId' => $raceId, 'raceUid' => $raceUid] = createRaceWithUid($venueId, $now);
+
+    // Act
+    $response = $this->actingAs($user)->post(route('races.result.store', ['uid' => $raceUid]), [
+        'text' => $jraSampleText,
+    ]);
+
+    // Assert
+    $response->assertRedirect(route('tickets.index'));
+    expect(DB::table('race_payouts')->where('race_id', $raceId)->count())->toBe(12);
 });
 
 test('unauthenticated user is redirected to login page when posting race result', function () {
