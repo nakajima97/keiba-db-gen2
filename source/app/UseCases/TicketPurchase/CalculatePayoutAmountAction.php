@@ -4,6 +4,7 @@ namespace App\UseCases\TicketPurchase;
 
 use App\Models\RacePayout;
 use App\Models\TicketPurchase;
+use Illuminate\Database\Eloquent\Collection;
 
 /**
  * TicketPurchase の払い戻し金額を計算する。
@@ -56,7 +57,7 @@ class CalculatePayoutAmountAction
             return null;
         }
 
-        /** @var \Illuminate\Database\Eloquent\Collection<int, RacePayout> $payouts */
+        /** @var Collection<int, RacePayout> $payouts */
         $payouts = RacePayout::with(['ticketType', 'racePayoutHorses' => function ($query): void {
             $query->orderBy('sort_order');
         }])->where('race_id', $purchase->race_id)->get();
@@ -277,7 +278,6 @@ class CalculatePayoutAmountAction
     }
 
     /**
-     * @param  mixed  $value
      * @return array<int, int>
      */
     private function extractIntList(mixed $value): array

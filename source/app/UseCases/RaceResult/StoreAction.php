@@ -7,6 +7,7 @@ use App\Models\RacePayout;
 use App\Models\RacePayoutHorse;
 use App\Models\TicketPurchase;
 use App\UseCases\TicketPurchase\CalculatePayoutAmountAction;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -98,7 +99,7 @@ class StoreAction
      */
     private function updateTicketPurchasesPayoutAmount(int $raceId, int $userId): void
     {
-        /** @var \Illuminate\Database\Eloquent\Collection<int, TicketPurchase> $purchases */
+        /** @var Collection<int, TicketPurchase> $purchases */
         $purchases = TicketPurchase::with(['ticketType', 'buyType'])
             ->where('race_id', $raceId)
             ->where('user_id', $userId)
