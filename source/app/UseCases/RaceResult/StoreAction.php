@@ -105,7 +105,10 @@ class StoreAction
      *
      * 各 TicketPurchase の selections を buy_type に応じて組み合わせに展開し、
      * 同じレースの race_payouts（ticket_type ごとの払い戻し行）の馬番配列と照合する。
-     * ヒットした組み合わせの payout_amount を合算し、1件以上ヒットした場合のみ更新する。
+     * ヒットした組み合わせの JRA 払戻額（100円あたり）を合算し、購入金額に応じてスケールする。
+     * 購入金額（amount）が null の場合は更新しない。
+     *
+     * 計算式: ヒット組み合わせの払戻合計 × (amount / (組み合わせ数 × 100))
      */
     private function updateTicketPurchasesPayoutAmount(int $raceId, int $userId): void
     {
@@ -161,8 +164,10 @@ class StoreAction
                 $isOrdered,
             );
 
-            if ($totalPayout > 0) {
-                $purchase->payout_amount = $totalPayout;
+            if ($totalPayout > 0 && $purchase->amount !== null) {
+                $numCombinations = count($combinations);
+                $payoutAmount = (int) ($totalPayout * $purchase->amount / ($numCombinations * 100));
+                $purchase->payout_amount = $payoutAmount;
                 $purchase->save();
             }
         }

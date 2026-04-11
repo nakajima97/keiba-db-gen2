@@ -824,3 +824,37 @@ test('別レースの馬券には影響しない', function () use ($sampleText)
         'payout_amount' => null,
     ]);
 });
+
+test('amount が 100円より多い場合、払い戻し金額は購入金額に比例してスケールされる', function () use ($sampleText) {
+    // Arrange
+    $user = User::factory()->create();
+    ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
+    ['raceId' => $raceId, 'raceUid' => $raceUid] = createRaceWithUid($venueId, $now);
+    createBuyTypes($now);
+
+    $tanshoTicketTypeId = DB::table('ticket_types')->where('name', 'tansho')->value('id');
+    $singleBuyTypeId = DB::table('buy_types')->where('name', 'single')->value('id');
+
+    // 単勝3番 200円購入（JRA払戻 610円 × 2口 = 1,220円）
+    $purchaseId = DB::table('ticket_purchases')->insertGetId([
+        'user_id' => $user->id,
+        'race_id' => $raceId,
+        'ticket_type_id' => $tanshoTicketTypeId,
+        'buy_type_id' => $singleBuyTypeId,
+        'selections' => json_encode(['horses' => [3]]),
+        'amount' => 200,
+        'created_at' => $now,
+        'updated_at' => $now,
+    ]);
+
+    // Act
+    $this->actingAs($user)->post(route('races.result.store', ['uid' => $raceUid]), [
+        'text' => $sampleText,
+    ]);
+
+    // Assert
+    $this->assertDatabaseHas('ticket_purchases', [
+        'id' => $purchaseId,
+        'payout_amount' => 1220,
+    ]);
+});
