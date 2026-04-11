@@ -29,6 +29,7 @@ const samplePurchase: TicketPurchaseListItem = {
 	buy_type_name: "nagashi",
 	selections: { axis: [1], others: [2, 4, 6] },
 	amount: 100,
+	payout_amount: 500,
 };
 
 const baseProps: TicketPurchaseListProps = {
@@ -142,6 +143,53 @@ describe("TicketPurchaseList", () => {
 			// Assert
 			const link = screen.getByText("馬券を登録する");
 			expect(link).toHaveAttribute("href", "/tickets/new");
+		});
+
+		it("テーブルヘッダーに「払い戻し金額」が表示される", () => {
+			// Act
+			render(<TicketPurchaseList {...baseProps} />);
+
+			// Assert
+			expect(screen.getByText("払い戻し金額")).toBeInTheDocument();
+		});
+
+		it("payout_amount が数値の場合、¥フォーマットで表示される（例: ¥5,000）", () => {
+			// Arrange
+			const purchaseWithPayout: TicketPurchaseListItem = {
+				...samplePurchase,
+				payout_amount: 5000,
+			};
+
+			// Act
+			render(
+				<TicketPurchaseList
+					{...baseProps}
+					purchases={[purchaseWithPayout]}
+				/>,
+			);
+
+			// Assert
+			expect(screen.getByText("¥5,000")).toBeInTheDocument();
+		});
+
+		it("payout_amount が null の場合、払い戻し金額列に「-」が表示される", () => {
+			// Arrange
+			const purchaseWithNullPayout: TicketPurchaseListItem = {
+				...samplePurchase,
+				payout_amount: null,
+			};
+
+			// Act
+			render(
+				<TicketPurchaseList
+					{...baseProps}
+					purchases={[purchaseWithNullPayout]}
+				/>,
+			);
+
+			// Assert
+			const dashes = screen.getAllByText("-");
+			expect(dashes.length).toBeGreaterThanOrEqual(1);
 		});
 	});
 

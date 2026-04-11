@@ -5,6 +5,9 @@ namespace App\UseCases\RaceResult;
 use App\Models\Race;
 use App\Models\RacePayout;
 use App\Models\RacePayoutHorse;
+use App\Models\TicketPurchase;
+use App\UseCases\TicketPurchase\CalculatePayoutAmountAction;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -40,10 +43,14 @@ class StoreAction
         'umaren', 'umatan', 'sanrenpuku', 'sanrentan',
     ];
 
+    public function __construct(
+        private readonly CalculatePayoutAmountAction $calculatePayoutAmountAction,
+    ) {}
+
     /**
      * @param  array{text: string}  $data
      */
-    public function execute(array $data, string $uid): void
+    public function execute(array $data, string $uid, int $userId): void
     {
         $race = Race::where('uid', $uid)->firstOrFail();
         $raceId = $race->id;
@@ -56,7 +63,7 @@ class StoreAction
             ->pluck('id', 'name')
             ->all();
 
-        DB::transaction(function () use ($entries, $raceId, $ticketTypeIds): void {
+        DB::transaction(function () use ($entries, $raceId, $ticketTypeIds, $userId): void {
             foreach ($entries as $entry) {
                 $ticketTypeId = $ticketTypeIds[$entry['ticket_type']];
 
@@ -82,7 +89,29 @@ class StoreAction
                     ]);
                 }
             }
+
+            $this->updateTicketPurchasesPayoutAmount($raceId, $userId);
         });
+    }
+
+    /**
+     * 対象レースの購入馬券（投稿ユーザーのみ）を取得し、レース結果と照合して payout_amount を更新する。
+     */
+    private function updateTicketPurchasesPayoutAmount(int $raceId, int $userId): void
+    {
+        /** @var Collection<int, TicketPurchase> $purchases */
+        $purchases = TicketPurchase::with(['ticketType', 'buyType'])
+            ->where('race_id', $raceId)
+            ->where('user_id', $userId)
+            ->get();
+
+        foreach ($purchases as $purchase) {
+            $payoutAmount = $this->calculatePayoutAmountAction->execute($purchase);
+            if ($payoutAmount !== null) {
+                $purchase->payout_amount = $payoutAmount;
+                $purchase->save();
+            }
+        }
     }
 
     /**

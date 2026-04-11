@@ -284,3 +284,56 @@ test('unauthenticated user is redirected to login page', function () {
     // Assert
     $response->assertRedirect(route('login'));
 });
+
+// ===== payout_amount =====
+
+test('payout_amount が null の馬券: レスポンスの purchases に payout_amount が null で含まれる', function () {
+    // Arrange
+    $user = User::factory()->create();
+
+    ['venueId' => $venueId, 'ticketTypeId' => $ticketTypeId, 'buyTypeId' => $buyTypeId, 'now' => $now] = createMasterData();
+    $raceId = createRace($venueId, '2026-04-05', 1, $now);
+
+    createTicketPurchase($user->id, $raceId, $ticketTypeId, $buyTypeId, $now);
+
+    // Act
+    $response = $this->actingAs($user)->get(route('tickets.index'));
+
+    // Assert
+    $response->assertInertia(fn (Assert $page) => $page
+        ->component('tickets/index')
+        ->where('purchases', function ($purchases) {
+            expect($purchases[0]['payout_amount'])->toBeNull();
+
+            return true;
+        })
+    );
+});
+
+test('payout_amount が設定済みの馬券: レスポンスの purchases に正しい値が含まれる', function () {
+    // Arrange
+    $user = User::factory()->create();
+
+    ['venueId' => $venueId, 'ticketTypeId' => $ticketTypeId, 'buyTypeId' => $buyTypeId, 'now' => $now] = createMasterData();
+    $raceId = createRace($venueId, '2026-04-05', 1, $now);
+
+    createTicketPurchase($user->id, $raceId, $ticketTypeId, $buyTypeId, $now);
+
+    DB::table('ticket_purchases')
+        ->where('user_id', $user->id)
+        ->where('race_id', $raceId)
+        ->update(['payout_amount' => 5000]);
+
+    // Act
+    $response = $this->actingAs($user)->get(route('tickets.index'));
+
+    // Assert
+    $response->assertInertia(fn (Assert $page) => $page
+        ->component('tickets/index')
+        ->where('purchases', function ($purchases) {
+            expect($purchases[0]['payout_amount'])->toBe(5000);
+
+            return true;
+        })
+    );
+});

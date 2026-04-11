@@ -55,6 +55,7 @@ erDiagram
         bigint buy_type_id FK
         json selections "馬番選択情報"
         int amount "購入金額（円）nullable"
+        int payout_amount "払い戻し金額（円）nullable"
         timestamp created_at
         timestamp updated_at
     }

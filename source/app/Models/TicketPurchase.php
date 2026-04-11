@@ -14,6 +14,7 @@ class TicketPurchase extends Model
         'buy_type_id',
         'selections',
         'amount',
+        'payout_amount',
     ];
 
     protected function casts(): array
