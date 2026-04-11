@@ -73,13 +73,6 @@ export default function Login({
 								Log in
 							</Button>
 						</div>
-
-						{canRegister && (
-							<div className="text-center text-sm text-muted-foreground">
-								Don't have an account?{" "}
-								<TextLink href={register()}>Sign up</TextLink>
-							</div>
-						)}
 					</>
 				)}
 			</Form>
