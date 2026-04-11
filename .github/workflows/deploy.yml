@@ -85,7 +85,7 @@ jobs:
       # ⑦ サーバー側デプロイ（Laravel全部ここ）
       - name: Run remote deploy
         run: |
-          ssh ${USER}@${HOST} /bin/bash -s << 'EOF'
+          ssh ${USER}@${HOST} bash -s << 'EOF'
             set -e
 
             cd ${LARAVEL_DIR}
