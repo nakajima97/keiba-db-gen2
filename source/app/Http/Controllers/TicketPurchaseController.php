@@ -24,6 +24,7 @@ class TicketPurchaseController extends Controller
                 'ticket_purchases.id',
                 'ticket_purchases.selections',
                 'ticket_purchases.amount',
+                'ticket_purchases.payout_amount',
                 'races.uid as race_uid',
                 'races.race_date',
                 'venues.name as venue_name',
@@ -48,6 +49,7 @@ class TicketPurchaseController extends Controller
             'buy_type_name' => $purchase->buy_type_name,
             'selections' => $purchase->selections,
             'amount' => $purchase->amount,
+            'payout_amount' => $purchase->payout_amount !== null ? (int) $purchase->payout_amount : null,
         ]);
 
         return Inertia::render('tickets/index', [

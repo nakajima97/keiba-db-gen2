@@ -21,7 +21,7 @@ class RaceResultController extends Controller
     public function store(string $uid, StoreRaceResultRequest $request, StoreAction $action): RedirectResponse
     {
         try {
-            $action->execute($request->validated(), $uid);
+            $action->execute($request->validated(), $uid, $request->user()->id);
         } catch (\InvalidArgumentException $e) {
             return redirect()->back()->withErrors(['text' => $e->getMessage()])->withInput();
         }

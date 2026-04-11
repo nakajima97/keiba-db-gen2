@@ -16,6 +16,7 @@ vi.mock("@inertiajs/react", () => ({
 					buy_type_name: "nagashi",
 					selections: { axis: [1], others: [2, 4, 6] },
 					amount: 100,
+					payout_amount: null,
 				},
 			],
 			nextCursor: null,

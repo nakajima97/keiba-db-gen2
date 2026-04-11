@@ -770,7 +770,16 @@ test('別レースの馬券には影響しない', function () use ($sampleText)
     $user = User::factory()->create();
     ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
     ['raceId' => $raceId, 'raceUid' => $raceUid] = createRaceWithUid($venueId, $now);
-    ['raceId' => $otherRaceId] = createRaceWithUid($venueId, $now);
+
+    // 別レース（race_number を変えてユニーク制約を回避）
+    $otherRaceId = DB::table('races')->insertGetId([
+        'uid' => 'test-uid-other-'.uniqid(),
+        'venue_id' => $venueId,
+        'race_date' => '2026-04-05',
+        'race_number' => 2,
+        'created_at' => $now,
+        'updated_at' => $now,
+    ]);
     createBuyTypes($now);
 
     $tanshoTicketTypeId = DB::table('ticket_types')->where('name', 'tansho')->value('id');
