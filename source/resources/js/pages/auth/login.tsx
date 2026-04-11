@@ -1,13 +1,11 @@
 import { Form, Head } from "@inertiajs/react";
 import InputError from "@/components/presentational/InputError";
 import PasswordInput from "@/components/presentational/PasswordInput";
-import TextLink from "@/components/presentational/TextLink";
 import { Button } from "@/components/shadcn/ui/button";
 import { Checkbox } from "@/components/shadcn/ui/checkbox";
 import { Input } from "@/components/shadcn/ui/input";
 import { Label } from "@/components/shadcn/ui/label";
 import { Spinner } from "@/components/shadcn/ui/spinner";
-import { register } from "@/routes";
 import { store } from "@/routes/login";
 
 type Props = {
@@ -18,8 +16,6 @@ type Props = {
 
 export default function Login({
 	status,
-	canResetPassword,
-	canRegister,
 }: Props) {
 	return (
 		<>
