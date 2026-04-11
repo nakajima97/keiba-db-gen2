@@ -21,7 +21,7 @@ class DatabaseSeeder extends Seeder
 
         // User::factory(10)->create();
 
-        if (!app()->environment('production')) {
+        if (! app()->environment('production')) {
             User::factory()->create([
                 'name' => 'Test User',
                 'email' => 'test@example.com',

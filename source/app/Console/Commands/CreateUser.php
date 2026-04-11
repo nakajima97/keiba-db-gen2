@@ -19,6 +19,7 @@ class CreateUser extends Command
 
         if (User::where('email', $email)->exists()) {
             $this->error('User already exists');
+
             return;
         }
 
