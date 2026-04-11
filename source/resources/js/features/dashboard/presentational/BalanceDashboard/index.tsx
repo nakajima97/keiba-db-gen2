@@ -81,8 +81,8 @@ export default function BalanceDashboard({
 										: "text-red-600"
 								}`}
 							>
-								{summary.total_net_amount >= 0 ? "+" : ""}
-								¥{summary.total_net_amount.toLocaleString()}
+								{summary.total_net_amount >= 0 ? "+" : ""}¥
+								{summary.total_net_amount.toLocaleString()}
 							</p>
 						</CardContent>
 					</Card>
@@ -107,20 +107,25 @@ export default function BalanceDashboard({
 				</div>
 			) : (
 				<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-					{(["合計購入額", "合計払い戻し額", "プラスマイナス", "利益率"] as const).map(
-						(label) => (
-							<Card key={label}>
-								<CardHeader>
-									<CardTitle className="text-sm text-muted-foreground">
-										{label}
-									</CardTitle>
-								</CardHeader>
-								<CardContent>
-									<p className="text-2xl font-bold text-muted-foreground">-</p>
-								</CardContent>
-							</Card>
-						),
-					)}
+					{(
+						[
+							"合計購入額",
+							"合計払い戻し額",
+							"プラスマイナス",
+							"利益率",
+						] as const
+					).map((label) => (
+						<Card key={label}>
+							<CardHeader>
+								<CardTitle className="text-sm text-muted-foreground">
+									{label}
+								</CardTitle>
+							</CardHeader>
+							<CardContent>
+								<p className="text-2xl font-bold text-muted-foreground">-</p>
+							</CardContent>
+						</Card>
+					))}
 				</div>
 			)}
 
@@ -158,9 +163,7 @@ export default function BalanceDashboard({
 										key={row.date}
 										className="border-b last:border-0 hover:bg-muted/30"
 									>
-										<td className="px-4 py-3">
-											{row.date.replace(/-/g, "/")}
-										</td>
+										<td className="px-4 py-3">{row.date.replace(/-/g, "/")}</td>
 										<td className="px-4 py-3 text-right">
 											¥{row.purchase_amount.toLocaleString()}
 										</td>
@@ -169,13 +172,11 @@ export default function BalanceDashboard({
 										</td>
 										<td
 											className={`px-4 py-3 text-right font-medium ${
-												row.net_amount >= 0
-													? "text-green-600"
-													: "text-red-600"
+												row.net_amount >= 0 ? "text-green-600" : "text-red-600"
 											}`}
 										>
-											{row.net_amount >= 0 ? "+" : ""}
-											¥{row.net_amount.toLocaleString()}
+											{row.net_amount >= 0 ? "+" : ""}¥
+											{row.net_amount.toLocaleString()}
 										</td>
 										<td
 											className={`px-4 py-3 text-right ${
@@ -197,4 +198,8 @@ export default function BalanceDashboard({
 	);
 }
 
-export type { BalanceDashboardProps, DailyBalance, YearlySummary } from "./types";
+export type {
+	BalanceDashboardProps,
+	DailyBalance,
+	YearlySummary,
+} from "./types";

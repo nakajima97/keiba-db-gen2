@@ -1,7 +1,11 @@
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import BalanceDashboard from "./index";
-import type { BalanceDashboardProps, DailyBalance, YearlySummary } from "./types";
+import type {
+	BalanceDashboardProps,
+	DailyBalance,
+	YearlySummary,
+} from "./types";
 
 vi.mock("@/components/shadcn/ui/select", () => ({
 	Select: ({
@@ -72,7 +76,9 @@ describe("BalanceDashboard", () => {
 			render(<BalanceDashboard {...baseProps} />);
 
 			// Assert
-			expect(screen.getByRole("button", { name: "年選択" })).toBeInTheDocument();
+			expect(
+				screen.getByRole("button", { name: "年選択" }),
+			).toBeInTheDocument();
 		});
 
 		it("日次テーブルのヘッダーが表示される", () => {
@@ -89,7 +95,9 @@ describe("BalanceDashboard", () => {
 			expect(screen.getByText("日付")).toBeInTheDocument();
 			expect(screen.getByText("購入金額")).toBeInTheDocument();
 			expect(screen.getByText("払い戻し金額")).toBeInTheDocument();
-			expect(screen.getAllByText("プラスマイナス").length).toBeGreaterThanOrEqual(1);
+			expect(
+				screen.getAllByText("プラスマイナス").length,
+			).toBeGreaterThanOrEqual(1);
 			expect(screen.getAllByText("利益率").length).toBeGreaterThanOrEqual(1);
 		});
 	});
@@ -207,7 +215,9 @@ describe("BalanceDashboard", () => {
 		it("年セレクタを変更すると onYearChange が数値型の年で呼ばれる", async () => {
 			// Arrange
 			const onYearChange = vi.fn();
-			const { default: userEvent } = await import("@testing-library/user-event");
+			const { default: userEvent } = await import(
+				"@testing-library/user-event"
+			);
 			const user = userEvent.setup();
 
 			// Act
