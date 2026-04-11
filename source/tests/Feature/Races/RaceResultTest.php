@@ -384,3 +384,434 @@ test('posting race result with non-existent uid returns 404', function () use ($
     // Assert
     $response->assertNotFound();
 });
+
+// ===== StoreAction — payout_amount 更新ロジック =====
+
+/**
+ * @return array{buyTypeId: int}
+ */
+function createBuyTypes(CarbonInterface $now): array
+{
+    $buyTypes = [
+        ['name' => 'single', 'label' => '通常', 'sort_order' => 1],
+        ['name' => 'nagashi', 'label' => '流し', 'sort_order' => 2],
+        ['name' => 'box', 'label' => 'ボックス', 'sort_order' => 3],
+        ['name' => 'formation', 'label' => 'フォーメーション', 'sort_order' => 4],
+    ];
+
+    foreach ($buyTypes as $buyType) {
+        DB::table('buy_types')->insertOrIgnore([
+            'name' => $buyType['name'],
+            'label' => $buyType['label'],
+            'sort_order' => $buyType['sort_order'],
+            'created_at' => $now,
+            'updated_at' => $now,
+        ]);
+    }
+
+    $buyTypeId = DB::table('buy_types')->where('name', 'single')->value('id');
+
+    return compact('buyTypeId');
+}
+
+test('single: ヒットした馬番の payout_amount が更新される', function () use ($sampleText) {
+    // Arrange
+    $user = User::factory()->create();
+    ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
+    ['raceId' => $raceId, 'raceUid' => $raceUid] = createRaceWithUid($venueId, $now);
+    createBuyTypes($now);
+
+    $tanshoTicketTypeId = DB::table('ticket_types')->where('name', 'tansho')->value('id');
+    $singleBuyTypeId = DB::table('buy_types')->where('name', 'single')->value('id');
+
+    $purchaseId = DB::table('ticket_purchases')->insertGetId([
+        'user_id' => $user->id,
+        'race_id' => $raceId,
+        'ticket_type_id' => $tanshoTicketTypeId,
+        'buy_type_id' => $singleBuyTypeId,
+        'selections' => json_encode(['horses' => [3]]),
+        'amount' => 100,
+        'created_at' => $now,
+        'updated_at' => $now,
+    ]);
+
+    // Act
+    $this->actingAs($user)->post(route('races.result.store', ['uid' => $raceUid]), [
+        'text' => $sampleText,
+    ]);
+
+    // Assert
+    $this->assertDatabaseHas('ticket_purchases', [
+        'id' => $purchaseId,
+        'payout_amount' => 610,
+    ]);
+});
+
+test('box: ヒットした組み合わせの payout_amount が更新される', function () use ($sampleText) {
+    // Arrange
+    $user = User::factory()->create();
+    ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
+    ['raceId' => $raceId, 'raceUid' => $raceUid] = createRaceWithUid($venueId, $now);
+    createBuyTypes($now);
+
+    $umarenTicketTypeId = DB::table('ticket_types')->where('name', 'umaren')->value('id');
+    $boxBuyTypeId = DB::table('buy_types')->where('name', 'box')->value('id');
+
+    $purchaseId = DB::table('ticket_purchases')->insertGetId([
+        'user_id' => $user->id,
+        'race_id' => $raceId,
+        'ticket_type_id' => $umarenTicketTypeId,
+        'buy_type_id' => $boxBuyTypeId,
+        'selections' => json_encode(['horses' => [3, 6]]),
+        'amount' => 100,
+        'created_at' => $now,
+        'updated_at' => $now,
+    ]);
+
+    // Act
+    $this->actingAs($user)->post(route('races.result.store', ['uid' => $raceUid]), [
+        'text' => $sampleText,
+    ]);
+
+    // Assert
+    $this->assertDatabaseHas('ticket_purchases', [
+        'id' => $purchaseId,
+        'payout_amount' => 700,
+    ]);
+});
+
+test('nagashi: ヒットした組み合わせの payout_amount が更新される', function () use ($sampleText) {
+    // Arrange
+    $user = User::factory()->create();
+    ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
+    ['raceId' => $raceId, 'raceUid' => $raceUid] = createRaceWithUid($venueId, $now);
+    createBuyTypes($now);
+
+    $umarenTicketTypeId = DB::table('ticket_types')->where('name', 'umaren')->value('id');
+    $nagashiBuyTypeId = DB::table('buy_types')->where('name', 'nagashi')->value('id');
+
+    $purchaseId = DB::table('ticket_purchases')->insertGetId([
+        'user_id' => $user->id,
+        'race_id' => $raceId,
+        'ticket_type_id' => $umarenTicketTypeId,
+        'buy_type_id' => $nagashiBuyTypeId,
+        'selections' => json_encode(['axis' => [3], 'others' => [6]]),
+        'amount' => 100,
+        'created_at' => $now,
+        'updated_at' => $now,
+    ]);
+
+    // Act
+    $this->actingAs($user)->post(route('races.result.store', ['uid' => $raceUid]), [
+        'text' => $sampleText,
+    ]);
+
+    // Assert
+    $this->assertDatabaseHas('ticket_purchases', [
+        'id' => $purchaseId,
+        'payout_amount' => 700,
+    ]);
+});
+
+test('formation: ヒットした組み合わせの payout_amount が更新される', function () use ($sampleText) {
+    // Arrange
+    $user = User::factory()->create();
+    ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
+    ['raceId' => $raceId, 'raceUid' => $raceUid] = createRaceWithUid($venueId, $now);
+    createBuyTypes($now);
+
+    $sanrenpukuTicketTypeId = DB::table('ticket_types')->where('name', 'sanrenpuku')->value('id');
+    $formationBuyTypeId = DB::table('buy_types')->where('name', 'formation')->value('id');
+
+    $purchaseId = DB::table('ticket_purchases')->insertGetId([
+        'user_id' => $user->id,
+        'race_id' => $raceId,
+        'ticket_type_id' => $sanrenpukuTicketTypeId,
+        'buy_type_id' => $formationBuyTypeId,
+        'selections' => json_encode(['columns' => [[3], [6], [11]]]),
+        'amount' => 100,
+        'created_at' => $now,
+        'updated_at' => $now,
+    ]);
+
+    // Act
+    $this->actingAs($user)->post(route('races.result.store', ['uid' => $raceUid]), [
+        'text' => $sampleText,
+    ]);
+
+    // Assert
+    $this->assertDatabaseHas('ticket_purchases', [
+        'id' => $purchaseId,
+        'payout_amount' => 1550,
+    ]);
+});
+
+test('umatan: 着順が一致した場合はヒット、逆順の場合はヒットしない', function () use ($sampleText) {
+    // Arrange
+    $user = User::factory()->create();
+    ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
+    ['raceId' => $raceId, 'raceUid' => $raceUid] = createRaceWithUid($venueId, $now);
+    createBuyTypes($now);
+
+    $umatanTicketTypeId = DB::table('ticket_types')->where('name', 'umatan')->value('id');
+    $singleBuyTypeId = DB::table('buy_types')->where('name', 'single')->value('id');
+
+    // 着順が一致（3→6）
+    $hitPurchaseId = DB::table('ticket_purchases')->insertGetId([
+        'user_id' => $user->id,
+        'race_id' => $raceId,
+        'ticket_type_id' => $umatanTicketTypeId,
+        'buy_type_id' => $singleBuyTypeId,
+        'selections' => json_encode(['horses' => [3, 6]]),
+        'amount' => 100,
+        'created_at' => $now,
+        'updated_at' => $now,
+    ]);
+
+    // 逆順（6→3）
+    $missedPurchaseId = DB::table('ticket_purchases')->insertGetId([
+        'user_id' => $user->id,
+        'race_id' => $raceId,
+        'ticket_type_id' => $umatanTicketTypeId,
+        'buy_type_id' => $singleBuyTypeId,
+        'selections' => json_encode(['horses' => [6, 3]]),
+        'amount' => 100,
+        'created_at' => $now,
+        'updated_at' => $now,
+    ]);
+
+    // Act
+    $this->actingAs($user)->post(route('races.result.store', ['uid' => $raceUid]), [
+        'text' => $sampleText,
+    ]);
+
+    // Assert
+    $this->assertDatabaseHas('ticket_purchases', [
+        'id' => $hitPurchaseId,
+        'payout_amount' => 1730,
+    ]);
+    $this->assertDatabaseHas('ticket_purchases', [
+        'id' => $missedPurchaseId,
+        'payout_amount' => null,
+    ]);
+});
+
+test('sanrentan: 着順が一致した場合はヒット、着順が異なる場合はヒットしない', function () use ($sampleText) {
+    // Arrange
+    $user = User::factory()->create();
+    ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
+    ['raceId' => $raceId, 'raceUid' => $raceUid] = createRaceWithUid($venueId, $now);
+    createBuyTypes($now);
+
+    $sanrentanTicketTypeId = DB::table('ticket_types')->where('name', 'sanrentan')->value('id');
+    $singleBuyTypeId = DB::table('buy_types')->where('name', 'single')->value('id');
+
+    // 着順が一致（3→6→11）
+    $hitPurchaseId = DB::table('ticket_purchases')->insertGetId([
+        'user_id' => $user->id,
+        'race_id' => $raceId,
+        'ticket_type_id' => $sanrentanTicketTypeId,
+        'buy_type_id' => $singleBuyTypeId,
+        'selections' => json_encode(['horses' => [3, 6, 11]]),
+        'amount' => 100,
+        'created_at' => $now,
+        'updated_at' => $now,
+    ]);
+
+    // 着順が異なる（3→11→6）
+    $missedPurchaseId = DB::table('ticket_purchases')->insertGetId([
+        'user_id' => $user->id,
+        'race_id' => $raceId,
+        'ticket_type_id' => $sanrentanTicketTypeId,
+        'buy_type_id' => $singleBuyTypeId,
+        'selections' => json_encode(['horses' => [3, 11, 6]]),
+        'amount' => 100,
+        'created_at' => $now,
+        'updated_at' => $now,
+    ]);
+
+    // Act
+    $this->actingAs($user)->post(route('races.result.store', ['uid' => $raceUid]), [
+        'text' => $sampleText,
+    ]);
+
+    // Assert
+    $this->assertDatabaseHas('ticket_purchases', [
+        'id' => $hitPurchaseId,
+        'payout_amount' => 8820,
+    ]);
+    $this->assertDatabaseHas('ticket_purchases', [
+        'id' => $missedPurchaseId,
+        'payout_amount' => null,
+    ]);
+});
+
+test('購入した組み合わせがレース結果に含まれない場合、payout_amount は null のまま', function () use ($sampleText) {
+    // Arrange
+    $user = User::factory()->create();
+    ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
+    ['raceId' => $raceId, 'raceUid' => $raceUid] = createRaceWithUid($venueId, $now);
+    createBuyTypes($now);
+
+    $tanshoTicketTypeId = DB::table('ticket_types')->where('name', 'tansho')->value('id');
+    $singleBuyTypeId = DB::table('buy_types')->where('name', 'single')->value('id');
+
+    // 単勝で1番（ヒットしない、結果は3番）
+    $purchaseId = DB::table('ticket_purchases')->insertGetId([
+        'user_id' => $user->id,
+        'race_id' => $raceId,
+        'ticket_type_id' => $tanshoTicketTypeId,
+        'buy_type_id' => $singleBuyTypeId,
+        'selections' => json_encode(['horses' => [1]]),
+        'amount' => 100,
+        'created_at' => $now,
+        'updated_at' => $now,
+    ]);
+
+    // Act
+    $this->actingAs($user)->post(route('races.result.store', ['uid' => $raceUid]), [
+        'text' => $sampleText,
+    ]);
+
+    // Assert
+    $this->assertDatabaseHas('ticket_purchases', [
+        'id' => $purchaseId,
+        'payout_amount' => null,
+    ]);
+});
+
+test('wide で複数組み合わせがヒットした場合、payout_amount は合算される', function () use ($sampleText) {
+    // Arrange
+    $user = User::factory()->create();
+    ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
+    ['raceId' => $raceId, 'raceUid' => $raceUid] = createRaceWithUid($venueId, $now);
+    createBuyTypes($now);
+
+    $wideTicketTypeId = DB::table('ticket_types')->where('name', 'wide')->value('id');
+    $boxBuyTypeId = DB::table('buy_types')->where('name', 'box')->value('id');
+
+    // ワイド ボックス 3-6-11（3-6: 330円、3-11: 710円、6-11: 340円 → 合計1,380円）
+    $purchaseId = DB::table('ticket_purchases')->insertGetId([
+        'user_id' => $user->id,
+        'race_id' => $raceId,
+        'ticket_type_id' => $wideTicketTypeId,
+        'buy_type_id' => $boxBuyTypeId,
+        'selections' => json_encode(['horses' => [3, 6, 11]]),
+        'amount' => 300,
+        'created_at' => $now,
+        'updated_at' => $now,
+    ]);
+
+    // Act
+    $this->actingAs($user)->post(route('races.result.store', ['uid' => $raceUid]), [
+        'text' => $sampleText,
+    ]);
+
+    // Assert
+    $this->assertDatabaseHas('ticket_purchases', [
+        'id' => $purchaseId,
+        'payout_amount' => 1380,
+    ]);
+});
+
+test('同じレースの別ユーザーの馬券には影響しない', function () use ($sampleText) {
+    // Arrange
+    $user = User::factory()->create();
+    $otherUser = User::factory()->create();
+    ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
+    ['raceId' => $raceId, 'raceUid' => $raceUid] = createRaceWithUid($venueId, $now);
+    createBuyTypes($now);
+
+    $tanshoTicketTypeId = DB::table('ticket_types')->where('name', 'tansho')->value('id');
+    $singleBuyTypeId = DB::table('buy_types')->where('name', 'single')->value('id');
+
+    // 投稿ユーザーの馬券（ヒット）
+    $userPurchaseId = DB::table('ticket_purchases')->insertGetId([
+        'user_id' => $user->id,
+        'race_id' => $raceId,
+        'ticket_type_id' => $tanshoTicketTypeId,
+        'buy_type_id' => $singleBuyTypeId,
+        'selections' => json_encode(['horses' => [3]]),
+        'amount' => 100,
+        'created_at' => $now,
+        'updated_at' => $now,
+    ]);
+
+    // 別ユーザーの馬券（同じ組み合わせだが更新対象外）
+    $otherPurchaseId = DB::table('ticket_purchases')->insertGetId([
+        'user_id' => $otherUser->id,
+        'race_id' => $raceId,
+        'ticket_type_id' => $tanshoTicketTypeId,
+        'buy_type_id' => $singleBuyTypeId,
+        'selections' => json_encode(['horses' => [3]]),
+        'amount' => 100,
+        'created_at' => $now,
+        'updated_at' => $now,
+    ]);
+
+    // Act
+    $this->actingAs($user)->post(route('races.result.store', ['uid' => $raceUid]), [
+        'text' => $sampleText,
+    ]);
+
+    // Assert
+    $this->assertDatabaseHas('ticket_purchases', [
+        'id' => $userPurchaseId,
+        'payout_amount' => 610,
+    ]);
+    $this->assertDatabaseHas('ticket_purchases', [
+        'id' => $otherPurchaseId,
+        'payout_amount' => null,
+    ]);
+});
+
+test('別レースの馬券には影響しない', function () use ($sampleText) {
+    // Arrange
+    $user = User::factory()->create();
+    ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
+    ['raceId' => $raceId, 'raceUid' => $raceUid] = createRaceWithUid($venueId, $now);
+    ['raceId' => $otherRaceId] = createRaceWithUid($venueId, $now);
+    createBuyTypes($now);
+
+    $tanshoTicketTypeId = DB::table('ticket_types')->where('name', 'tansho')->value('id');
+    $singleBuyTypeId = DB::table('buy_types')->where('name', 'single')->value('id');
+
+    // 対象レースの馬券（ヒット）
+    $targetPurchaseId = DB::table('ticket_purchases')->insertGetId([
+        'user_id' => $user->id,
+        'race_id' => $raceId,
+        'ticket_type_id' => $tanshoTicketTypeId,
+        'buy_type_id' => $singleBuyTypeId,
+        'selections' => json_encode(['horses' => [3]]),
+        'amount' => 100,
+        'created_at' => $now,
+        'updated_at' => $now,
+    ]);
+
+    // 別レースの馬券（同じ組み合わせだが更新対象外）
+    $otherRacePurchaseId = DB::table('ticket_purchases')->insertGetId([
+        'user_id' => $user->id,
+        'race_id' => $otherRaceId,
+        'ticket_type_id' => $tanshoTicketTypeId,
+        'buy_type_id' => $singleBuyTypeId,
+        'selections' => json_encode(['horses' => [3]]),
+        'amount' => 100,
+        'created_at' => $now,
+        'updated_at' => $now,
+    ]);
+
+    // Act
+    $this->actingAs($user)->post(route('races.result.store', ['uid' => $raceUid]), [
+        'text' => $sampleText,
+    ]);
+
+    // Assert
+    $this->assertDatabaseHas('ticket_purchases', [
+        'id' => $targetPurchaseId,
+        'payout_amount' => 610,
+    ]);
+    $this->assertDatabaseHas('ticket_purchases', [
+        'id' => $otherRacePurchaseId,
+        'payout_amount' => null,
+    ]);
+});
