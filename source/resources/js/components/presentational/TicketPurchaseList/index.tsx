@@ -49,6 +49,9 @@ export default function TicketPurchaseList({
 									<th className="px-4 py-3 text-right font-medium text-muted-foreground">
 										購入金額
 									</th>
+									<th className="px-4 py-3 text-right font-medium text-muted-foreground">
+										払い戻し金額
+									</th>
 									<th className="px-4 py-3 text-left font-medium text-muted-foreground">
 										レース結果
 									</th>
@@ -74,6 +77,11 @@ export default function TicketPurchaseList({
 										<td className="px-4 py-3 text-right">
 											{purchase.amount != null
 												? `¥${purchase.amount.toLocaleString()}`
+												: "-"}
+										</td>
+										<td className="px-4 py-3 text-right">
+											{purchase.payout_amount != null
+												? `¥${purchase.payout_amount.toLocaleString()}`
 												: "-"}
 										</td>
 										<td className="px-4 py-3">
