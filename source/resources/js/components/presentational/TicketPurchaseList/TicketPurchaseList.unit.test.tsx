@@ -162,10 +162,7 @@ describe("TicketPurchaseList", () => {
 
 			// Act
 			render(
-				<TicketPurchaseList
-					{...baseProps}
-					purchases={[purchaseWithPayout]}
-				/>,
+				<TicketPurchaseList {...baseProps} purchases={[purchaseWithPayout]} />,
 			);
 
 			// Assert

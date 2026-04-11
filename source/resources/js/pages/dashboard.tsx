@@ -1,27 +1,40 @@
-import { Head } from "@inertiajs/react";
-import { PlaceholderPattern } from "@/components/shadcn/ui/placeholder-pattern";
+import { Head, router, usePage } from "@inertiajs/react";
 import { dashboard } from "@/routes";
+import BalanceDashboard from "@/features/dashboard/presentational/BalanceDashboard";
+import type {
+	DailyBalance,
+	YearlySummary,
+} from "@/features/dashboard/presentational/BalanceDashboard";
+
+type DashboardPageProps = {
+	selected_year: number;
+	available_years: number[];
+	summary: YearlySummary | null;
+	daily_balances: DailyBalance[];
+};
 
 export default function Dashboard() {
+	const { selected_year, available_years, summary, daily_balances } =
+		usePage<DashboardPageProps>().props;
+
+	const handleYearChange = (year: number) => {
+		router.get(
+			dashboard.url(),
+			{ year },
+			{ preserveState: false, preserveScroll: true },
+		);
+	};
+
 	return (
 		<>
-			<Head title="Dashboard" />
-			<div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-				<div className="grid auto-rows-min gap-4 md:grid-cols-3">
-					<div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
-						<PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
-					</div>
-					<div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
-						<PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
-					</div>
-					<div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
-						<PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
-					</div>
-				</div>
-				<div className="relative min-h-[100vh] flex-1 overflow-hidden rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border">
-					<PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
-				</div>
-			</div>
+			<Head title="収支ダッシュボード" />
+			<BalanceDashboard
+				selectedYear={selected_year}
+				availableYears={available_years}
+				summary={summary}
+				dailyBalances={daily_balances}
+				onYearChange={handleYearChange}
+			/>
 		</>
 	);
 }
