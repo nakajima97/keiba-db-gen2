@@ -1,0 +1,100 @@
+name: auto-deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      SSH_PRIVATE_KEY: ${{ secrets.SECRET_KEY }}
+      USER: ${{ secrets.USER }}
+      HOST: ${{ secrets.HOST }}
+      ASSETS_BUILD_FILE_PATH: ${{ secrets.ASSETS_BUILD_FILE_PATH }}
+      LARAVEL_DIR: ${{ secrets.LARAVEL_DIR }}
+
+    steps:
+      # ① ソース取得
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # ② Node セットアップ
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+
+      # ③ フロントビルド
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build assets
+        run: npm run build
+
+      # ④ SSH セットアップ（安全版）
+      - name: Setup SSH
+        run: |
+          set -e
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+          ssh-keyscan -H "$HOST" >> ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+
+      # ⑤ アセット転送（差分・安全）
+      - name: Deploy assets via rsync
+        run: |
+          rsync -avz --delete \
+            --chmod=Du=rwx,Dgo=rx,Fu=rw,Fgo=r \
+            ./public/build/ \
+            ${USER}@${HOST}:${ASSETS_BUILD_FILE_PATH}
+
+      # ⑥ サーバー側デプロイ（本体）
+      - name: Run remote deploy
+        run: |
+          ssh ${USER}@${HOST} << EOF
+            set -e
+
+            echo "== Move to project directory =="
+            cd ${LARAVEL_DIR}
+
+            echo "== Enable maintenance mode =="
+            php artisan down || true
+
+            echo "== Git update =="
+            git fetch origin
+            git reset --hard origin/main
+
+            echo "== Install PHP dependencies =="
+            composer install \
+              --no-dev \
+              --prefer-dist \
+              --optimize-autoloader \
+              --no-interaction
+
+            echo "== Run migrations =="
+            php artisan migrate --force
+
+            echo "== Clear cache =="
+            php artisan cache:clear
+            php artisan config:clear
+            php artisan route:clear
+            php artisan view:clear
+
+            echo "== Rebuild cache =="
+            php artisan config:cache
+            php artisan route:cache
+            php artisan view:cache
+
+            echo "== Disable maintenance mode =="
+            php artisan up
+
+            echo "== Deploy completed successfully =="
+          EOF
