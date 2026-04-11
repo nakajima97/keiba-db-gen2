@@ -11,7 +11,7 @@ jobs:
 
     defaults:
       run:
-          working-directory: source
+        working-directory: source
 
     env:
       SSH_PRIVATE_KEY: ${{ secrets.SECRET_KEY }}
@@ -25,30 +25,26 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # ② Node セットアップ
+      # ② Nodeセットアップ
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 24
-          cache: 'npm'
+          node-version: 20.19
+          cache: 'pnpm'
           cache-dependency-path: source/pnpm-lock.yaml
 
-      - name: enable pnpm
+      - name: Enable pnpm
         run: corepack enable
 
-      # ③ フロントビルド
+      # ③ フロント依存インストール
       - name: Install dependencies
         run: pnpm install
 
-      - name: Generate frontend resources
-        run: |
-          php artisan ziggy:generate
-          php artisan route:cache
-
+      # ④ フロントビルド（★CIではここまで）
       - name: Build assets
         run: pnpm run build
 
-      # ④ SSH セットアップ（安全版）
+      # ⑤ SSH セットアップ
       - name: Setup SSH
         run: |
           set -e
@@ -61,7 +57,7 @@ jobs:
           ssh-keyscan -H "$HOST" >> ~/.ssh/known_hosts
           chmod 644 ~/.ssh/known_hosts
 
-      # ⑤ アセット転送（差分・安全）
+      # ⑥ アセット転送
       - name: Deploy assets via rsync
         run: |
           rsync -avz --delete \
@@ -69,19 +65,18 @@ jobs:
             ./public/build/ \
             ${USER}@${HOST}:${ASSETS_BUILD_FILE_PATH}
 
-      # ⑥ サーバー側デプロイ（本体）
+      # ⑦ サーバー側デプロイ（Laravel全部ここ）
       - name: Run remote deploy
         run: |
-          ssh ${USER}@${HOST} << EOF
+          ssh ${USER}@${HOST} << 'EOF'
             set -e
 
-            echo "== Move to project directory =="
             cd ${LARAVEL_DIR}
 
             echo "== Enable maintenance mode =="
             php artisan down || true
 
-            echo "== Git update =="
+            echo "== Git pull =="
             git fetch origin
             git reset --hard origin/main
 
@@ -92,22 +87,23 @@ jobs:
               --optimize-autoloader \
               --no-interaction
 
+            echo "== Generate Laravel assets =="
+            php artisan ziggy:generate || true
+            php artisan route:cache
+            php artisan config:cache
+            php artisan view:cache
+
             echo "== Run migrations =="
             php artisan migrate --force
 
-            echo "== Clear cache =="
-            php artisan cache:clear
-            php artisan config:clear
-            php artisan route:clear
-            php artisan view:clear
+            echo "== Clear caches =="
+            php artisan cache:clear || true
+            php artisan config:clear || true
+            php artisan route:clear || true
+            php artisan view:clear || true
 
-            echo "== Rebuild cache =="
-            php artisan config:cache
-            php artisan route:cache
-            php artisan view:cache
-
-            echo "== Disable maintenance mode =="
+            echo "== Enable app =="
             php artisan up
 
-            echo "== Deploy completed successfully =="
+            echo "== Deploy completed =="
           EOF
