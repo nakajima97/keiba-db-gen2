@@ -31,6 +31,7 @@ jobs:
         with:
           node-version: 18
           cache: 'npm'
+          cache-dependency-path: source/package-lock.json
 
       # ③ フロントビルド
       - name: Install dependencies
