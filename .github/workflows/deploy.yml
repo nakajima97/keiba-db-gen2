@@ -40,6 +40,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Generate frontend resources
+        run: |
+          php artisan ziggy:generate
+          php artisan route:cache
+
       - name: Build assets
         run: pnpm run build
 
