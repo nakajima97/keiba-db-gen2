@@ -16,7 +16,9 @@ vi.mock("@/components/shadcn/ui/select", () => ({
 		children: React.ReactNode;
 	}) => (
 		<div>
-			<button onClick={() => onValueChange("2025")}>年選択</button>
+			<button onClick={() => onValueChange("2025")} type="button">
+				年選択
+			</button>
 			{children}
 		</div>
 	),
