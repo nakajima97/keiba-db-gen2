@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\RaceResultController;
 use App\Http\Controllers\TicketPurchaseController;
 use Illuminate\Support\Facades\Route;
@@ -10,7 +11,7 @@ Route::inertia('/', 'welcome', [
 ])->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::inertia('dashboard', 'dashboard')->name('dashboard');
+    Route::get('dashboard', [DashboardController::class, 'show'])->name('dashboard');
     Route::get('/tickets', [TicketPurchaseController::class, 'index'])->name('tickets.index');
     Route::get('/tickets/new', [TicketPurchaseController::class, 'create'])->name('tickets.new');
     Route::post('/tickets', [TicketPurchaseController::class, 'store'])->name('tickets.store');
