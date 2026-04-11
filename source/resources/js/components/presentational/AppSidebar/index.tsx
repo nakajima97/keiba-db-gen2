@@ -14,6 +14,7 @@ import {
 	SidebarMenuItem,
 } from "@/components/shadcn/ui/sidebar";
 import { dashboard } from "@/routes";
+import { index } from "@/routes/tickets";
 import type { NavItem } from "@/types";
 
 const mainNavItems: NavItem[] = [
@@ -22,6 +23,11 @@ const mainNavItems: NavItem[] = [
 		href: dashboard(),
 		icon: LayoutGrid,
 	},
+	{
+		title: "Tickets",
+		href: index(),
+		icon: FolderGit2,
+	}
 ];
 
 const footerNavItems: NavItem[] = [
