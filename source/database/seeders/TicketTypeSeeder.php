@@ -22,6 +22,7 @@ class TicketTypeSeeder extends Seeder
             ['name' => 'wide', 'label' => 'ワイド', 'sort_order' => 6, 'created_at' => $now, 'updated_at' => $now],
             ['name' => 'sanrenpuku', 'label' => '三連複', 'sort_order' => 7, 'created_at' => $now, 'updated_at' => $now],
             ['name' => 'sanrentan', 'label' => '三連単', 'sort_order' => 8, 'created_at' => $now, 'updated_at' => $now],
+            ['name' => 'tanpuku', 'label' => '単複', 'sort_order' => 9, 'created_at' => $now, 'updated_at' => $now],
         ];
 
         DB::table('ticket_types')->insert($types);

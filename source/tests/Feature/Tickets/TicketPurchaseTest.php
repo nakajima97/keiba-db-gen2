@@ -57,6 +57,60 @@ test('authenticated user can purchase a ticket', function () {
     ]);
 });
 
+test('単複で馬券購入を記録できる', function () {
+    // Arrange
+    $user = User::factory()->create();
+
+    $now = now();
+
+    DB::table('venues')->insert([
+        'name' => '東京',
+        'created_at' => $now,
+        'updated_at' => $now,
+    ]);
+
+    $ticketType = DB::table('ticket_types')->insertGetId([
+        'name' => 'tanpuku',
+        'label' => '単複',
+        'sort_order' => 9,
+        'created_at' => $now,
+        'updated_at' => $now,
+    ]);
+
+    $buyType = DB::table('buy_types')->insertGetId([
+        'name' => 'single',
+        'label' => '通常',
+        'sort_order' => 1,
+        'created_at' => $now,
+        'updated_at' => $now,
+    ]);
+
+    // Act
+    $response = $this->actingAs($user)->post(route('tickets.store'), [
+        'venue' => '東京',
+        'race_date' => '2026-04-11',
+        'race_number' => 1,
+        'ticket_type' => 'tanpuku',
+        'buy_type' => 'single',
+        'selections' => ['horses' => [5]],
+        'amount' => 200,
+    ]);
+
+    // Assert
+    $response->assertRedirect(route('tickets.new'));
+
+    $race = DB::table('races')->where('race_date', '2026-04-11')->where('race_number', 1)->first();
+    expect($race)->not->toBeNull();
+
+    $this->assertDatabaseHas('ticket_purchases', [
+        'user_id' => $user->id,
+        'race_id' => $race->id,
+        'ticket_type_id' => $ticketType,
+        'buy_type_id' => $buyType,
+        'amount' => 200,
+    ]);
+});
+
 test('レース結果登録済みの場合、馬券購入時に payout_amount が計算される', function () {
     // Arrange
     $user = User::factory()->create();
