@@ -38,3 +38,8 @@ pnpm lint
 # フロントフォーマット
 pnpm format
 ~~~
+
+## ユーザーの作成
+```bash
+php artisan user:create
+```
