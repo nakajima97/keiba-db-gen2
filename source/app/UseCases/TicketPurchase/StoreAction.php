@@ -3,12 +3,17 @@
 namespace App\UseCases\TicketPurchase;
 
 use App\Models\Race;
+use App\Models\RacePayout;
 use App\Models\TicketPurchase;
 use App\Models\Venue;
 use Illuminate\Support\Facades\DB;
 
 class StoreAction
 {
+    public function __construct(
+        private readonly CalculatePayoutAmountAction $calculatePayoutAmountAction,
+    ) {}
+
     public function execute(array $data, int $userId): TicketPurchase
     {
         $ticketTypeId = DB::table('ticket_types')
@@ -34,7 +39,7 @@ class StoreAction
             }
         }
 
-        return TicketPurchase::create([
+        $ticketPurchase = TicketPurchase::create([
             'user_id' => $userId,
             'race_id' => $raceId,
             'ticket_type_id' => $ticketTypeId,
@@ -42,5 +47,15 @@ class StoreAction
             'selections' => $data['selections'],
             'amount' => $data['amount'] ?? null,
         ]);
+
+        if ($raceId !== null && RacePayout::where('race_id', $raceId)->exists()) {
+            $payoutAmount = $this->calculatePayoutAmountAction->execute($ticketPurchase);
+            if ($payoutAmount !== null) {
+                $ticketPurchase->payout_amount = $payoutAmount;
+                $ticketPurchase->save();
+            }
+        }
+
+        return $ticketPurchase;
     }
 }
