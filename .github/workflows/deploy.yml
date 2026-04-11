@@ -40,6 +40,22 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      # ③.5 PHPセットアップ（Wayfinder生成ファイル用）
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: composer
+
+      - name: Install Composer dependencies
+        run: composer install --no-dev --prefer-dist --optimize-autoloader --no-interaction
+
+      - name: Generate Wayfinder TypeScript files
+        run: |
+          cp .env.example .env
+          php artisan key:generate --no-interaction
+          php artisan wayfinder:generate --with-form --no-interaction
+
       # ④ フロントビルド（★CIではここまで）
       - name: Build assets
         run: pnpm run build
