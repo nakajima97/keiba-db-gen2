@@ -9,7 +9,6 @@ import { Label } from "@/components/shadcn/ui/label";
 import { Spinner } from "@/components/shadcn/ui/spinner";
 import { register } from "@/routes";
 import { store } from "@/routes/login";
-import { request } from "@/routes/password";
 
 type Props = {
 	status?: string;
@@ -49,14 +48,6 @@ export default function Login({
 							</div>
 
 							<div className="grid gap-2">
-								<div className="flex items-center">
-									<Label htmlFor="password">Password</Label>
-									{canResetPassword && (
-										<TextLink href={request()} className="ml-auto text-sm">
-											Forgot password?
-										</TextLink>
-									)}
-								</div>
 								<PasswordInput
 									id="password"
 									name="password"
