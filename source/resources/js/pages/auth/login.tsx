@@ -1,15 +1,12 @@
 import { Form, Head } from "@inertiajs/react";
 import InputError from "@/components/presentational/InputError";
 import PasswordInput from "@/components/presentational/PasswordInput";
-import TextLink from "@/components/presentational/TextLink";
 import { Button } from "@/components/shadcn/ui/button";
 import { Checkbox } from "@/components/shadcn/ui/checkbox";
 import { Input } from "@/components/shadcn/ui/input";
 import { Label } from "@/components/shadcn/ui/label";
 import { Spinner } from "@/components/shadcn/ui/spinner";
-import { register } from "@/routes";
 import { store } from "@/routes/login";
-import { request } from "@/routes/password";
 
 type Props = {
 	status?: string;
@@ -19,8 +16,6 @@ type Props = {
 
 export default function Login({
 	status,
-	canResetPassword,
-	canRegister,
 }: Props) {
 	return (
 		<>
@@ -49,14 +44,6 @@ export default function Login({
 							</div>
 
 							<div className="grid gap-2">
-								<div className="flex items-center">
-									<Label htmlFor="password">Password</Label>
-									{canResetPassword && (
-										<TextLink href={request()} className="ml-auto text-sm">
-											Forgot password?
-										</TextLink>
-									)}
-								</div>
 								<PasswordInput
 									id="password"
 									name="password"
@@ -82,13 +69,6 @@ export default function Login({
 								Log in
 							</Button>
 						</div>
-
-						{canRegister && (
-							<div className="text-center text-sm text-muted-foreground">
-								Don't have an account?{" "}
-								<TextLink href={register()}>Sign up</TextLink>
-							</div>
-						)}
 					</>
 				)}
 			</Form>
