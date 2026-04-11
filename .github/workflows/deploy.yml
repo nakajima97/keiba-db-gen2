@@ -33,12 +33,15 @@ jobs:
           cache: 'npm'
           cache-dependency-path: source/package-lock.json
 
+      - name: enable pnpm
+        run: corepack enable
+
       # ③ フロントビルド
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install
 
       - name: Build assets
-        run: npm run build
+        run: pnpm run build
 
       # ④ SSH セットアップ（安全版）
       - name: Setup SSH
