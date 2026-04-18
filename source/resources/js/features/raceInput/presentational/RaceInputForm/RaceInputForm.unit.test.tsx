@@ -166,12 +166,17 @@ describe("RaceInputForm", () => {
 			await user.click(selectButtons[0]);
 			await user.type(screen.getByLabelText("レース日"), "2026-04-18");
 			await user.click(selectButtons[1]);
-			await user.type(screen.getByLabelText("出馬表をペースト"), "出馬表テキスト");
+			await user.type(
+				screen.getByLabelText("出馬表をペースト"),
+				"出馬表テキスト",
+			);
 			await user.click(screen.getByRole("button", { name: "保存する" }));
 
 			// Act: コンテナが成功を通知するイメージで onSuccess を呼ぶ
 			const onSuccess = onSubmit.mock.calls[0][1] as () => void;
-			await act(async () => { onSuccess(); });
+			await act(async () => {
+				onSuccess();
+			});
 
 			// Assert
 			expect(screen.getByLabelText("出馬表をペースト")).toHaveValue("");
@@ -192,9 +197,7 @@ describe("RaceInputForm", () => {
 
 		it("initialRaceDate が渡された場合、レース日の初期値として反映される", () => {
 			// Act
-			render(
-				<RaceInputForm {...baseProps} initialRaceDate="2026-04-18" />,
-			);
+			render(<RaceInputForm {...baseProps} initialRaceDate="2026-04-18" />);
 
 			// Assert
 			expect(screen.getByLabelText("レース日")).toHaveValue("2026-04-18");

@@ -44,7 +44,9 @@ export default function RaceList({
 						{venues.map((venue) => (
 							<Button
 								key={venue.id}
-								variant={selectedVenueId === String(venue.id) ? "default" : "outline"}
+								variant={
+									selectedVenueId === String(venue.id) ? "default" : "outline"
+								}
 								size="sm"
 								onClick={() => onVenueChange(String(venue.id))}
 							>

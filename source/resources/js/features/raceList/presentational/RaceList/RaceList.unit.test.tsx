@@ -26,11 +26,7 @@ vi.mock("@/components/shadcn/ui/button", () => ({
 		onClick?: () => void;
 		children: unknown;
 	}) => (
-		<button
-			data-variant={variant ?? "default"}
-			onClick={onClick}
-			type="button"
-		>
+		<button data-variant={variant ?? "default"} onClick={onClick} type="button">
 			{children as never}
 		</button>
 	),
@@ -74,7 +70,9 @@ describe("RaceList", () => {
 			render(<RaceList {...baseProps} races={[]} />);
 
 			// Assert（ヘッダーと空状態の両方に表示されるため複数件存在する）
-			expect(screen.getAllByText("レース情報入力").length).toBeGreaterThanOrEqual(1);
+			expect(
+				screen.getAllByText("レース情報入力").length,
+			).toBeGreaterThanOrEqual(1);
 		});
 
 		it("テーブルが表示されない", () => {
@@ -151,12 +149,14 @@ describe("RaceList", () => {
 			render(<RaceList {...baseProps} />);
 
 			// Assert
-			expect(screen.getByRole("button", { name: "すべて" })).toBeInTheDocument();
+			expect(
+				screen.getByRole("button", { name: "すべて" }),
+			).toBeInTheDocument();
 			expect(screen.getByRole("button", { name: "東京" })).toBeInTheDocument();
 			expect(screen.getByRole("button", { name: "中山" })).toBeInTheDocument();
 		});
 
-		it("selectedVenueId=\"all\" のとき「すべて」ボタンが選択状態（data-variant=\"default\"）になる", () => {
+		it('selectedVenueId="all" のとき「すべて」ボタンが選択状態（data-variant="default"）になる', () => {
 			// Act
 			render(<RaceList {...baseProps} selectedVenueId="all" />);
 
@@ -165,7 +165,7 @@ describe("RaceList", () => {
 			expect(allButton).toHaveAttribute("data-variant", "default");
 		});
 
-		it("selectedVenueId が会場IDのとき、対応する会場ボタンが選択状態（data-variant=\"default\"）になる", () => {
+		it('selectedVenueId が会場IDのとき、対応する会場ボタンが選択状態（data-variant="default"）になる', () => {
 			// Act
 			render(<RaceList {...baseProps} selectedVenueId="1" />);
 
@@ -174,7 +174,7 @@ describe("RaceList", () => {
 			expect(tokyoButton).toHaveAttribute("data-variant", "default");
 		});
 
-		it("selectedVenueId が会場IDのとき「すべて」ボタンは非選択状態（data-variant=\"outline\"）になる", () => {
+		it('selectedVenueId が会場IDのとき「すべて」ボタンは非選択状態（data-variant="outline"）になる', () => {
 			// Act
 			render(<RaceList {...baseProps} selectedVenueId="1" />);
 
@@ -183,7 +183,7 @@ describe("RaceList", () => {
 			expect(allButton).toHaveAttribute("data-variant", "outline");
 		});
 
-		it("「すべて」ボタンをクリックすると onVenueChange(\"all\") が呼ばれる", async () => {
+		it('「すべて」ボタンをクリックすると onVenueChange("all") が呼ばれる', async () => {
 			// Arrange
 			const onVenueChange = vi.fn();
 			const user = userEvent.setup();
