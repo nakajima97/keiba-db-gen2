@@ -17,7 +17,7 @@ vi.mock("@inertiajs/react", () => ({
 						horse_number: 1,
 						horse_name: "テストホース",
 						jockey_name: "テスト騎手",
-						weight: 55.0,
+						weight: 480,
 					},
 				],
 			},
@@ -36,6 +36,6 @@ describe("RacesShow ページ", () => {
 		expect(screen.getByText("3R")).toBeInTheDocument();
 		expect(screen.getByText("テストホース")).toBeInTheDocument();
 		expect(screen.getByText("テスト騎手")).toBeInTheDocument();
-		expect(screen.getByText("55kg")).toBeInTheDocument();
+		expect(screen.getByText("480kg")).toBeInTheDocument();
 	});
 });

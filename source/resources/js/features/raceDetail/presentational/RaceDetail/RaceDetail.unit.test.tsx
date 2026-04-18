@@ -10,11 +10,11 @@ const baseRace: RaceDetailItem = {
 	race_number: 3,
 	entries: [
 		{
-			frame_number: 1,
+			frame_number: 2,
 			horse_number: 1,
 			horse_name: "テストホース",
 			jockey_name: "テスト騎手",
-			weight: 55.0,
+			weight: 480,
 		},
 	],
 };
@@ -55,7 +55,7 @@ describe("RaceDetail", () => {
 			expect(screen.getByText("1")).toBeInTheDocument();
 			expect(screen.getByText("テストホース")).toBeInTheDocument();
 			expect(screen.getByText("テスト騎手")).toBeInTheDocument();
-			expect(screen.getByText("55kg")).toBeInTheDocument();
+			expect(screen.getByText("480kg")).toBeInTheDocument();
 		});
 
 		it("馬体重が null の場合「-」が表示される", () => {

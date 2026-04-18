@@ -112,7 +112,7 @@ test('race show returns entries with horse and jockey info as inertia props', fu
             ->where('horse_number', 1)
             ->where('horse_name', 'テストホース')
             ->where('jockey_name', 'テスト騎手')
-            ->where('weight', 55.0)
+            ->where('weight', 480)
             ->etc()
         )
     );
