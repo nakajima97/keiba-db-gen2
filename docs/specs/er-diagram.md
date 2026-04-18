@@ -87,6 +87,38 @@ erDiagram
     races ||--o{ race_payouts : "has"
     ticket_types ||--o{ race_payouts : "classified by"
     race_payouts ||--|{ race_payout_horses : "has"
+
+    horses {
+        bigint id PK
+        string name "競走馬名"
+        smallint birth_year "生年"
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    jockeys {
+        bigint id PK
+        string name "騎手名"
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    race_entries {
+        bigint id PK
+        bigint race_id FK
+        bigint horse_id FK
+        bigint jockey_id FK
+        tinyint frame_number "枠番 1〜8"
+        tinyint horse_number "馬番 1〜18"
+        decimal weight "負担重量(kg) 4,1"
+        smallint horse_weight "馬体重(kg) nullable"
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    races ||--o{ race_entries : "has"
+    horses ||--o{ race_entries : "participates in"
+    jockeys ||--o{ race_entries : "rides in"
 ```
 
 ## selectionsカラムのJSONフォーマット
