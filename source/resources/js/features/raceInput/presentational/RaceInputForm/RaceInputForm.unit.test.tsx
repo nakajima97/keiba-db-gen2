@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import RaceInputForm from "./index";
@@ -143,12 +143,38 @@ describe("RaceInputForm", () => {
 
 			// Assert
 			expect(onSubmit).toHaveBeenCalledTimes(1);
-			expect(onSubmit).toHaveBeenCalledWith({
-				venue_id: 1,
-				race_date: "2026-04-18",
-				race_number: 1,
-				paste_text: "出馬表テキスト",
-			});
+			expect(onSubmit).toHaveBeenCalledWith(
+				{
+					venue_id: 1,
+					race_date: "2026-04-18",
+					race_number: 1,
+					paste_text: "出馬表テキスト",
+				},
+				expect.any(Function),
+			);
+		});
+	});
+
+	describe("保存成功後のクリア", () => {
+		it("onSubmit の第2引数を呼ぶとテキストエリアがクリアされる", async () => {
+			// Arrange
+			const onSubmit = vi.fn();
+			const user = userEvent.setup();
+			render(<RaceInputForm {...baseProps} onSubmit={onSubmit} />);
+
+			const selectButtons = screen.getAllByRole("button", { name: "セレクト" });
+			await user.click(selectButtons[0]);
+			await user.type(screen.getByLabelText("レース日"), "2026-04-18");
+			await user.click(selectButtons[1]);
+			await user.type(screen.getByLabelText("出馬表をペースト"), "出馬表テキスト");
+			await user.click(screen.getByRole("button", { name: "保存する" }));
+
+			// Act: コンテナが成功を通知するイメージで onSuccess を呼ぶ
+			const onSuccess = onSubmit.mock.calls[0][1] as () => void;
+			await act(async () => { onSuccess(); });
+
+			// Assert
+			expect(screen.getByLabelText("出馬表をペースト")).toHaveValue("");
 		});
 	});
 

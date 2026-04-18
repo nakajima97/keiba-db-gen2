@@ -15,12 +15,15 @@ type Props = {
 	initialVenueId?: number;
 	initialRaceDate?: string;
 	initialRaceNumber?: number;
-	onSubmit: (data: {
-		venue_id: number;
-		race_date: string;
-		race_number: number;
-		paste_text: string;
-	}) => void;
+	onSubmit: (
+		data: {
+			venue_id: number;
+			race_date: string;
+			race_number: number;
+			paste_text: string;
+		},
+		onSuccess: () => void,
+	) => void;
 };
 
 const RACE_NUMBERS = Array.from({ length: 12 }, (_, i) => i + 1);
@@ -42,12 +45,15 @@ export default function RaceInputForm({
 	const [pasteText, setPasteText] = useState<string>("");
 
 	const handleSubmit = () => {
-		onSubmit({
-			venue_id: Number(venueId),
-			race_date: raceDate,
-			race_number: Number(raceNumber),
-			paste_text: pasteText,
-		});
+		onSubmit(
+			{
+				venue_id: Number(venueId),
+				race_date: raceDate,
+				race_number: Number(raceNumber),
+				paste_text: pasteText,
+			},
+			() => setPasteText(""),
+		);
 	};
 
 	const isFormValid =
