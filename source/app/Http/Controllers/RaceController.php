@@ -6,6 +6,7 @@ use App\Http\Requests\Race\StoreRaceRequest;
 use App\Models\Race;
 use App\Models\Venue;
 use App\UseCases\Race\StoreAction;
+use Carbon\CarbonInterface;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -28,7 +29,7 @@ class RaceController extends Controller
                 ->get()
                 ->map(fn (Race $race) => [
                     'uid' => $race->uid,
-                    'race_date' => $race->race_date instanceof \Carbon\CarbonInterface
+                    'race_date' => $race->race_date instanceof CarbonInterface
                         ? $race->race_date->format('Y-m-d')
                         : (string) $race->race_date,
                     'venue_name' => $race->venue->name,
