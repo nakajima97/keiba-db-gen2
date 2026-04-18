@@ -11,6 +11,7 @@ flowchart TD
     TicketsIndex -->|確認・編集リンク（入力済み）| RaceResultEdit[レース結果確認・編集画面\n/races/uid/result/edit]
     RaceResultNew -->|保存ボタン押下| TicketsIndex
     Nav[ナビゲーションメニュー] -->|レース一覧| RacesIndex[レース一覧画面\n/races]
+    RacesIndex -->|行クリック（詳細は別issueで実装）| RaceDetail[レース詳細画面\n/races/uid]
     RacesIndex -->|レース情報入力ボタン| RacesNew[レース情報入力画面\n/races/new]
     RacesNew -->|保存ボタン押下（競馬場・日付・番号引き継ぎ）| RacesNew
 ```
