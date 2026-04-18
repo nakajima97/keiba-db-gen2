@@ -48,9 +48,19 @@ export default function RacesIndex() {
 		}
 	}, []);
 
+	useEffect(() => {
+		if (
+			selectedVenueId !== "all" &&
+			!venues.some((v) => String(v.id) === selectedVenueId)
+		) {
+			setSelectedVenueId("all");
+		}
+	}, [venues]);
+
 	const handleDateChange = (date: string) => {
 		setSelectedDate(date);
-		router.get(racesIndex.url(), buildQuery(date, selectedVenueId), {
+		setSelectedVenueId("all");
+		router.get(racesIndex.url(), buildQuery(date, "all"), {
 			preserveState: true,
 			replace: true,
 		});

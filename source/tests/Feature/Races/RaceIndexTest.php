@@ -29,7 +29,7 @@ test('authenticated user can access races index and inertia component is rendere
 
 // ===== GET /races (フィルタリング) =====
 
-test('races index returns empty races and venues as inertia props when no filter is specified', function () {
+test('races index returns empty races and empty venues as inertia props when no filter is specified', function () {
     // Arrange
     $user = User::factory()->create();
     $venue = Venue::firstOrCreate(['name' => '東京']);
@@ -37,11 +37,6 @@ test('races index returns empty races and venues as inertia props when no filter
         'venue_id' => $venue->id,
         'race_date' => '2026-04-05',
         'race_number' => 1,
-    ]);
-    Race::create([
-        'venue_id' => $venue->id,
-        'race_date' => '2026-04-06',
-        'race_number' => 2,
     ]);
 
     // Act
@@ -51,9 +46,35 @@ test('races index returns empty races and venues as inertia props when no filter
     $response->assertInertia(fn (Assert $page) => $page
         ->component('races/index')
         ->has('races', 0)
-        ->has('venues', fn (Assert $venues) => $venues
-            ->where('0.id', $venue->id)
-            ->where('0.name', '東京')
+        ->has('venues', 0)
+    );
+});
+
+test('races index returns only venues with races on the specified date', function () {
+    // Arrange
+    $user = User::factory()->create();
+    $tokyo = Venue::firstOrCreate(['name' => '東京']);
+    $nakayama = Venue::firstOrCreate(['name' => '中山']);
+    Race::create([
+        'venue_id' => $tokyo->id,
+        'race_date' => '2026-04-05',
+        'race_number' => 1,
+    ]);
+    Race::create([
+        'venue_id' => $nakayama->id,
+        'race_date' => '2026-04-06',
+        'race_number' => 1,
+    ]);
+
+    // Act
+    $response = $this->actingAs($user)->get(route('races.index', ['race_date' => '2026-04-05']));
+
+    // Assert
+    $response->assertInertia(fn (Assert $page) => $page
+        ->component('races/index')
+        ->has('venues', 1, fn (Assert $venue) => $venue
+            ->where('name', '東京')
+            ->etc()
         )
     );
 });

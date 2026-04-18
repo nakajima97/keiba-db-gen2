@@ -34,7 +34,12 @@ class RaceController extends Controller
                     'venue_name' => $race->venue->name,
                     'race_number' => $race->race_number,
                 ]) : [],
-            'venues' => Venue::query()->orderBy('id')->get(['id', 'name']),
+            'venues' => $raceDate
+                ? Venue::query()
+                    ->whereHas('races', fn ($q) => $q->where('race_date', $raceDate))
+                    ->orderBy('id')
+                    ->get(['id', 'name'])
+                : collect(),
             'filters' => [
                 'race_date' => $raceDate,
                 'venue_id' => $venueId !== null ? (int) $venueId : null,
