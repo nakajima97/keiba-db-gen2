@@ -1,10 +1,11 @@
 import { Head, router, usePage } from "@inertiajs/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import RaceList from "@/features/raceList/presentational/RaceList";
 import type {
 	RaceListItem,
 	Venue,
 } from "@/features/raceList/presentational/RaceList/types";
+import { getDefaultRaceDate } from "@/features/raceList/utils/getDefaultRaceDate";
 import { index as racesIndex } from "@/routes/races";
 
 type RacesIndexProps = {
@@ -20,7 +21,7 @@ export default function RacesIndex() {
 	const { races, venues, filters } = usePage<RacesIndexProps>().props;
 
 	const [selectedDate, setSelectedDate] = useState<string>(
-		filters.race_date ?? "",
+		filters.race_date ?? getDefaultRaceDate(),
 	);
 	const [selectedVenueId, setSelectedVenueId] = useState<string>(
 		filters.venue_id != null ? String(filters.venue_id) : "all",
@@ -36,6 +37,16 @@ export default function RacesIndex() {
 		}
 		return query;
 	};
+
+	useEffect(() => {
+		if (!filters.race_date) {
+			router.get(
+				racesIndex.url(),
+				buildQuery(getDefaultRaceDate(), selectedVenueId),
+				{ preserveState: true, replace: true },
+			);
+		}
+	}, []);
 
 	const handleDateChange = (date: string) => {
 		setSelectedDate(date);
