@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Race\StoreRaceRequest;
+use App\Models\Race;
 use App\Models\Venue;
 use App\UseCases\Race\StoreAction;
 use Illuminate\Http\RedirectResponse;
@@ -12,9 +13,34 @@ use Inertia\Response;
 
 class RaceController extends Controller
 {
-    public function index(): Response
+    public function index(Request $request): Response
     {
-        return Inertia::render('races/index');
+        $venueId = $request->query('venue_id');
+        $raceDate = $request->query('race_date');
+
+        return Inertia::render('races/index', [
+            'races' => Race::query()
+                ->with('venue')
+                ->when($raceDate, fn ($q, $date) => $q->where('race_date', $date))
+                ->when($venueId, fn ($q, $id) => $q->where('venue_id', $id))
+                ->orderBy('race_date', 'desc')
+                ->orderBy('venue_id')
+                ->orderBy('race_number')
+                ->get()
+                ->map(fn (Race $race) => [
+                    'uid' => $race->uid,
+                    'race_date' => $race->race_date instanceof \Carbon\CarbonInterface
+                        ? $race->race_date->format('Y-m-d')
+                        : (string) $race->race_date,
+                    'venue_name' => $race->venue->name,
+                    'race_number' => $race->race_number,
+                ]),
+            'venues' => Venue::query()->orderBy('id')->get(['id', 'name']),
+            'filters' => [
+                'race_date' => $raceDate,
+                'venue_id' => $venueId !== null ? (int) $venueId : null,
+            ],
+        ]);
     }
 
     public function create(Request $request): Response
