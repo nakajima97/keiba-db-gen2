@@ -125,9 +125,10 @@ general-purposeエージェントへの指示例:
 以下の順序でチェックする:
 
 **1. テスト結果の確認**
-- ステップ3で作成したテストがすべてパスしているか
-- Step2で作成した補助テストがすべてパスしているか
-- テストランナーのコマンドは `docs/architecture/` または `package.json`/`README.md` から判断する
+- テストスイートがすべてパスしているか
+  - テストランナーのコマンドは `docs/architecture/` または `package.json`/`README.md` から判断する
+- 実装準備フェーズ（ステップ3）でissueに記録された承認済みテスト計画の各項目が実装されており、壊れていないか
+  - `gh issue view <番号> --comments` で承認済みテスト計画コメントを取得して確認する
 
 **2. 仕様準拠の確認**
 - `docs/specs/` の確定仕様（openapi.yaml・api-list.md・screen-list.md等）と実装が一致しているか
