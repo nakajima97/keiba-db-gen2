@@ -8,11 +8,17 @@ vi.mock("@inertiajs/react", () => ({
 	Link: ({ href, children }: { href: string; children: unknown }) => (
 		<a href={href}>{children as never}</a>
 	),
+	router: {
+		visit: vi.fn(),
+	},
 }));
 
 vi.mock("@/routes/races", () => ({
 	create: {
 		url: () => "/races/new",
+	},
+	show: {
+		url: ({ race }: { race: string }) => `/races/${race}`,
 	},
 }));
 
@@ -240,6 +246,21 @@ describe("RaceList", () => {
 
 			// Assert
 			expect(onDateChange).toHaveBeenCalled();
+		});
+	});
+
+	describe("レース行クリック", () => {
+		it("レースの行をクリックすると router.visit が show.url({ race: uid }) で呼ばれる", async () => {
+			// Arrange
+			const { router } = await import("@inertiajs/react");
+			const user = userEvent.setup();
+
+			// Act
+			render(<RaceList {...baseProps} />);
+			await user.click(screen.getByRole("row", { name: /2026\/04\/05/ }));
+
+			// Assert
+			expect(router.visit).toHaveBeenCalledWith("/races/abc123");
 		});
 	});
 });
