@@ -107,10 +107,10 @@ general-purposeエージェントへの指示例:
 | `docs/specs/screen-list.md` | 新規画面を行として追記 | 画面の追加・変更がある場合 |
 | `docs/specs/screen-transition.md` | 遷移をmermaid flowchartに追記 | 画面遷移の変更がある場合 |
 | `docs/specs/er-diagram.md` | テーブル・カラムをmermaid erDiagramに追記・修正 | DB構造の変更がある場合 |
-| `docs/specs/api-list.md` | 新規エンドポイントを行として追記（概要一覧） | APIの追加・変更がある場合 |
+| `docs/specs/api-list.md` | 新規エンドポイントを行として追記（概要一覧） | REST APIエンドポイント（JSONレスポンスを返すもの）の追加・変更がある場合（画面を返すルートは対象外） |
 | `docs/specs/openapi.yaml` | Step3で生成済み（追加操作不要） | Step3でOpenAPI YAMLを生成した場合 |
 
-> `api-list.md` は人間が読む概要一覧、`openapi.yaml` は機械可読の完全仕様。役割が異なるため両方を維持する。
+> `api-list.md` は REST API（JSONレスポンスを返すエンドポイント）のみを記載する。`openapi.yaml` はその機械可読の完全仕様。画面ルートは `screen-list.md` に記載し `api-list.md` には含めない。
 
 ### Step 5: 人間への確認・フィードバック反映（メイン）
 
@@ -127,3 +127,4 @@ general-purposeエージェントへの指示例:
 - アーキテクチャ定義（`docs/architecture/`）を必ず参照し、既存コードの命名規則・ディレクトリ構造に従う
 - 変更が不要なドキュメントは更新しない（空振りの更新をしない）
 - issueに記録するコメントは日本語で書く
+- `api-list.md` に記載するのは REST API（JSON レスポンスを返すエンドポイント）のみ。画面を返すルートは REST API ではないため `screen-list.md` に記載し `api-list.md` には含めない。
