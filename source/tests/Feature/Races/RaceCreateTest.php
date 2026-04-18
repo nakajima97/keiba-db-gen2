@@ -29,7 +29,7 @@ test('authenticated user can access race create page with venues prop', function
     // Assert
     $response->assertOk();
     $response->assertInertia(fn (Assert $page) => $page
-        ->component('pages/races/new')
+        ->component('races/new')
         ->has('venues', 2)
     );
 });

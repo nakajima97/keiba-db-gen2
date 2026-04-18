@@ -22,5 +22,5 @@ test('authenticated user can access races index and inertia component is rendere
 
     // Assert
     $response->assertOk();
-    $response->assertInertia(fn (Assert $page) => $page->component('pages/races/index'));
+    $response->assertInertia(fn (Assert $page) => $page->component('races/index'));
 });
