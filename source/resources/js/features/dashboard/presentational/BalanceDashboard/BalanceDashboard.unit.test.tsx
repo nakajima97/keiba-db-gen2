@@ -100,7 +100,7 @@ describe("BalanceDashboard", () => {
 			expect(
 				screen.getAllByText("プラスマイナス").length,
 			).toBeGreaterThanOrEqual(1);
-			expect(screen.getAllByText("利益率").length).toBeGreaterThanOrEqual(1);
+			expect(screen.getAllByText("回収率").length).toBeGreaterThanOrEqual(1);
 		});
 	});
 
@@ -182,7 +182,7 @@ describe("BalanceDashboard", () => {
 			expect(negativeCell).toHaveClass("text-red-600");
 		});
 
-		it("return_rate >= 100 の利益率に text-green-600 が適用される", () => {
+		it("return_rate >= 100 の回収率に text-green-600 が適用される", () => {
 			// Arrange
 			const props: BalanceDashboardProps = {
 				...baseProps,
@@ -197,7 +197,7 @@ describe("BalanceDashboard", () => {
 			expect(returnRateCell).toHaveClass("text-green-600");
 		});
 
-		it("return_rate < 100 の利益率に text-red-600 が適用される", () => {
+		it("return_rate < 100 の回収率に text-red-600 が適用される", () => {
 			// Arrange
 			const props: BalanceDashboardProps = {
 				...baseProps,
