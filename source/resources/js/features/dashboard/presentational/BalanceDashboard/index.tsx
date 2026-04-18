@@ -89,7 +89,7 @@ export default function BalanceDashboard({
 					<Card>
 						<CardHeader>
 							<CardTitle className="text-sm text-muted-foreground">
-								利益率
+								回収率
 							</CardTitle>
 						</CardHeader>
 						<CardContent>
@@ -112,7 +112,7 @@ export default function BalanceDashboard({
 							"合計購入額",
 							"合計払い戻し額",
 							"プラスマイナス",
-							"利益率",
+							"回収率",
 						] as const
 					).map((label) => (
 						<Card key={label}>
@@ -153,7 +153,7 @@ export default function BalanceDashboard({
 										プラスマイナス
 									</th>
 									<th className="px-4 py-3 text-right font-medium text-muted-foreground">
-										利益率
+										回収率
 									</th>
 								</tr>
 							</thead>
