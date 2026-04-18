@@ -17,6 +17,17 @@ type RacesIndexProps = {
 	};
 };
 
+const buildQuery = (date: string, venueId: string) => {
+	const query: Record<string, string> = {};
+	if (date !== "") {
+		query.race_date = date;
+	}
+	if (venueId !== "all") {
+		query.venue_id = venueId;
+	}
+	return query;
+};
+
 export default function RacesIndex() {
 	const { races, venues, filters } = usePage<RacesIndexProps>().props;
 
@@ -27,17 +38,6 @@ export default function RacesIndex() {
 		filters.venue_id != null ? String(filters.venue_id) : "all",
 	);
 
-	const buildQuery = (date: string, venueId: string) => {
-		const query: Record<string, string> = {};
-		if (date !== "") {
-			query.race_date = date;
-		}
-		if (venueId !== "all") {
-			query.venue_id = venueId;
-		}
-		return query;
-	};
-
 	useEffect(() => {
 		if (!filters.race_date) {
 			router.get(
@@ -46,7 +46,7 @@ export default function RacesIndex() {
 				{ preserveState: true, replace: true },
 			);
 		}
-	}, []);
+	}, [filters.race_date, selectedVenueId]);
 
 	useEffect(() => {
 		if (
@@ -55,7 +55,7 @@ export default function RacesIndex() {
 		) {
 			setSelectedVenueId("all");
 		}
-	}, [venues]);
+	}, [venues, selectedVenueId]);
 
 	const handleDateChange = (date: string) => {
 		setSelectedDate(date);
