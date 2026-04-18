@@ -47,10 +47,12 @@ export default function RacesIndex() {
 
 	const handleVenueChange = (venueId: string) => {
 		setSelectedVenueId(venueId);
-		router.get(racesIndex.url(), buildQuery(selectedDate, venueId), {
-			preserveState: true,
-			replace: true,
-		});
+		if (selectedDate !== "") {
+			router.get(racesIndex.url(), buildQuery(selectedDate, venueId), {
+				preserveState: true,
+				replace: true,
+			});
+		}
 	};
 
 	return (

@@ -19,11 +19,10 @@ class RaceController extends Controller
         $raceDate = $request->query('race_date');
 
         return Inertia::render('races/index', [
-            'races' => Race::query()
+            'races' => $raceDate ? Race::query()
                 ->with('venue')
-                ->when($raceDate, fn ($q, $date) => $q->where('race_date', $date))
+                ->where('race_date', $raceDate)
                 ->when($venueId, fn ($q, $id) => $q->where('venue_id', $id))
-                ->orderBy('race_date', 'desc')
                 ->orderBy('venue_id')
                 ->orderBy('race_number')
                 ->get()
@@ -34,7 +33,7 @@ class RaceController extends Controller
                         : (string) $race->race_date,
                     'venue_name' => $race->venue->name,
                     'race_number' => $race->race_number,
-                ]),
+                ]) : [],
             'venues' => Venue::query()->orderBy('id')->get(['id', 'name']),
             'filters' => [
                 'race_date' => $raceDate,

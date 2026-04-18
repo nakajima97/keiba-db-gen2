@@ -16,7 +16,7 @@ vi.mock("@inertiajs/react", () => ({
 			],
 			venues: [{ id: 1, name: "東京" }],
 			filters: {
-				race_date: null,
+				race_date: "2026-04-05",
 				venue_id: null,
 			},
 		},
