@@ -2,13 +2,21 @@
 
 namespace App\UseCases\Balance;
 
+use App\UseCases\TicketPurchase\ExpandSelectionsAction;
 use Illuminate\Support\Facades\DB;
 
 /**
  * 収支ダッシュボードに表示する年間サマリー・日次収支・年一覧を集計して返す。
+ *
+ * 購入金額は「単価 × 有効点数」で算出する。有効点数は selections を
+ * ExpandSelectionsAction で展開した結果の件数。
  */
 class ShowDashboardAction
 {
+    public function __construct(
+        private ExpandSelectionsAction $expandSelections,
+    ) {}
+
     /**
      * @return array{
      *   selected_year: int,
@@ -43,33 +51,62 @@ class ShowDashboardAction
             ->values()
             ->all();
 
-        $dailyRows = DB::table('ticket_purchases')
+        $purchaseRows = DB::table('ticket_purchases')
             ->join('races', 'ticket_purchases.race_id', '=', 'races.id')
+            ->join('ticket_types', 'ticket_purchases.ticket_type_id', '=', 'ticket_types.id')
+            ->join('buy_types', 'ticket_purchases.buy_type_id', '=', 'buy_types.id')
             ->where('ticket_purchases.user_id', $userId)
             ->whereRaw('YEAR(races.race_date) = ?', [$selectedYear])
-            ->groupBy('races.race_date')
             ->orderBy('races.race_date')
             ->selectRaw('DATE_FORMAT(races.race_date, "%Y-%m-%d") as date')
-            ->selectRaw('SUM(COALESCE(ticket_purchases.amount, 0)) as purchase_amount')
-            ->selectRaw('SUM(COALESCE(ticket_purchases.payout_amount, 0)) as payout_amount')
+            ->selectRaw('ticket_purchases.amount as amount')
+            ->selectRaw('COALESCE(ticket_purchases.payout_amount, 0) as payout_amount')
+            ->selectRaw('ticket_purchases.selections as selections')
+            ->selectRaw('ticket_types.name as ticket_type_name')
+            ->selectRaw('buy_types.name as buy_type_name')
             ->get();
 
-        $dailyBalances = $dailyRows->map(function ($row) {
-            $purchaseAmount = (int) $row->purchase_amount;
-            $payoutAmount = (int) $row->payout_amount;
+        /** @var array<string, array{purchase_amount: int, payout_amount: int}> $dailyMap */
+        $dailyMap = [];
+        foreach ($purchaseRows as $row) {
+            $date = (string) $row->date;
+            $selections = json_decode((string) $row->selections, true);
+
+            $purchaseAmount = $row->amount !== null
+                ? (int) $row->amount * count($this->expandSelections->execute(
+                    (string) $row->ticket_type_name,
+                    (string) $row->buy_type_name,
+                    is_array($selections) ? $selections : null,
+                ))
+                : 0;
+
+            if (! isset($dailyMap[$date])) {
+                $dailyMap[$date] = ['purchase_amount' => 0, 'payout_amount' => 0];
+            }
+
+            $dailyMap[$date]['purchase_amount'] += $purchaseAmount;
+            $dailyMap[$date]['payout_amount'] += (int) $row->payout_amount;
+        }
+
+        ksort($dailyMap);
+
+        $dailyBalances = [];
+        foreach ($dailyMap as $date => $amounts) {
+            $purchaseAmount = $amounts['purchase_amount'];
+            $payoutAmount = $amounts['payout_amount'];
             $netAmount = $payoutAmount - $purchaseAmount;
             $returnRate = $purchaseAmount > 0
                 ? round($payoutAmount / $purchaseAmount * 100, 1)
                 : 0.0;
 
-            return [
-                'date' => (string) $row->date,
+            $dailyBalances[] = [
+                'date' => $date,
                 'purchase_amount' => $purchaseAmount,
                 'payout_amount' => $payoutAmount,
                 'net_amount' => $netAmount,
                 'return_rate' => $returnRate,
             ];
-        })->values()->all();
+        }
 
         $summary = null;
         if (! empty($dailyBalances)) {
