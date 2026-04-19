@@ -323,3 +323,121 @@ test('payout_amount が null の馬券は 0 として集計される', function 
         ->where('daily_balances.0.net_amount', -1000)
     );
 });
+
+test('nagashi（流し）・2点の馬券: summary の total_purchase_amount が 単価×2 で返る', function () {
+    // Arrange
+    $user = User::factory()->create();
+    $now = now();
+
+    $venueId = DB::table('venues')->insertGetId([
+        'name' => '東京',
+        'created_at' => $now,
+        'updated_at' => $now,
+    ]);
+
+    $raceId = DB::table('races')->insertGetId([
+        'uid' => 'test-uid-'.uniqid(),
+        'venue_id' => $venueId,
+        'race_date' => '2026-04-05',
+        'race_number' => 1,
+        'created_at' => $now,
+        'updated_at' => $now,
+    ]);
+
+    $ticketTypeId = DB::table('ticket_types')->insertGetId([
+        'name' => 'umaren',
+        'label' => '馬連',
+        'sort_order' => 4,
+        'created_at' => $now,
+        'updated_at' => $now,
+    ]);
+
+    $buyTypeId = DB::table('buy_types')->insertGetId([
+        'name' => 'nagashi',
+        'label' => '流し',
+        'sort_order' => 2,
+        'created_at' => $now,
+        'updated_at' => $now,
+    ]);
+
+    DB::table('ticket_purchases')->insert([
+        'user_id' => $user->id,
+        'race_id' => $raceId,
+        'ticket_type_id' => $ticketTypeId,
+        'buy_type_id' => $buyTypeId,
+        'selections' => json_encode(['axis' => [1], 'others' => [2, 3]]),
+        'amount' => 200,
+        'payout_amount' => null,
+        'created_at' => $now,
+        'updated_at' => $now,
+    ]);
+
+    // Act
+    $response = $this->actingAs($user)->get(route('dashboard', ['year' => 2026]));
+
+    // Assert
+    $response->assertInertia(fn ($page) => $page
+        ->component('dashboard')
+        ->where('summary.total_purchase_amount', 400)
+        ->where('daily_balances.0.purchase_amount', 400)
+    );
+});
+
+test('amount が null の馬券は purchase_amount が 0 として集計される', function () {
+    // Arrange
+    $user = User::factory()->create();
+    $now = now();
+
+    $venueId = DB::table('venues')->insertGetId([
+        'name' => '東京',
+        'created_at' => $now,
+        'updated_at' => $now,
+    ]);
+
+    $raceId = DB::table('races')->insertGetId([
+        'uid' => 'test-uid-'.uniqid(),
+        'venue_id' => $venueId,
+        'race_date' => '2026-04-05',
+        'race_number' => 1,
+        'created_at' => $now,
+        'updated_at' => $now,
+    ]);
+
+    $ticketTypeId = DB::table('ticket_types')->insertGetId([
+        'name' => 'tansho',
+        'label' => '単勝',
+        'sort_order' => 1,
+        'created_at' => $now,
+        'updated_at' => $now,
+    ]);
+
+    $buyTypeId = DB::table('buy_types')->insertGetId([
+        'name' => 'single',
+        'label' => '通常',
+        'sort_order' => 1,
+        'created_at' => $now,
+        'updated_at' => $now,
+    ]);
+
+    DB::table('ticket_purchases')->insert([
+        'user_id' => $user->id,
+        'race_id' => $raceId,
+        'ticket_type_id' => $ticketTypeId,
+        'buy_type_id' => $buyTypeId,
+        'selections' => json_encode(['horses' => [1]]),
+        'amount' => null,
+        'payout_amount' => null,
+        'created_at' => $now,
+        'updated_at' => $now,
+    ]);
+
+    // Act
+    $response = $this->actingAs($user)->get(route('dashboard', ['year' => 2026]));
+
+    // Assert
+    $response->assertInertia(fn ($page) => $page
+        ->component('dashboard')
+        ->where('daily_balances.0.purchase_amount', 0)
+        ->where('summary.total_purchase_amount', 0)
+    );
+});
