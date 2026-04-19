@@ -14,20 +14,7 @@ use Illuminate\Database\Eloquent\Collection;
  */
 class CalculatePayoutAmountAction
 {
-    /** 着順を保持する券種 */
-    private const ORDERED_TYPES = ['umatan', 'sanrentan'];
-
-    /** 券種ごとの照合対象馬番数 */
-    private const TICKET_TYPE_HORSE_COUNT = [
-        'tansho' => 1,
-        'fukusho' => 1,
-        'wakuren' => 2,
-        'umaren' => 2,
-        'umatan' => 2,
-        'wide' => 2,
-        'sanrenpuku' => 3,
-        'sanrentan' => 3,
-    ];
+    public function __construct(private readonly ExpandSelectionsAction $expandSelections) {}
 
     /**
      * 対象の TicketPurchase の払い戻し金額を計算して返す。
@@ -43,15 +30,10 @@ class CalculatePayoutAmountAction
 
         $ticketTypeName = $purchase->ticketType->name;
         $buyTypeName = $purchase->buyType->name;
-        $selections = $purchase->selections ?? [];
+        $selections = $purchase->selections;
+        $isOrdered = in_array($ticketTypeName, ['umatan', 'sanrentan'], true);
 
-        $horseCount = self::TICKET_TYPE_HORSE_COUNT[$ticketTypeName] ?? null;
-        if ($horseCount === null) {
-            return null;
-        }
-
-        $isOrdered = in_array($ticketTypeName, self::ORDERED_TYPES, true);
-        $combinations = $this->expandSelections($buyTypeName, $selections, $horseCount, $isOrdered);
+        $combinations = $this->expandSelections->execute($ticketTypeName, $buyTypeName, $selections);
 
         if ($combinations === []) {
             return null;
@@ -100,160 +82,6 @@ class CalculatePayoutAmountAction
     }
 
     /**
-     * buy_type と ticket_type の指定頭数に応じて selections を組み合わせに展開する。
-     *
-     * @param  array<string, mixed>  $selections
-     * @return array<int, array<int, int>>
-     */
-    private function expandSelections(string $buyType, array $selections, int $horseCount, bool $isOrdered): array
-    {
-        $combinations = match ($buyType) {
-            'single' => $this->expandSingle($selections, $horseCount, $isOrdered),
-            'box' => $this->expandBox($selections, $horseCount, $isOrdered),
-            'nagashi' => $this->expandNagashi($selections, $horseCount, $isOrdered),
-            'formation' => $this->expandFormation($selections, $horseCount, $isOrdered),
-            default => [],
-        };
-
-        return $this->normalizeCombinations($combinations, $isOrdered);
-    }
-
-    /**
-     * @param  array<string, mixed>  $selections
-     * @return array<int, array<int, int>>
-     */
-    private function expandSingle(array $selections, int $horseCount, bool $isOrdered): array
-    {
-        $horses = $this->extractIntList($selections['horses'] ?? []);
-
-        if ($horseCount === 1) {
-            return array_map(static fn (int $h): array => [$h], $horses);
-        }
-
-        if (count($horses) !== $horseCount) {
-            return [];
-        }
-
-        return [$horses];
-    }
-
-    /**
-     * @param  array<string, mixed>  $selections
-     * @return array<int, array<int, int>>
-     */
-    private function expandBox(array $selections, int $horseCount, bool $isOrdered): array
-    {
-        $horses = $this->extractIntList($selections['horses'] ?? []);
-
-        if ($horseCount === 1) {
-            return array_map(static fn (int $h): array => [$h], $horses);
-        }
-
-        if (count($horses) < $horseCount) {
-            return [];
-        }
-
-        if ($isOrdered) {
-            return $this->permutations($horses, $horseCount);
-        }
-
-        return $this->combinations($horses, $horseCount);
-    }
-
-    /**
-     * @param  array<string, mixed>  $selections
-     * @return array<int, array<int, int>>
-     */
-    private function expandNagashi(array $selections, int $horseCount, bool $isOrdered): array
-    {
-        $axis = $this->extractIntList($selections['axis'] ?? []);
-        $others = $this->extractIntList($selections['others'] ?? []);
-
-        if ($horseCount === 1) {
-            return array_map(
-                static fn (int $h): array => [$h],
-                array_values(array_unique(array_merge($axis, $others)))
-            );
-        }
-
-        if ($axis === [] || $others === []) {
-            return [];
-        }
-
-        $remainingSlots = $horseCount - count($axis);
-        if ($remainingSlots < 1 || count($others) < $remainingSlots) {
-            return [];
-        }
-
-        $otherCombinations = $this->combinations($others, $remainingSlots);
-
-        $result = [];
-        foreach ($otherCombinations as $otherCombo) {
-            $result[] = array_merge($axis, $otherCombo);
-        }
-
-        return $result;
-    }
-
-    /**
-     * @param  array<string, mixed>  $selections
-     * @return array<int, array<int, int>>
-     */
-    private function expandFormation(array $selections, int $horseCount, bool $isOrdered): array
-    {
-        $columns = $selections['columns'] ?? [];
-        if (! is_array($columns) || count($columns) !== $horseCount) {
-            return [];
-        }
-
-        /** @var array<int, array<int, int>> $columnLists */
-        $columnLists = [];
-        foreach ($columns as $column) {
-            $list = $this->extractIntList(is_array($column) ? $column : []);
-            if ($list === []) {
-                return [];
-            }
-            $columnLists[] = $list;
-        }
-
-        $result = [[]];
-        foreach ($columnLists as $column) {
-            $next = [];
-            foreach ($result as $partial) {
-                foreach ($column as $horse) {
-                    if (in_array($horse, $partial, true)) {
-                        continue;
-                    }
-                    $next[] = [...$partial, $horse];
-                }
-            }
-            $result = $next;
-        }
-
-        return $result;
-    }
-
-    /**
-     * @param  array<int, array<int, int>>  $combinations
-     * @return array<int, array<int, int>>
-     */
-    private function normalizeCombinations(array $combinations, bool $isOrdered): array
-    {
-        $seen = [];
-        $normalized = [];
-        foreach ($combinations as $combo) {
-            $key = $isOrdered ? implode('-', $combo) : implode('-', $this->sortedCopy($combo));
-            if (isset($seen[$key])) {
-                continue;
-            }
-            $seen[$key] = true;
-            $normalized[] = $isOrdered ? $combo : $this->sortedCopy($combo);
-        }
-
-        return $normalized;
-    }
-
-    /**
      * @param  array<int, array<int, int>>  $combinations
      * @param  array<int, array{amount: int, horse_numbers: array<int, int>}>  $payouts
      */
@@ -275,75 +103,6 @@ class CalculatePayoutAmountAction
         }
 
         return $total;
-    }
-
-    /**
-     * @return array<int, int>
-     */
-    private function extractIntList(mixed $value): array
-    {
-        if (! is_array($value)) {
-            return [];
-        }
-
-        $result = [];
-        foreach ($value as $item) {
-            if (is_int($item)) {
-                $result[] = $item;
-            } elseif (is_string($item) && ctype_digit($item)) {
-                $result[] = (int) $item;
-            }
-        }
-
-        return $result;
-    }
-
-    /**
-     * @param  array<int, int>  $items
-     * @return array<int, array<int, int>>
-     */
-    private function combinations(array $items, int $k): array
-    {
-        if ($k === 0) {
-            return [[]];
-        }
-        if ($k > count($items)) {
-            return [];
-        }
-
-        $result = [];
-        $length = count($items);
-        for ($i = 0; $i <= $length - $k; $i++) {
-            $head = $items[$i];
-            $tailCombinations = $this->combinations(array_slice($items, $i + 1), $k - 1);
-            foreach ($tailCombinations as $tail) {
-                $result[] = [$head, ...$tail];
-            }
-        }
-
-        return $result;
-    }
-
-    /**
-     * @param  array<int, int>  $items
-     * @return array<int, array<int, int>>
-     */
-    private function permutations(array $items, int $k): array
-    {
-        if ($k === 0) {
-            return [[]];
-        }
-
-        $result = [];
-        foreach ($items as $index => $item) {
-            $rest = $items;
-            array_splice($rest, $index, 1);
-            foreach ($this->permutations($rest, $k - 1) as $tail) {
-                $result[] = [$item, ...$tail];
-            }
-        }
-
-        return $result;
     }
 
     /**
