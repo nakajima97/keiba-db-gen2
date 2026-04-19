@@ -136,6 +136,15 @@ class ExpandSelectionsAction
      */
     private function expandFormation(array $selections, int $horseCount): array
     {
+        // col1/col2/col3 形式（旧フォーマット）を columns 形式に正規化
+        if (isset($selections['col1'])) {
+            $cols = array_values(array_filter(
+                [$selections['col1'] ?? [], $selections['col2'] ?? [], $selections['col3'] ?? []],
+                fn (array $col): bool => $col !== [],
+            ));
+            $selections = ['columns' => $cols];
+        }
+
         $columns = $selections['columns'] ?? [];
         if (! is_array($columns) || count($columns) !== $horseCount) {
             return [];
