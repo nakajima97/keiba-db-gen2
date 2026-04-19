@@ -14,5 +14,8 @@ export function getHorseInputConfigKey(
 			? "formation"
 			: `nagashi_axis${axisCount}`;
 	}
+	if (buyTypeId === "formation" && ticketTypeId === "sanrenpuku") {
+		return "formation_sanrenpuku";
+	}
 	return buyTypeId;
 }

@@ -50,6 +50,7 @@ export const BUY_TYPE_MAP: Record<
 	sanrenpuku: [
 		{ id: "nagashi", label: "流し" },
 		{ id: "box", label: "ボックス" },
+		{ id: "formation", label: "フォーメーション" },
 	],
 	sanrentan: [
 		{ id: "nagashi", label: "流し" },
@@ -79,10 +80,16 @@ export const HORSE_INPUT_CONFIG: Record<
 		{ key: "axis2", label: "軸2" },
 		{ key: "others", label: "相手" },
 	],
-	// 三連単流し・全券種フォーメーション（パターン④）
+	// 三連単流し・三連単フォーメーション（パターン④）
 	formation: [
 		{ key: "col1", label: "1着" },
 		{ key: "col2", label: "2着" },
 		{ key: "col3", label: "3着" },
+	],
+	// 三連複フォーメーション（着順不問のため「列」ラベル）
+	formation_sanrenpuku: [
+		{ key: "col1", label: "1列目" },
+		{ key: "col2", label: "2列目" },
+		{ key: "col3", label: "3列目" },
 	],
 };

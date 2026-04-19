@@ -132,3 +132,14 @@ export const SanrentanFormation: Story = {
 		selectedHorses: { col1: [1, 2], col2: [3, 4], col3: [5, 6, 7] },
 	},
 };
+
+// 三連複フォーメーションは着順不問のため「1列目/2列目/3列目」ラベルを使用（1着/2着/3着ではない）
+export const SanrenpukuFormation: Story = {
+	name: "三連複・フォーメーション（④着順別）",
+	args: {
+		...baseArgs,
+		selectedTicketTypeId: "sanrenpuku",
+		selectedBuyTypeId: "formation",
+		selectedHorses: { col1: [1, 2], col2: [3, 4], col3: [5, 6, 7] },
+	},
+};
