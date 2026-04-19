@@ -274,6 +274,73 @@ describe("TicketPurchaseForm", () => {
 			).toBeInTheDocument();
 		});
 
+		it("三連複（sanrenpuku）の買い方に「フォーメーション」ボタンが表示される", () => {
+			// Act
+			render(
+				<TicketPurchaseForm
+					{...baseProps}
+					selectedTicketTypeId="sanrenpuku"
+					selectedBuyTypeId="nagashi"
+					selectedAxisCount={1}
+					selectedHorses={{ axis: [], others: [] }}
+				/>,
+			);
+
+			// Assert
+			expect(
+				screen.getByRole("button", { name: "フォーメーション" }),
+			).toBeInTheDocument();
+		});
+
+		it("三連複（sanrenpuku）+ フォーメーション（formation）のとき「フォーメーション」ボタンが aria-pressed=true になる", () => {
+			// Act
+			render(
+				<TicketPurchaseForm
+					{...baseProps}
+					selectedTicketTypeId="sanrenpuku"
+					selectedBuyTypeId="formation"
+					selectedHorses={{ col1: [], col2: [], col3: [] }}
+				/>,
+			);
+
+			// Assert
+			expect(
+				screen.getByRole("button", { name: "フォーメーション" }),
+			).toHaveAttribute("aria-pressed", "true");
+		});
+
+		it("三連複（sanrenpuku）+ フォーメーション（formation）のとき「1列目」「2列目」「3列目」ラベルが表示される", () => {
+			// Act
+			render(
+				<TicketPurchaseForm
+					{...baseProps}
+					selectedTicketTypeId="sanrenpuku"
+					selectedBuyTypeId="formation"
+					selectedHorses={{ col1: [], col2: [], col3: [] }}
+				/>,
+			);
+
+			// Assert
+			expect(screen.getByText("1列目")).toBeInTheDocument();
+			expect(screen.getByText("2列目")).toBeInTheDocument();
+			expect(screen.getByText("3列目")).toBeInTheDocument();
+		});
+
+		it("三連複（sanrenpuku）+ フォーメーション（formation）のとき「軸の頭数」セレクタが表示されない", () => {
+			// Act
+			render(
+				<TicketPurchaseForm
+					{...baseProps}
+					selectedTicketTypeId="sanrenpuku"
+					selectedBuyTypeId="formation"
+					selectedHorses={{ col1: [], col2: [], col3: [] }}
+				/>,
+			);
+
+			// Assert
+			expect(screen.queryByText("軸の頭数")).not.toBeInTheDocument();
+		});
+
 		it("上記以外の組み合わせでは「軸の頭数」「流し方向」セレクタが表示されない", () => {
 			// Act
 			render(
@@ -339,5 +406,13 @@ describe("getHorseInputConfigKey", () => {
 
 		// Assert
 		expect(result).toBe("formation");
+	});
+
+	it("ticketTypeId が sanrenpuku かつ buyTypeId が formation のとき formation_sanrenpuku を返す", () => {
+		// Act
+		const result = getHorseInputConfigKey("sanrenpuku", "formation", 1, 1);
+
+		// Assert
+		expect(result).toBe("formation_sanrenpuku");
 	});
 });
