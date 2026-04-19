@@ -101,6 +101,11 @@ class ExpandSelectionsAction
      */
     private function expandNagashi(array $selections, int $horseCount): array
     {
+        // sanrentan/nagashi は col1/col2/col3 形式（各列に軸馬・流し馬を指定）で保存される
+        if (isset($selections['col1'])) {
+            return $this->expandFormation($selections, $horseCount);
+        }
+
         $axis = $this->extractIntList($selections['axis'] ?? []);
         $others = $this->extractIntList($selections['others'] ?? []);
 
