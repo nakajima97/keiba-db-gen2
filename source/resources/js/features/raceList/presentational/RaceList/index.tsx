@@ -1,8 +1,8 @@
-import { Link } from "@inertiajs/react";
+import { Link, router } from "@inertiajs/react";
 import { Button } from "@/components/shadcn/ui/button";
 import { Input } from "@/components/shadcn/ui/input";
 import { Label } from "@/components/shadcn/ui/label";
-import { create } from "@/routes/races";
+import { create, show } from "@/routes/races";
 import type { RaceListProps } from "./types";
 
 export default function RaceList({
@@ -83,6 +83,14 @@ export default function RaceList({
 								<tr
 									key={race.uid}
 									className="cursor-pointer border-b last:border-0 hover:bg-muted/30"
+									onClick={() =>
+										router.visit(show.url({ race: race.uid }))
+									}
+									onKeyDown={(e) => {
+										if (e.key === "Enter" || e.key === " ") {
+											router.visit(show.url({ race: race.uid }));
+										}
+									}}
 								>
 									<td className="px-4 py-3">
 										{race.race_date.replace(/-/g, "/")}

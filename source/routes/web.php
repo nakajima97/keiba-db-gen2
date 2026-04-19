@@ -20,6 +20,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/races', [RaceController::class, 'index'])->name('races.index');
     Route::get('/races/new', [RaceController::class, 'create'])->name('races.create');
     Route::post('/races', [RaceController::class, 'store'])->name('races.store');
+    Route::get('/races/{race:uid}', [RaceController::class, 'show'])->name('races.show');
 
     Route::get('/races/{uid}/result/new', [RaceResultController::class, 'create'])->name('races.result.create');
     Route::post('/races/{uid}/result', [RaceResultController::class, 'store'])->name('races.result.store');

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Race\StoreRaceRequest;
 use App\Models\Race;
 use App\Models\Venue;
+use App\UseCases\Race\ShowAction;
 use App\UseCases\Race\StoreAction;
 use Carbon\CarbonInterface;
 use Illuminate\Http\RedirectResponse;
@@ -69,5 +70,12 @@ class RaceController extends Controller
                 'last_race_date' => (string) $request->validated('race_date'),
                 'last_race_number' => (int) $request->validated('race_number'),
             ]);
+    }
+
+    public function show(Race $race, ShowAction $action): Response
+    {
+        return Inertia::render('races/show', [
+            'race' => $action->execute($race),
+        ]);
     }
 }

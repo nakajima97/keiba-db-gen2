@@ -36,4 +36,10 @@ class Race extends Model
     {
         return $this->hasMany(RacePayout::class);
     }
+
+    /** @return HasMany<RaceEntry, $this> */
+    public function raceEntries(): HasMany
+    {
+        return $this->hasMany(RaceEntry::class);
+    }
 }
