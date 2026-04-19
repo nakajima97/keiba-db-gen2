@@ -186,6 +186,10 @@ class ExpandSelectionsAction
         $seen = [];
         $normalized = [];
         foreach ($combinations as $combo) {
+            // 同一馬番が複数ポジションに入る組み合わせは無効
+            if (count($combo) !== count(array_unique($combo))) {
+                continue;
+            }
             $key = $isOrdered ? implode('-', $combo) : implode('-', $this->sortedCopy($combo));
             if (isset($seen[$key])) {
                 continue;
