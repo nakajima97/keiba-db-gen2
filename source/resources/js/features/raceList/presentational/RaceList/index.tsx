@@ -86,6 +86,11 @@ export default function RaceList({
 									onClick={() =>
 										router.visit(show.url({ race: race.uid }))
 									}
+									onKeyDown={(e) => {
+										if (e.key === "Enter" || e.key === " ") {
+											router.visit(show.url({ race: race.uid }));
+										}
+									}}
 								>
 									<td className="px-4 py-3">
 										{race.race_date.replace(/-/g, "/")}
