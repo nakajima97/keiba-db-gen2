@@ -23,6 +23,7 @@ class ExpandSelectionsAction
         'wide' => 2,
         'sanrenpuku' => 3,
         'sanrentan' => 3,
+        'tanpuku' => 2,
     ];
 
     /**
@@ -37,6 +38,14 @@ class ExpandSelectionsAction
         $horseCount = self::TICKET_TYPE_HORSE_COUNT[$ticketTypeName] ?? null;
         if ($horseCount === null) {
             return [];
+        }
+
+        // tanpuku は1馬選択で単勝+複勝の2点同時購入として扱う（normalize による重複排除を避けるため、展開ロジックを分岐させる）
+        if ($ticketTypeName === 'tanpuku') {
+            $horses = $this->extractIntList(($selections ?? [])['horses'] ?? []);
+            $singles = array_map(static fn (int $h): array => [$h], $horses);
+
+            return array_merge($singles, $singles);
         }
 
         $isOrdered = in_array($ticketTypeName, self::ORDERED_TYPES, true);
