@@ -499,6 +499,40 @@ test('単複（tanpuku）の馬券: daily_balances の purchase_amount が 単�
     );
 });
 
+test('daily_balances が日付降順で返される', function () {
+    // Arrange
+    $user = User::factory()->create();
+    createDashboardTicketPurchase([
+        'user_id' => $user->id,
+        'race_date' => '2026-04-01',
+        'amount' => 100,
+        'payout_amount' => 0,
+    ]);
+    createDashboardTicketPurchase([
+        'user_id' => $user->id,
+        'race_date' => '2026-04-03',
+        'amount' => 100,
+        'payout_amount' => 0,
+    ]);
+    createDashboardTicketPurchase([
+        'user_id' => $user->id,
+        'race_date' => '2026-04-02',
+        'amount' => 100,
+        'payout_amount' => 0,
+    ]);
+
+    // Act
+    $response = $this->actingAs($user)->get(route('dashboard', ['year' => 2026]));
+
+    // Assert
+    $response->assertInertia(fn ($page) => $page
+        ->component('dashboard')
+        ->where('daily_balances.0.date', '2026-04-03')
+        ->where('daily_balances.1.date', '2026-04-02')
+        ->where('daily_balances.2.date', '2026-04-01')
+    );
+});
+
 test('amount が null の馬券は purchase_amount が 0 として集計される', function () {
     // Arrange
     $user = User::factory()->create();
