@@ -88,7 +88,7 @@ class ShowDashboardAction
             $dailyMap[$date]['payout_amount'] += (int) $row->payout_amount;
         }
 
-        ksort($dailyMap);
+        krsort($dailyMap);
 
         $dailyBalances = [];
         foreach ($dailyMap as $date => $amounts) {
