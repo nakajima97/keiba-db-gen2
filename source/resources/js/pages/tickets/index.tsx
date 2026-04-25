@@ -1,7 +1,7 @@
 import { Head, usePage, router } from "@inertiajs/react";
 import { useState } from "react";
-import TicketPurchaseList from "@/components/presentational/TicketPurchaseList";
-import type { TicketPurchaseListItem } from "@/components/presentational/TicketPurchaseList";
+import TicketPurchaseList from "@/features/ticket/presentational/TicketPurchaseList";
+import type { TicketPurchaseListItem } from "@/features/ticket/presentational/TicketPurchaseList";
 
 type TicketsIndexProps = {
 	purchases: TicketPurchaseListItem[];

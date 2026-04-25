@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { router } from "@inertiajs/react";
 import { toast } from "sonner";
-import TicketPurchaseForm from "@/components/presentational/TicketPurchaseForm";
+import TicketPurchaseForm from "@/features/ticket/presentational/TicketPurchaseForm";
 import {
 	BUY_TYPE_MAP,
 	type TicketTypeId,
-} from "@/components/presentational/TicketPurchaseForm";
+} from "@/features/ticket/presentational/TicketPurchaseForm";
 
 export type TicketPurchaseFormContainerProps = {
 	initialVenue: string;

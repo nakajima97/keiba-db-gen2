@@ -6,8 +6,8 @@ import SecurityController from "@/actions/App/Http/Controllers/Settings/Security
 import Heading from "@/components/presentational/Heading";
 import InputError from "@/components/presentational/InputError";
 import PasswordInput from "@/components/presentational/PasswordInput";
-import TwoFactorRecoveryCodes from "@/components/presentational/TwoFactorRecoveryCodes";
-import TwoFactorSetupModal from "@/components/presentational/TwoFactorSetupModal";
+import TwoFactorRecoveryCodes from "@/features/settings/presentational/TwoFactorRecoveryCodes";
+import TwoFactorSetupModal from "@/features/settings/presentational/TwoFactorSetupModal";
 import { Button } from "@/components/shadcn/ui/button";
 import { Label } from "@/components/shadcn/ui/label";
 import { useTwoFactorAuth } from "@/hooks/use-two-factor-auth";
