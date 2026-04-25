@@ -3,7 +3,7 @@ import TicketPurchaseList from ".";
 import type { TicketPurchaseListProps } from ".";
 
 const meta: Meta<typeof TicketPurchaseList> = {
-	title: "TicketPurchaseList",
+	title: "features/ticket/presentational/TicketPurchaseList",
 	component: TicketPurchaseList,
 };
 

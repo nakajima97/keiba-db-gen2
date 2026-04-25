@@ -3,7 +3,7 @@ import RaceDetail from ".";
 import type { RaceDetailProps } from ".";
 
 const meta: Meta<typeof RaceDetail> = {
-	title: "features/raceDetail/RaceDetail",
+	title: "features/raceDetail/presentational/RaceDetail",
 	component: RaceDetail,
 };
 

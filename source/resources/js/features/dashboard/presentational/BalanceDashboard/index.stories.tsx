@@ -3,7 +3,7 @@ import BalanceDashboard from ".";
 import type { BalanceDashboardProps } from ".";
 
 const meta: Meta<typeof BalanceDashboard> = {
-	title: "features/dashboard/BalanceDashboard",
+	title: "features/dashboard/presentational/BalanceDashboard",
 	component: BalanceDashboard,
 };
 
