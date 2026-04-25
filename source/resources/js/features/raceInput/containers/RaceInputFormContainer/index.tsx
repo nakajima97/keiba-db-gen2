@@ -7,6 +7,7 @@ export type RaceInputFormContainerProps = {
 	initialVenueId?: number;
 	initialRaceDate?: string;
 	initialRaceNumber?: number;
+	initialRaceName?: string;
 };
 
 export default function RaceInputFormContainer({
@@ -14,12 +15,14 @@ export default function RaceInputFormContainer({
 	initialVenueId,
 	initialRaceDate,
 	initialRaceNumber,
+	initialRaceName,
 }: RaceInputFormContainerProps) {
 	const handleSubmit = (
 		data: {
 			venue_id: number;
 			race_date: string;
 			race_number: number;
+			race_name: string | undefined;
 			paste_text: string;
 		},
 		onSuccess: () => void,
@@ -43,6 +46,7 @@ export default function RaceInputFormContainer({
 			initialVenueId={initialVenueId}
 			initialRaceDate={initialRaceDate}
 			initialRaceNumber={initialRaceNumber}
+			initialRaceName={initialRaceName}
 			onSubmit={handleSubmit}
 		/>
 	);

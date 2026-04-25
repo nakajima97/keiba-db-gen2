@@ -6,6 +6,7 @@ use App\Models\Race;
 use App\Models\RacePayout;
 use App\Models\RacePayoutHorse;
 use App\Models\TicketPurchase;
+use App\Models\TicketType;
 use App\UseCases\TicketPurchase\CalculatePayoutAmountAction;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
@@ -58,8 +59,7 @@ class StoreAction
         $entries = $this->parse($data['text']);
         $this->validateAllTypesPresent($entries);
 
-        $ticketTypeIds = DB::table('ticket_types')
-            ->whereIn('name', self::REQUIRED_TYPES)
+        $ticketTypeIds = TicketType::whereIn('name', self::REQUIRED_TYPES)
             ->pluck('id', 'name')
             ->all();
 

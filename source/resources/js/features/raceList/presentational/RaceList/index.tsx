@@ -76,6 +76,9 @@ export default function RaceList({
 								<th className="px-4 py-3 text-left font-medium text-muted-foreground">
 									レース番号
 								</th>
+								<th className="px-4 py-3 text-left font-medium text-muted-foreground">
+									レース名
+								</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -83,9 +86,7 @@ export default function RaceList({
 								<tr
 									key={race.uid}
 									className="cursor-pointer border-b last:border-0 hover:bg-muted/30"
-									onClick={() =>
-										router.visit(show.url({ race: race.uid }))
-									}
+									onClick={() => router.visit(show.url({ race: race.uid }))}
 									onKeyDown={(e) => {
 										if (e.key === "Enter" || e.key === " ") {
 											router.visit(show.url({ race: race.uid }));
@@ -97,6 +98,7 @@ export default function RaceList({
 									</td>
 									<td className="px-4 py-3">{race.venue_name}</td>
 									<td className="px-4 py-3">{race.race_number}R</td>
+									<td className="px-4 py-3">{race.race_name ?? "—"}</td>
 								</tr>
 							))}
 						</tbody>

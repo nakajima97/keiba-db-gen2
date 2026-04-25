@@ -1,5 +1,5 @@
 import { Head, usePage } from "@inertiajs/react";
-import TicketPurchaseFormContainer from "@/components/container/TicketPurchaseFormContainer";
+import TicketPurchaseFormContainer from "@/features/ticket/containers/TicketPurchaseFormContainer";
 
 type TicketsNewProps = {
 	lastVenue: string;

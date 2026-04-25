@@ -21,6 +21,7 @@ class StoreRaceRequest extends FormRequest
             'venue_id' => ['required', 'integer', 'exists:venues,id'],
             'race_date' => ['required', 'date'],
             'race_number' => ['required', 'integer', 'between:1,12'],
+            'race_name' => ['nullable', 'string'],
             'paste_text' => ['required', 'string'],
         ];
     }

@@ -12,9 +12,7 @@ export default function RaceDetail({ race }: RaceDetailProps) {
 							<th className="w-32 bg-muted/50 px-4 py-3 text-left font-medium text-muted-foreground">
 								開催日
 							</th>
-							<td className="px-4 py-3">
-								{race.race_date.replace(/-/g, "/")}
-							</td>
+							<td className="px-4 py-3">{race.race_date.replace(/-/g, "/")}</td>
 						</tr>
 						<tr className="border-b">
 							<th className="bg-muted/50 px-4 py-3 text-left font-medium text-muted-foreground">
@@ -57,10 +55,7 @@ export default function RaceDetail({ race }: RaceDetailProps) {
 					</thead>
 					<tbody>
 						{race.entries.map((entry) => (
-							<tr
-								key={entry.horse_number}
-								className="border-b last:border-0"
-							>
+							<tr key={entry.horse_number} className="border-b last:border-0">
 								<td className="px-4 py-3">{entry.frame_number}</td>
 								<td className="px-4 py-3">{entry.horse_number}</td>
 								<td className="px-4 py-3">{entry.horse_name}</td>

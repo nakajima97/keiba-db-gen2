@@ -16,6 +16,7 @@ use Illuminate\Validation\ValidationException;
  *
  * 競馬場・レース日・レース番号で既存レースを検査し、重複があれば ValidationException を投げる。
  * 出馬表テキストをパースし、未登録の馬・騎手を自動で新規登録したうえで race_entries を作成する。
+ * race_name は任意項目で、未指定の場合は null として保存する。
  */
 class StoreAction
 {
@@ -24,7 +25,7 @@ class StoreAction
     ) {}
 
     /**
-     * @param  array{venue_id: int, race_date: string, race_number: int, paste_text: string}  $data
+     * @param  array{venue_id: int, race_date: string, race_number: int, paste_text: string, race_name?: string|null}  $data
      *
      * @throws ValidationException
      */
@@ -34,6 +35,7 @@ class StoreAction
         $raceDate = (string) $data['race_date'];
         $raceNumber = (int) $data['race_number'];
         $pasteText = (string) $data['paste_text'];
+        $raceName = $data['race_name'] ?? null;
 
         $exists = Race::where('venue_id', $venueId)
             ->whereDate('race_date', $raceDate)
@@ -54,11 +56,12 @@ class StoreAction
             ]);
         }
 
-        DB::transaction(function () use ($venueId, $raceDate, $raceNumber, $entries): void {
+        DB::transaction(function () use ($venueId, $raceDate, $raceNumber, $raceName, $entries): void {
             $race = Race::create([
                 'venue_id' => $venueId,
                 'race_date' => $raceDate,
                 'race_number' => $raceNumber,
+                'race_name' => $raceName,
             ]);
 
             foreach ($entries as $entry) {

@@ -50,6 +50,7 @@ const sampleRace = {
 	race_date: "2026-04-05",
 	venue_name: "東京",
 	race_number: 1,
+	race_name: "天皇賞（春）",
 };
 
 const baseProps: RaceListProps = {
@@ -91,7 +92,7 @@ describe("RaceList", () => {
 	});
 
 	describe("データあり", () => {
-		it("テーブルヘッダーが表示される（日付・開催場所・レース番号）", () => {
+		it("テーブルヘッダーが表示される（日付・開催場所・レース番号・レース名）", () => {
 			// Act
 			render(<RaceList {...baseProps} />);
 
@@ -104,6 +105,9 @@ describe("RaceList", () => {
 			).toBeInTheDocument();
 			expect(
 				screen.getByRole("columnheader", { name: "レース番号" }),
+			).toBeInTheDocument();
+			expect(
+				screen.getByRole("columnheader", { name: "レース名" }),
 			).toBeInTheDocument();
 		});
 
@@ -146,6 +150,30 @@ describe("RaceList", () => {
 			// Assert
 			const link = screen.getByText("レース情報入力");
 			expect(link).toHaveAttribute("href", "/races/new");
+		});
+
+		it("race_name が表示される", () => {
+			// Act
+			render(<RaceList {...baseProps} />);
+
+			// Assert
+			expect(
+				screen.getByRole("cell", { name: "天皇賞（春）" }),
+			).toBeInTheDocument();
+		});
+
+		it("race_name が null の場合「—」が表示される", () => {
+			// Arrange
+			const propsWithNullRaceName: RaceListProps = {
+				...baseProps,
+				races: [{ ...sampleRace, race_name: null }],
+			};
+
+			// Act
+			render(<RaceList {...propsWithNullRaceName} />);
+
+			// Assert
+			expect(screen.getByRole("cell", { name: "—" })).toBeInTheDocument();
 		});
 	});
 

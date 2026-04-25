@@ -55,4 +55,26 @@ describe("RaceInputFormContainer", () => {
 			}),
 		);
 	});
+
+	it("ハッピーパス: race_name を入力して保存すると router.post の data に race_name が含まれる", async () => {
+		// Arrange
+		const user = userEvent.setup();
+		vi.mocked(router.post).mockImplementation((_url, _data, options) => {
+			options?.onSuccess?.({} as never);
+		});
+		render(<RaceInputFormContainer {...defaultProps} initialRaceName="天皇賞（春）" />);
+
+		const textarea = screen.getByLabelText("出馬表をペースト");
+		await user.type(textarea, "sample paste text");
+
+		// Act
+		await user.click(screen.getByRole("button", { name: "保存する" }));
+
+		// Assert
+		expect(router.post).toHaveBeenCalledWith(
+			expect.stringContaining("races"),
+			expect.objectContaining({ race_name: "天皇賞（春）" }),
+			expect.anything(),
+		);
+	});
 });

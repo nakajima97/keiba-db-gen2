@@ -15,11 +15,13 @@ type Props = {
 	initialVenueId?: number;
 	initialRaceDate?: string;
 	initialRaceNumber?: number;
+	initialRaceName?: string;
 	onSubmit: (
 		data: {
 			venue_id: number;
 			race_date: string;
 			race_number: number;
+			race_name: string | undefined;
 			paste_text: string;
 		},
 		onSuccess: () => void,
@@ -33,6 +35,7 @@ export default function RaceInputForm({
 	initialVenueId,
 	initialRaceDate,
 	initialRaceNumber,
+	initialRaceName,
 	onSubmit,
 }: Props) {
 	const [venueId, setVenueId] = useState<string>(
@@ -42,6 +45,7 @@ export default function RaceInputForm({
 	const [raceNumber, setRaceNumber] = useState<string>(
 		initialRaceNumber ? String(initialRaceNumber) : "",
 	);
+	const [raceName, setRaceName] = useState<string>(initialRaceName ?? "");
 	const [pasteText, setPasteText] = useState<string>("");
 
 	const handleSubmit = () => {
@@ -50,6 +54,7 @@ export default function RaceInputForm({
 				venue_id: Number(venueId),
 				race_date: raceDate,
 				race_number: Number(raceNumber),
+				race_name: raceName || undefined,
 				paste_text: pasteText,
 			},
 			() => setPasteText(""),
@@ -112,6 +117,17 @@ export default function RaceInputForm({
 							))}
 						</SelectContent>
 					</Select>
+				</div>
+
+				<div className="flex flex-col gap-2">
+					<Label htmlFor="race-name">レース名</Label>
+					<Input
+						id="race-name"
+						type="text"
+						value={raceName}
+						onChange={(e) => setRaceName(e.target.value)}
+						placeholder="例：天皇賞（春）"
+					/>
 				</div>
 
 				<div className="flex flex-col gap-2">

@@ -1,7 +1,7 @@
 import { Transition } from "@headlessui/react";
 import { Form, Head, Link, usePage } from "@inertiajs/react";
 import ProfileController from "@/actions/App/Http/Controllers/Settings/ProfileController";
-import DeleteUser from "@/components/presentational/DeleteUser";
+import DeleteUser from "@/features/settings/presentational/DeleteUser";
 import Heading from "@/components/presentational/Heading";
 import InputError from "@/components/presentational/InputError";
 import { Button } from "@/components/shadcn/ui/button";

@@ -9,15 +9,23 @@
       "Bash(git push)",
       "Write(*.md)",
       "Write(.claude/skills/**)",
+      "Write(**/*.tsx)",
+      "Write(**/*.ts)",
+      "Write(**/*.php)",
       "Read(*.md)",
       "Edit(/.claude/skills/**)",
+      "Edit(**/*.tsx)",
+      "Edit(**/*.ts)",
+      "Edit(**/*.php)",
       "Bash(mkdir -p *)"
     ],
     "deny": [
       "Bash(curl *)",
-      "Read(./.env)",
-      "Read(./.env.*)",
-      "Read(./secrets/**)"
+      "Read(**/.env)",
+      "Read(**/.env.*)",
+      "Read(./secrets/**)",
+      "Bash(grep *.env)",
+      "Bash(grep *.env.*)"
     ]
   },
   "enabledPlugins": {
