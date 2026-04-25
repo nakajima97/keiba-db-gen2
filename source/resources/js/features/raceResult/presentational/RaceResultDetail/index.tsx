@@ -1,3 +1,4 @@
+import { formatDateDisplay } from "@/utils/date";
 import type { RaceResultDetailProps } from "./types";
 import { formatHorseNumbers } from "./utils";
 
@@ -7,7 +8,7 @@ export default function RaceResultDetail({ race }: RaceResultDetailProps) {
 			<div>
 				<h1 className="text-xl font-semibold">レース結果</h1>
 				<p className="text-sm text-muted-foreground">
-					{race.race_date.replace(/-/g, "/")} {race.venue_name}{" "}
+					{formatDateDisplay(race.race_date)} {race.venue_name}{" "}
 					{race.race_number}R
 				</p>
 			</div>

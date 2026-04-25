@@ -1,5 +1,6 @@
 import { Button } from "@/components/shadcn/ui/button";
 import AlertError from "@/components/presentational/AlertError";
+import { formatDateDisplay } from "@/utils/date";
 import type { RaceResultFormProps } from "./types";
 
 export default function RaceResultForm({
@@ -20,7 +21,7 @@ export default function RaceResultForm({
 			<div>
 				<h1 className="text-xl font-semibold">レース結果入力</h1>
 				<p className="text-sm text-muted-foreground">
-					{raceDate.replace(/-/g, "/")} {venueName} {raceNumber}R
+					{formatDateDisplay(raceDate)} {venueName} {raceNumber}R
 				</p>
 			</div>
 

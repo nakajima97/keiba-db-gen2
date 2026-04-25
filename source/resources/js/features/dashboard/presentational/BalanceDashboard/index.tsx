@@ -11,6 +11,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/shadcn/ui/select";
+import { formatDateDisplay } from "@/utils/date";
 import type { BalanceDashboardProps } from "./types";
 
 export default function BalanceDashboard({
@@ -163,7 +164,7 @@ export default function BalanceDashboard({
 										key={row.date}
 										className="border-b last:border-0 hover:bg-muted/30"
 									>
-										<td className="px-4 py-3">{row.date.replace(/-/g, "/")}</td>
+										<td className="px-4 py-3">{formatDateDisplay(row.date)}</td>
 										<td className="px-4 py-3 text-right">
 											¥{row.purchase_amount.toLocaleString()}
 										</td>
