@@ -1074,3 +1074,160 @@ test('umatan horses in race result edit page are ordered by sort_order', functio
         ->where('race.payouts.0.horses.1.horse_number', 5)
     );
 });
+
+// ===== GET /races/{uid}/result/edit — finishing_horses =====
+
+test('finishing_horses is included in props when race_result_horses records exist', function () {
+    // Arrange
+    $user = User::factory()->create();
+    ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
+    ['raceId' => $raceId, 'raceUid' => $raceUid] = createRaceWithUid($venueId, $now);
+
+    DB::table('race_result_horses')->insert([
+        'race_id' => $raceId,
+        'finishing_order' => 1,
+        'frame_number' => 2,
+        'horse_number' => 3,
+        'horse_name' => 'テスト馬A',
+        'sex_age' => '牡3',
+        'weight' => '57.0',
+        'jockey_name' => '騎手A',
+        'race_time' => '1:34.5',
+        'trainer_name' => '調教師A',
+        'popularity' => 1,
+        'created_at' => $now,
+        'updated_at' => $now,
+    ]);
+
+    // Act
+    $response = $this->actingAs($user)->get(route('races.result.edit', ['uid' => $raceUid]));
+
+    // Assert
+    $response->assertInertia(fn (Assert $page) => $page
+        ->component('races/result/edit')
+        ->has('race.finishing_horses')
+    );
+});
+
+test('finishing_horses items have correct fields', function () {
+    // Arrange
+    $user = User::factory()->create();
+    ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
+    ['raceId' => $raceId, 'raceUid' => $raceUid] = createRaceWithUid($venueId, $now);
+
+    DB::table('race_result_horses')->insert([
+        'race_id' => $raceId,
+        'finishing_order' => 1,
+        'frame_number' => 2,
+        'horse_number' => 3,
+        'horse_name' => 'テスト馬A',
+        'sex_age' => '牡3',
+        'weight' => '57.0',
+        'jockey_name' => '騎手A',
+        'race_time' => '1:34.5',
+        'trainer_name' => '調教師A',
+        'popularity' => 1,
+        'created_at' => $now,
+        'updated_at' => $now,
+    ]);
+
+    // Act
+    $response = $this->actingAs($user)->get(route('races.result.edit', ['uid' => $raceUid]));
+
+    // Assert
+    $response->assertInertia(fn (Assert $page) => $page
+        ->component('races/result/edit')
+        ->has('race.finishing_horses.0', fn (Assert $horse) => $horse
+            ->has('finishing_order')
+            ->has('frame_number')
+            ->has('horse_number')
+            ->has('horse_name')
+            ->has('jockey_name')
+            ->has('race_time')
+            ->etc()
+        )
+    );
+});
+
+test('finishing_horses is empty array when no race_result_horses records exist', function () {
+    // Arrange
+    $user = User::factory()->create();
+    ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
+    ['raceUid' => $raceUid] = createRaceWithUid($venueId, $now);
+
+    // Act
+    $response = $this->actingAs($user)->get(route('races.result.edit', ['uid' => $raceUid]));
+
+    // Assert
+    $response->assertInertia(fn (Assert $page) => $page
+        ->component('races/result/edit')
+        ->where('race.finishing_horses', [])
+    );
+});
+
+test('finishing_horses are sorted by finishing_order ascending', function () {
+    // Arrange
+    $user = User::factory()->create();
+    ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
+    ['raceId' => $raceId, 'raceUid' => $raceUid] = createRaceWithUid($venueId, $now);
+
+    DB::table('race_result_horses')->insert([
+        [
+            'race_id' => $raceId,
+            'finishing_order' => 3,
+            'frame_number' => 1,
+            'horse_number' => 1,
+            'horse_name' => 'テスト馬C',
+            'sex_age' => '牡5',
+            'weight' => '58.0',
+            'jockey_name' => '騎手C',
+            'race_time' => '1:35.0',
+            'trainer_name' => '調教師C',
+            'popularity' => 2,
+            'created_at' => $now,
+            'updated_at' => $now,
+        ],
+        [
+            'race_id' => $raceId,
+            'finishing_order' => 1,
+            'frame_number' => 2,
+            'horse_number' => 3,
+            'horse_name' => 'テスト馬A',
+            'sex_age' => '牡3',
+            'weight' => '57.0',
+            'jockey_name' => '騎手A',
+            'race_time' => '1:34.5',
+            'trainer_name' => '調教師A',
+            'popularity' => 1,
+            'created_at' => $now,
+            'updated_at' => $now,
+        ],
+        [
+            'race_id' => $raceId,
+            'finishing_order' => 2,
+            'frame_number' => 4,
+            'horse_number' => 7,
+            'horse_name' => 'テスト馬B',
+            'sex_age' => '牝4',
+            'weight' => '55.0',
+            'jockey_name' => '騎手B',
+            'race_time' => '1:34.8',
+            'trainer_name' => '調教師B',
+            'popularity' => 3,
+            'created_at' => $now,
+            'updated_at' => $now,
+        ],
+    ]);
+
+    // Act
+    $response = $this->actingAs($user)->get(route('races.result.edit', ['uid' => $raceUid]));
+
+    // Assert
+    $response->assertInertia(fn (Assert $page) => $page
+        ->component('races/result/edit')
+        ->has('race.finishing_horses', 3)
+        ->where('race.finishing_horses.0.finishing_order', 1)
+        ->where('race.finishing_horses.1.finishing_order', 2)
+        ->where('race.finishing_horses.2.finishing_order', 3)
+    );
+});
