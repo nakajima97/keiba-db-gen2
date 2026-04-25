@@ -234,6 +234,41 @@ test('missing paste_text returns validation error', function () {
     $response->assertSessionHasErrors(['paste_text']);
 });
 
+test('race_name ありで登録すると races テーブルに race_name が保存される', function () use ($sampleText) {
+    // Arrange
+    $user = User::factory()->create();
+    $venueId = createVenueForStoreTest();
+
+    // Act
+    $this->actingAs($user)->post(route('races.store'), [
+        'venue_id' => $venueId,
+        'race_date' => '2026-04-18',
+        'race_number' => 1,
+        'paste_text' => $sampleText,
+        'race_name' => '天皇賞（春）',
+    ]);
+
+    // Assert
+    $this->assertDatabaseHas('races', ['race_name' => '天皇賞（春）']);
+});
+
+test('race_name を省略して登録すると races.race_name が null で保存される', function () use ($sampleText) {
+    // Arrange
+    $user = User::factory()->create();
+    $venueId = createVenueForStoreTest();
+
+    // Act
+    $this->actingAs($user)->post(route('races.store'), [
+        'venue_id' => $venueId,
+        'race_date' => '2026-04-18',
+        'race_number' => 1,
+        'paste_text' => $sampleText,
+    ]);
+
+    // Assert
+    $this->assertDatabaseHas('races', ['race_name' => null]);
+});
+
 test('duplicate race registration returns error', function () use ($sampleText) {
     // Arrange
     $user = User::factory()->create();

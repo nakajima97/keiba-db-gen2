@@ -135,3 +135,27 @@ test('races index returns only races matching venue_id query parameter when race
         )
     );
 });
+
+test('races index includes race_name in each race item in inertia props', function () {
+    // Arrange
+    $user = User::factory()->create();
+    $venue = Venue::firstOrCreate(['name' => '東京']);
+    Race::create([
+        'venue_id' => $venue->id,
+        'race_date' => '2026-04-05',
+        'race_number' => 1,
+        'race_name' => '天皇賞（春）',
+    ]);
+
+    // Act
+    $response = $this->actingAs($user)->get(route('races.index', ['race_date' => '2026-04-05', 'venue_id' => $venue->id]));
+
+    // Assert
+    $response->assertInertia(fn (Assert $page) => $page
+        ->component('races/index')
+        ->has('races', 1, fn (Assert $race) => $race
+            ->has('race_name')
+            ->etc()
+        )
+    );
+});
