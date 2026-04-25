@@ -1,5 +1,4 @@
 import { Button } from "@/components/shadcn/ui/button";
-import { Textarea } from "@/components/shadcn/ui/textarea";
 import { formatDateDisplay } from "@/utils/date";
 import type { RaceEntryRegistrationFormProps } from "./types";
 
@@ -51,10 +50,10 @@ export default function RaceEntryRegistrationForm({
 				<p className="text-sm text-muted-foreground">
 					JRAの出馬表をコピーしてペーストしてください。
 				</p>
-				<Textarea
+				<textarea
 					id="jra-paste"
+					className="min-h-[320px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:opacity-50"
 					value={pastedText}
-					rows={16}
 					placeholder="ここにJRAの出馬表テキストをペーストしてください"
 					disabled={isSubmitting}
 					onChange={(e) => onPastedTextChange(e.target.value)}
