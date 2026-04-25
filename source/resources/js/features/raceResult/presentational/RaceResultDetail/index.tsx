@@ -31,17 +31,14 @@ export default function RaceResultDetail({ race }: RaceResultDetailProps) {
 						</tr>
 					</thead>
 					<tbody>
-						{race.payouts.map((payout, index) => (
+						{race.payouts.map((payout) => (
 							<tr
-								key={index}
+								key={`${payout.ticket_type_name}-${payout.horses.map((h) => h.horse_number).join("-")}`}
 								className="border-b last:border-0 hover:bg-muted/30"
 							>
 								<td className="px-4 py-3">{payout.ticket_type_label}</td>
 								<td className="px-4 py-3">
-									{formatHorseNumbers(
-										payout.horses,
-										payout.ticket_type_name,
-									)}
+									{formatHorseNumbers(payout.horses, payout.ticket_type_name)}
 								</td>
 								<td className="px-4 py-3 text-right">
 									¥{payout.payout_amount.toLocaleString()}
