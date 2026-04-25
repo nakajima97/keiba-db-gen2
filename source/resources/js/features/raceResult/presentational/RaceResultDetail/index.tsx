@@ -47,7 +47,7 @@ export default function RaceResultDetail({ race }: RaceResultDetailProps) {
 							<tbody>
 								{race.finishing_horses.map((horse) => (
 									<tr
-										key={horse.finishing_order}
+										key={horse.horse_number}
 										className="border-b last:border-0 hover:bg-muted/30"
 									>
 										<td className="px-4 py-3">

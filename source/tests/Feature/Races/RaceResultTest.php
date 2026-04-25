@@ -1077,7 +1077,7 @@ test('umatan horses in race result edit page are ordered by sort_order', functio
 
 // ===== GET /races/{uid}/result/edit — finishing_horses =====
 
-test('finishing_horses is included in props when race_result_horses records exist', function () {
+test('finishing_horses items have correct fields and values', function () {
     // Arrange
     $user = User::factory()->create();
     ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
@@ -1105,45 +1105,14 @@ test('finishing_horses is included in props when race_result_horses records exis
     // Assert
     $response->assertInertia(fn (Assert $page) => $page
         ->component('races/result/edit')
-        ->has('race.finishing_horses')
-    );
-});
-
-test('finishing_horses items have correct fields', function () {
-    // Arrange
-    $user = User::factory()->create();
-    ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
-    ['raceId' => $raceId, 'raceUid' => $raceUid] = createRaceWithUid($venueId, $now);
-
-    DB::table('race_result_horses')->insert([
-        'race_id' => $raceId,
-        'finishing_order' => 1,
-        'frame_number' => 2,
-        'horse_number' => 3,
-        'horse_name' => 'テスト馬A',
-        'sex_age' => '牡3',
-        'weight' => '57.0',
-        'jockey_name' => '騎手A',
-        'race_time' => '1:34.5',
-        'trainer_name' => '調教師A',
-        'popularity' => 1,
-        'created_at' => $now,
-        'updated_at' => $now,
-    ]);
-
-    // Act
-    $response = $this->actingAs($user)->get(route('races.result.edit', ['uid' => $raceUid]));
-
-    // Assert
-    $response->assertInertia(fn (Assert $page) => $page
-        ->component('races/result/edit')
+        ->has('race.finishing_horses', 1)
         ->has('race.finishing_horses.0', fn (Assert $horse) => $horse
-            ->has('finishing_order')
-            ->has('frame_number')
-            ->has('horse_number')
-            ->has('horse_name')
-            ->has('jockey_name')
-            ->has('race_time')
+            ->where('finishing_order', 1)
+            ->where('frame_number', 2)
+            ->where('horse_number', 3)
+            ->where('horse_name', 'テスト馬A')
+            ->where('jockey_name', '騎手A')
+            ->where('race_time', '1:34.5')
             ->etc()
         )
     );
