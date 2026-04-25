@@ -14,6 +14,7 @@ class Race extends Model
         'venue_id',
         'race_date',
         'race_number',
+        'race_name',
     ];
 
     protected static function booted(): void
