@@ -1,16 +1,5 @@
 import type { RaceResultDetailProps } from "./types";
-
-const ARROW_TICKET_TYPES = ["umatan", "sanrentan"];
-
-function formatHorseNumbers(
-	horses: { horse_number: number; sort_order: number }[],
-	ticketTypeName: string,
-): string {
-	const sorted = [...horses].sort((a, b) => a.sort_order - b.sort_order);
-	const numbers = sorted.map((h) => h.horse_number);
-	const separator = ARROW_TICKET_TYPES.includes(ticketTypeName) ? "→" : "-";
-	return numbers.join(separator);
-}
+import { formatHorseNumbers } from "./utils";
 
 export default function RaceResultDetail({ race }: RaceResultDetailProps) {
 	return (

@@ -858,3 +858,111 @@ test('amount が 100円より多い場合、払い戻し金額は購入金額に
         'payout_amount' => 1220,
     ]);
 });
+
+// ===== GET /races/{uid}/result/edit =====
+
+test('authenticated user can access race result edit page', function () {
+    // Arrange
+    $user = User::factory()->create();
+    ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
+    ['raceUid' => $raceUid] = createRaceWithUid($venueId, $now);
+
+    // Act
+    $response = $this->actingAs($user)->get(route('races.result.edit', ['uid' => $raceUid]));
+
+    // Assert
+    $response->assertInertia(fn (Assert $page) => $page->component('races/result/edit'));
+});
+
+test('unauthenticated user is redirected to login page when accessing race result edit page', function () {
+    // Arrange
+    ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
+    ['raceUid' => $raceUid] = createRaceWithUid($venueId, $now);
+
+    // Act
+    $response = $this->get(route('races.result.edit', ['uid' => $raceUid]));
+
+    // Assert
+    $response->assertRedirect(route('login'));
+});
+
+test('accessing race result edit page with non-existent uid returns 404', function () {
+    // Arrange
+    $user = User::factory()->create();
+
+    // Act
+    $response = $this->actingAs($user)->get(route('races.result.edit', ['uid' => 'non-existent-uid']));
+
+    // Assert
+    $response->assertNotFound();
+});
+
+test('race result edit page response includes payout fields', function () {
+    // Arrange
+    $user = User::factory()->create();
+    ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
+    ['raceId' => $raceId, 'raceUid' => $raceUid] = createRaceWithUid($venueId, $now);
+
+    $umatanTypeId = DB::table('ticket_types')->where('name', 'umatan')->value('id');
+    $payoutId = DB::table('race_payouts')->insertGetId([
+        'race_id' => $raceId,
+        'ticket_type_id' => $umatanTypeId,
+        'payout_amount' => 2410,
+        'popularity' => 3,
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+    DB::table('race_payout_horses')->insert([
+        ['race_payout_id' => $payoutId, 'horse_number' => 3, 'sort_order' => 1, 'created_at' => now(), 'updated_at' => now()],
+        ['race_payout_id' => $payoutId, 'horse_number' => 5, 'sort_order' => 2, 'created_at' => now(), 'updated_at' => now()],
+    ]);
+
+    // Act
+    $response = $this->actingAs($user)->get(route('races.result.edit', ['uid' => $raceUid]));
+
+    // Assert
+    $response->assertInertia(fn (Assert $page) =>
+        $page->component('races/result/edit')
+             ->has('race.payouts.0', fn (Assert $payout) =>
+                 $payout->has('ticket_type_label')
+                        ->has('ticket_type_name')
+                        ->has('payout_amount')
+                        ->has('popularity')
+                        ->has('horses')
+             )
+    );
+});
+
+test('umatan horses in race result edit page are ordered by sort_order', function () {
+    // Arrange
+    $user = User::factory()->create();
+    ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
+    ['raceId' => $raceId, 'raceUid' => $raceUid] = createRaceWithUid($venueId, $now);
+
+    $umatanTypeId = DB::table('ticket_types')->where('name', 'umatan')->value('id');
+    $payoutId = DB::table('race_payouts')->insertGetId([
+        'race_id' => $raceId,
+        'ticket_type_id' => $umatanTypeId,
+        'payout_amount' => 2410,
+        'popularity' => 3,
+        'created_at' => $now,
+        'updated_at' => $now,
+    ]);
+    DB::table('race_payout_horses')->insert([
+        ['race_payout_id' => $payoutId, 'horse_number' => 3, 'sort_order' => 1, 'created_at' => $now, 'updated_at' => $now],
+        ['race_payout_id' => $payoutId, 'horse_number' => 5, 'sort_order' => 2, 'created_at' => $now, 'updated_at' => $now],
+    ]);
+
+    // Act
+    $response = $this->actingAs($user)->get(route('races.result.edit', ['uid' => $raceUid]));
+
+    // Assert
+    $response->assertInertia(fn (Assert $page) =>
+        $page->component('races/result/edit')
+             ->has('race.payouts.0.horses', 2)
+             ->where('race.payouts.0.horses.0.sort_order', 1)
+             ->where('race.payouts.0.horses.0.horse_number', 3)
+             ->where('race.payouts.0.horses.1.sort_order', 2)
+             ->where('race.payouts.0.horses.1.horse_number', 5)
+    );
+});
