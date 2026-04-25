@@ -3,6 +3,7 @@ import { Button } from "@/components/shadcn/ui/button";
 import { Input } from "@/components/shadcn/ui/input";
 import { Label } from "@/components/shadcn/ui/label";
 import { create, show } from "@/routes/races";
+import { formatDateDisplay } from "@/utils/date";
 import type { RaceListProps } from "./types";
 
 export default function RaceList({
@@ -94,7 +95,7 @@ export default function RaceList({
 									}}
 								>
 									<td className="px-4 py-3">
-										{race.race_date.replace(/-/g, "/")}
+										{formatDateDisplay(race.race_date)}
 									</td>
 									<td className="px-4 py-3">{race.venue_name}</td>
 									<td className="px-4 py-3">{race.race_number}R</td>

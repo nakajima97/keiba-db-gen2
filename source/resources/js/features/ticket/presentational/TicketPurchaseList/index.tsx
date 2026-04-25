@@ -2,6 +2,7 @@ import { Link } from "@inertiajs/react";
 import { Button } from "@/components/shadcn/ui/button";
 import { Spinner } from "@/components/shadcn/ui/spinner";
 import { newMethod } from "@/routes/tickets";
+import { formatDateDisplay } from "@/utils/date";
 import type { TicketPurchaseListProps } from "./types";
 import { formatSelections } from "./utils";
 
@@ -65,7 +66,7 @@ export default function TicketPurchaseList({
 									>
 										<td className="px-4 py-3">
 											{purchase.race_date
-												? purchase.race_date.replace(/-/g, "/")
+												? formatDateDisplay(purchase.race_date)
 												: "-"}
 										</td>
 										<td className="px-4 py-3">{purchase.venue_name ?? "-"}</td>

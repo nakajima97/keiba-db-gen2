@@ -1,3 +1,4 @@
+import { formatDateDisplay } from "@/utils/date";
 import type { RaceDetailProps } from "./types";
 
 export default function RaceDetail({ race }: RaceDetailProps) {
@@ -12,7 +13,7 @@ export default function RaceDetail({ race }: RaceDetailProps) {
 							<th className="w-32 bg-muted/50 px-4 py-3 text-left font-medium text-muted-foreground">
 								開催日
 							</th>
-							<td className="px-4 py-3">{race.race_date.replace(/-/g, "/")}</td>
+							<td className="px-4 py-3">{formatDateDisplay(race.race_date)}</td>
 						</tr>
 						<tr className="border-b">
 							<th className="bg-muted/50 px-4 py-3 text-left font-medium text-muted-foreground">
