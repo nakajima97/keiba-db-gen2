@@ -48,13 +48,29 @@ OFFSET=$(get_next_offset)
 WORKTREE_PATH="${WORKTREE_BASE}/issue-${ISSUE_NUM}"
 WT_SOURCE="${WORKTREE_PATH}/source"
 
+if [[ -e "${WORKTREE_PATH}" ]]; then
+  echo "Error: worktree path already exists: ${WORKTREE_PATH}" >&2
+  exit 1
+fi
+
 echo "==> Creating worktree: issue-${ISSUE_NUM} (offset=${OFFSET})"
 echo "    Path   : ${WORKTREE_PATH}"
 echo "    Branch : ${BRANCH_NAME}"
 
 mkdir -p "${WORKTREE_BASE}"
 
-git -C "${PROJECT_ROOT}" worktree add "${WORKTREE_PATH}" -b "${BRANCH_NAME}"
+if git -C "${PROJECT_ROOT}" show-ref --verify --quiet "refs/heads/${BRANCH_NAME}"; then
+  echo "==> Branch '${BRANCH_NAME}' already exists locally, using it as-is"
+elif git -C "${PROJECT_ROOT}" ls-remote --exit-code --heads origin "${BRANCH_NAME}" >/dev/null 2>&1; then
+  echo "==> Branch '${BRANCH_NAME}' exists on remote, fetching..."
+  git -C "${PROJECT_ROOT}" fetch origin "${BRANCH_NAME}"
+else
+  echo "==> Creating branch via 'gh issue develop' (linked to issue #${ISSUE_NUM})"
+  gh issue develop "${ISSUE_NUM}" --name "${BRANCH_NAME}" --base main
+  git -C "${PROJECT_ROOT}" fetch origin "${BRANCH_NAME}"
+fi
+
+git -C "${PROJECT_ROOT}" worktree add "${WORKTREE_PATH}" "${BRANCH_NAME}"
 
 echo "==> Installing PHP dependencies via disposable container..."
 docker run --rm \
