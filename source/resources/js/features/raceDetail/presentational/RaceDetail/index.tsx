@@ -1,3 +1,5 @@
+import { Link } from "@inertiajs/react";
+import { Button } from "@/components/shadcn/ui/button";
 import { formatDateDisplay } from "@/utils/date";
 import type { RaceDetailProps } from "./types";
 
@@ -31,7 +33,12 @@ export default function RaceDetail({ race }: RaceDetailProps) {
 				</table>
 			</div>
 
-			<h2 className="text-lg font-semibold">出馬表</h2>
+			<div className="flex items-center justify-between">
+				<h2 className="text-lg font-semibold">出馬表</h2>
+				<Button asChild variant="outline" size="sm">
+					<Link href={`/races/${race.uid}/entries/new`}>出走馬登録</Link>
+				</Button>
+			</div>
 
 			<div className="overflow-x-auto rounded-xl border">
 				<table className="w-full text-sm">

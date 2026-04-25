@@ -4,6 +4,9 @@ import RacesShow from "./show";
 
 vi.mock("@inertiajs/react", () => ({
 	Head: ({ title }: { title: string }) => <title>{title}</title>,
+	Link: ({ href, children }: { href: string; children: unknown }) => (
+		<a href={href}>{children as never}</a>
+	),
 	usePage: () => ({
 		props: {
 			race: {
