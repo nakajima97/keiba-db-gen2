@@ -124,6 +124,8 @@ erDiagram
     race_result_horses {
         bigint id PK
         bigint race_id FK
+        bigint horse_id FK "nullable"
+        bigint jockey_id FK "nullable"
         tinyint finishing_order "着順"
         tinyint frame_number "枠番"
         tinyint horse_number "馬番"
@@ -144,6 +146,8 @@ erDiagram
     }
 
     races ||--o{ race_result_horses : "has"
+    horses ||--o{ race_result_horses : "has"
+    jockeys ||--o{ race_result_horses : "has"
 ```
 
 ## selectionsカラムのJSONフォーマット
