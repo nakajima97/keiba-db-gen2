@@ -260,6 +260,34 @@ describe('box with sanrenpuku', function () {
     });
 });
 
+// ===== single / box (sanrentan: horseCount=3 ordered) =====
+
+describe('single with sanrentan', function () {
+    test('three horses returns one pick with order preserved', function () {
+        // Arrange
+        $action = new ExpandSelectionsAction;
+
+        // Act
+        $result = $action->execute('sanrentan', 'single', ['horses' => [3, 1, 2]]);
+
+        // Assert: ordered so not sorted (contrast: sanrenpuku would return [[1,2,3]])
+        expect($result)->toBe([[3, 1, 2]]);
+    });
+});
+
+describe('box with sanrentan', function () {
+    test('three horses produce P(3,3)=6 permutations', function () {
+        // Arrange
+        $action = new ExpandSelectionsAction;
+
+        // Act
+        $result = $action->execute('sanrentan', 'box', ['horses' => [1, 2, 3]]);
+
+        // Assert: all ordered permutations of 3 horses
+        expect($result)->toBe([[1, 2, 3], [1, 3, 2], [2, 1, 3], [2, 3, 1], [3, 1, 2], [3, 2, 1]]);
+    });
+});
+
 // ===== nagashi (umaren: horseCount=2) =====
 
 describe('nagashi with umaren', function () {
