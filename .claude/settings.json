@@ -9,8 +9,14 @@
       "Bash(git push)",
       "Write(*.md)",
       "Write(.claude/skills/**)",
+      "Write(**/*.tsx)",
+      "Write(**/*.ts)",
+      "Write(**/*.php)",
       "Read(*.md)",
       "Edit(/.claude/skills/**)",
+      "Edit(**/*.tsx)",
+      "Edit(**/*.ts)",
+      "Edit(**/*.php)",
       "Bash(mkdir -p *)"
     ],
     "deny": [
