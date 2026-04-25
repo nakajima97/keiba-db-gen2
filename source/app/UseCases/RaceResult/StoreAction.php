@@ -2,11 +2,14 @@
 
 namespace App\UseCases\RaceResult;
 
+use App\Exceptions\RaceResult\ParseException;
 use App\Models\Race;
 use App\Models\RacePayout;
 use App\Models\RacePayoutHorse;
+use App\Models\RaceResultHorse;
 use App\Models\TicketPurchase;
 use App\Models\TicketType;
+use App\Services\RaceResultHorseParser;
 use App\UseCases\TicketPurchase\CalculatePayoutAmountAction;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
@@ -46,24 +49,39 @@ class StoreAction
 
     public function __construct(
         private readonly CalculatePayoutAmountAction $calculatePayoutAmountAction,
+        private readonly RaceResultHorseParser $raceResultHorseParser,
     ) {}
 
     /**
-     * @param  array{text: string}  $data
+     * @param  array{text: string, result_text: string}  $data
      */
     public function execute(array $data, string $uid, int $userId): void
     {
         $race = Race::where('uid', $uid)->firstOrFail();
         $raceId = $race->id;
 
-        $entries = $this->parse($data['text']);
-        $this->validateAllTypesPresent($entries);
+        try {
+            $resultHorseEntries = $this->raceResultHorseParser->parse($data['result_text']);
+        } catch (\InvalidArgumentException $e) {
+            throw new ParseException($e->getMessage(), 'result_text');
+        }
+
+        try {
+            $entries = $this->parse($data['text']);
+            $this->validateAllTypesPresent($entries);
+        } catch (\InvalidArgumentException $e) {
+            throw new ParseException($e->getMessage(), 'text');
+        }
 
         $ticketTypeIds = TicketType::whereIn('name', self::REQUIRED_TYPES)
             ->pluck('id', 'name')
             ->all();
 
-        DB::transaction(function () use ($entries, $raceId, $ticketTypeIds, $userId): void {
+        DB::transaction(function () use ($entries, $resultHorseEntries, $raceId, $ticketTypeIds, $userId): void {
+            foreach ($resultHorseEntries as $horseEntry) {
+                RaceResultHorse::create(array_merge(['race_id' => $raceId], $horseEntry));
+            }
+
             foreach ($entries as $entry) {
                 $ticketTypeId = $ticketTypeIds[$entry['ticket_type']];
 

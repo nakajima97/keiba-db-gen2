@@ -18,6 +18,7 @@ class StoreRaceResultRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'result_text' => ['required', 'string'],
             'text' => ['required', 'string'],
         ];
     }
