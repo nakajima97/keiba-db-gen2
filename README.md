@@ -10,21 +10,50 @@ https://github.com/nakajima97/ai-driven-development
 docs配下を確認
 
 ## セットアップ
+
+### 初回のみ
+
 ~~~bash
 # 移動（のちに記載したコマンドの前提条件）
 cd ./source
 
-# 初回のみ: Docker イメージのビルド
+# .env を作成
+cp .env.example .env
+
+# vendor/ をインストール（使い捨てコンテナ経由）
+docker run --rm \
+    -u "$(id -u):$(id -g)" \
+    -v "$(pwd):/var/www/html" \
+    -w /var/www/html \
+    laravelsail/php85-composer:latest \
+    composer install --ignore-platform-reqs
+
+# Docker イメージのビルド
 ./vendor/bin/sail build --no-cache
 
 # コンテナ起動
 ./vendor/bin/sail up -d
+
+# アプリケーションキーの生成
+./vendor/bin/sail artisan key:generate
 
 # マイグレーション
 ./vendor/bin/sail artisan migrate
 
 # シード
 ./vendor/bin/sail artisan db:seed
+
+# フロント依存関係のインストール
+pnpm install
+~~~
+
+### 通常起動
+
+~~~bash
+cd ./source
+
+# コンテナ起動
+./vendor/bin/sail up -d
 
 # フロント
 pnpm dev
