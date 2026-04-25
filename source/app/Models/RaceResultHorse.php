@@ -9,6 +9,8 @@ class RaceResultHorse extends Model
 {
     protected $fillable = [
         'race_id',
+        'horse_id',
+        'jockey_id',
         'finishing_order',
         'frame_number',
         'horse_number',
@@ -30,5 +32,17 @@ class RaceResultHorse extends Model
     public function race(): BelongsTo
     {
         return $this->belongsTo(Race::class);
+    }
+
+    /** @return BelongsTo<Horse, $this> */
+    public function horse(): BelongsTo
+    {
+        return $this->belongsTo(Horse::class);
+    }
+
+    /** @return BelongsTo<Jockey, $this> */
+    public function jockey(): BelongsTo
+    {
+        return $this->belongsTo(Jockey::class);
     }
 }

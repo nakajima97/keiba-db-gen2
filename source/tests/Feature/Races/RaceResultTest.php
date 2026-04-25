@@ -909,8 +909,12 @@ test('race_result_horses records have correct field mappings', function () use (
     ]);
 
     // Assert
+    $horseId = DB::table('horses')->where('name', 'テスト馬A')->value('id');
+    $jockeyId = DB::table('jockeys')->where('name', '騎手A')->value('id');
     $this->assertDatabaseHas('race_result_horses', [
         'race_id' => $raceId,
+        'horse_id' => $horseId,
+        'jockey_id' => $jockeyId,
         'finishing_order' => 1,
         'frame_number' => 2,
         'horse_number' => 3,
@@ -947,6 +951,50 @@ test('horse weight change is null when horse has no race experience', function (
         'horse_name' => 'テスト馬C',
         'horse_weight' => 490,
         'horse_weight_change' => null,
+    ]);
+});
+
+test('horses and jockeys are created in their tables when not previously registered', function () use ($resultSampleText, $sampleText) {
+    // Arrange
+    $user = User::factory()->create();
+    ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
+    ['raceUid' => $raceUid] = createRaceWithUid($venueId, $now);
+
+    // Act
+    $this->actingAs($user)->post(route('races.result.store', ['uid' => $raceUid]), [
+        'result_text' => $resultSampleText,
+        'text' => $sampleText,
+    ]);
+
+    // Assert
+    $this->assertDatabaseHas('horses', ['name' => 'テスト馬A']);
+    $this->assertDatabaseHas('horses', ['name' => 'テスト馬B']);
+    $this->assertDatabaseHas('jockeys', ['name' => '騎手A']);
+    $this->assertDatabaseHas('jockeys', ['name' => '騎手B']);
+});
+
+test('existing horse and jockey records are reused when result text contains same name', function () use ($resultSampleText, $sampleText) {
+    // Arrange
+    $user = User::factory()->create();
+    ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
+    ['raceUid' => $raceUid] = createRaceWithUid($venueId, $now);
+
+    $existingHorse = \App\Models\Horse::create(['name' => 'テスト馬A']);
+    $existingJockey = \App\Models\Jockey::create(['name' => '騎手A']);
+
+    // Act
+    $this->actingAs($user)->post(route('races.result.store', ['uid' => $raceUid]), [
+        'result_text' => $resultSampleText,
+        'text' => $sampleText,
+    ]);
+
+    // Assert: 既存レコードが再利用され、重複作成されていない
+    expect(DB::table('horses')->where('name', 'テスト馬A')->count())->toBe(1);
+    expect(DB::table('jockeys')->where('name', '騎手A')->count())->toBe(1);
+    $this->assertDatabaseHas('race_result_horses', [
+        'horse_name' => 'テスト馬A',
+        'horse_id' => $existingHorse->id,
+        'jockey_id' => $existingJockey->id,
     ]);
 });
 
