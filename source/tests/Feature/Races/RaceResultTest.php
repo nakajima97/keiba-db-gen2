@@ -921,15 +921,15 @@ test('race result edit page response includes payout fields', function () {
     $response = $this->actingAs($user)->get(route('races.result.edit', ['uid' => $raceUid]));
 
     // Assert
-    $response->assertInertia(fn (Assert $page) =>
-        $page->component('races/result/edit')
-             ->has('race.payouts.0', fn (Assert $payout) =>
-                 $payout->has('ticket_type_label')
-                        ->has('ticket_type_name')
-                        ->has('payout_amount')
-                        ->has('popularity')
-                        ->has('horses')
-             )
+    $response->assertInertia(fn (Assert $page) => $page
+        ->component('races/result/edit')
+        ->has('race.payouts.0', fn (Assert $payout) => $payout
+            ->has('ticket_type_label')
+            ->has('ticket_type_name')
+            ->has('payout_amount')
+            ->has('popularity')
+            ->has('horses')
+        )
     );
 });
 
@@ -957,12 +957,12 @@ test('umatan horses in race result edit page are ordered by sort_order', functio
     $response = $this->actingAs($user)->get(route('races.result.edit', ['uid' => $raceUid]));
 
     // Assert
-    $response->assertInertia(fn (Assert $page) =>
-        $page->component('races/result/edit')
-             ->has('race.payouts.0.horses', 2)
-             ->where('race.payouts.0.horses.0.sort_order', 1)
-             ->where('race.payouts.0.horses.0.horse_number', 3)
-             ->where('race.payouts.0.horses.1.sort_order', 2)
-             ->where('race.payouts.0.horses.1.horse_number', 5)
+    $response->assertInertia(fn (Assert $page) => $page
+        ->component('races/result/edit')
+        ->has('race.payouts.0.horses', 2)
+        ->where('race.payouts.0.horses.0.sort_order', 1)
+        ->where('race.payouts.0.horses.0.horse_number', 3)
+        ->where('race.payouts.0.horses.1.sort_order', 2)
+        ->where('race.payouts.0.horses.1.horse_number', 5)
     );
 });
