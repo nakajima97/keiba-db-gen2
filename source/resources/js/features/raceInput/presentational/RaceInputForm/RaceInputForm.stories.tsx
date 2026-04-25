@@ -40,3 +40,15 @@ export const AfterSave: Story = {
 		onSubmit: () => {},
 	},
 };
+
+export const AfterSaveWithRaceName: Story = {
+	name: "保存後（レース名あり）",
+	args: {
+		venues: baseVenues,
+		initialVenueId: 2,
+		initialRaceDate: "2026-04-18",
+		initialRaceNumber: 5,
+		initialRaceName: "春の天皇賞",
+		onSubmit: () => {},
+	},
+};

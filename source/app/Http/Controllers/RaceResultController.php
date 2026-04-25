@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Exceptions\RaceResult\ParseException;
 use App\Http\Requests\RaceResult\StoreRaceResultRequest;
 use App\UseCases\RaceResult\ShowAction;
+use App\UseCases\RaceResult\ShowResultAction;
 use App\UseCases\RaceResult\StoreAction;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
@@ -30,7 +31,7 @@ class RaceResultController extends Controller
         return redirect()->route('tickets.index');
     }
 
-    public function edit(string $uid, ShowAction $action): Response
+    public function edit(string $uid, ShowResultAction $action): Response
     {
         return Inertia::render('races/result/edit', [
             'race' => $action->execute($uid),

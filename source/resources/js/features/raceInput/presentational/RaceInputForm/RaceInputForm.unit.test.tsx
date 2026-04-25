@@ -72,6 +72,14 @@ describe("RaceInputForm", () => {
 			expect(screen.getByText("レース番号")).toBeInTheDocument();
 			expect(screen.getByLabelText("出馬表をペースト")).toBeInTheDocument();
 		});
+
+		it("「レース名」入力フィールドが表示される", () => {
+			// Act
+			render(<RaceInputForm {...baseProps} />);
+
+			// Assert
+			expect(screen.getByLabelText("レース名")).toBeInTheDocument();
+		});
 	});
 
 	describe("バリデーション", () => {
@@ -149,6 +157,7 @@ describe("RaceInputForm", () => {
 					race_date: "2026-04-18",
 					race_number: 1,
 					paste_text: "出馬表テキスト",
+					race_name: undefined,
 				},
 				expect.any(Function),
 			);
@@ -181,6 +190,38 @@ describe("RaceInputForm", () => {
 			// Assert
 			expect(screen.getByLabelText("出馬表をペースト")).toHaveValue("");
 		});
+
+		it("onSubmit の第2引数を呼んでもレース名は保持される", async () => {
+			// Arrange
+			const onSubmit = vi.fn();
+			const user = userEvent.setup();
+			render(
+				<RaceInputForm
+					{...baseProps}
+					onSubmit={onSubmit}
+					initialRaceName="天皇賞（春）"
+				/>,
+			);
+
+			const selectButtons = screen.getAllByRole("button", { name: "セレクト" });
+			await user.click(selectButtons[0]);
+			await user.type(screen.getByLabelText("レース日"), "2026-04-18");
+			await user.click(selectButtons[1]);
+			await user.type(
+				screen.getByLabelText("出馬表をペースト"),
+				"出馬表テキスト",
+			);
+			await user.click(screen.getByRole("button", { name: "保存する" }));
+
+			// Act: コンテナが成功を通知するイメージで onSuccess を呼ぶ
+			const onSuccess = onSubmit.mock.calls[0][1] as () => void;
+			await act(async () => {
+				onSuccess();
+			});
+
+			// Assert
+			expect(screen.getByLabelText("レース名")).toHaveValue("天皇賞（春）");
+		});
 	});
 
 	describe("初期値", () => {
@@ -212,6 +253,14 @@ describe("RaceInputForm", () => {
 				.getAllByRole("button", { name: "セレクト" })
 				.map((btn) => btn.closest("[data-value]"));
 			expect(selectDivs[1]).toHaveAttribute("data-value", "5");
+		});
+
+		it("initialRaceName が渡された場合、レース名の初期値として反映される", () => {
+			// Act
+			render(<RaceInputForm {...baseProps} initialRaceName="天皇賞（春）" />);
+
+			// Assert
+			expect(screen.getByLabelText("レース名")).toHaveValue("天皇賞（春）");
 		});
 	});
 });
