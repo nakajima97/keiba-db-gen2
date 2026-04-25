@@ -61,7 +61,7 @@ docker run --rm \
   -u "$(id -u):$(id -g)" \
   -v "${WT_SOURCE}:/var/www/html" \
   -w /var/www/html \
-  laravelsail/php85-composer:latest \
+  laravelsail/php84-composer:latest \
   composer install --ignore-platform-reqs
 
 echo "==> Installing Node dependencies..."
