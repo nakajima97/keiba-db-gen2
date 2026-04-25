@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\RaceController;
+use App\Http\Controllers\RaceEntryController;
 use App\Http\Controllers\RaceResultController;
 use App\Http\Controllers\TicketPurchaseController;
 use Illuminate\Support\Facades\Route;
@@ -21,6 +22,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/races/new', [RaceController::class, 'create'])->name('races.create');
     Route::post('/races', [RaceController::class, 'store'])->name('races.store');
     Route::get('/races/{race:uid}', [RaceController::class, 'show'])->name('races.show');
+
+    Route::get('/races/{race:uid}/entries/new', [RaceEntryController::class, 'create'])->name('races.entries.create');
+    Route::post('/races/{race:uid}/entries', [RaceEntryController::class, 'store'])->name('races.entries.store');
 
     Route::get('/races/{uid}/result/new', [RaceResultController::class, 'create'])->name('races.result.create');
     Route::post('/races/{uid}/result', [RaceResultController::class, 'store'])->name('races.result.store');
