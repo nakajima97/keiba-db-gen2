@@ -15,20 +15,31 @@ export default function RaceResultFormContainer({
 	raceDate,
 	raceNumber,
 }: RaceResultFormContainerProps) {
-	const [pasteValue, setPasteValue] = useState("");
-	const [parseError, setParseError] = useState<string | null>(null);
+	const [resultPasteValue, setResultPasteValue] = useState("");
+	const [payoutPasteValue, setPayoutPasteValue] = useState("");
+	const [resultParseError, setResultParseError] = useState<string | null>(null);
+	const [payoutParseError, setPayoutParseError] = useState<string | null>(null);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
 	const handleSubmit = () => {
 		setIsSubmitting(true);
-		setParseError(null);
+		setResultParseError(null);
+		setPayoutParseError(null);
 
 		router.post(
 			`/races/${raceUid}/result`,
-			{ text: pasteValue },
+			{ result_text: resultPasteValue, text: payoutPasteValue },
 			{
 				onError: (errors) => {
-					setParseError(errors.text ?? "保存に失敗しました。");
+					if (errors.result_text) {
+						setResultParseError(errors.result_text);
+					}
+					if (errors.text) {
+						setPayoutParseError(errors.text);
+					}
+					if (!errors.result_text && !errors.text) {
+						setPayoutParseError("保存に失敗しました。");
+					}
 					setIsSubmitting(false);
 				},
 				onFinish: () => {
@@ -43,9 +54,12 @@ export default function RaceResultFormContainer({
 			venueName={venueName}
 			raceDate={raceDate}
 			raceNumber={raceNumber}
-			pasteValue={pasteValue}
-			onPasteChange={setPasteValue}
-			parseError={parseError}
+			resultPasteValue={resultPasteValue}
+			onResultPasteChange={setResultPasteValue}
+			resultParseError={resultParseError}
+			payoutPasteValue={payoutPasteValue}
+			onPayoutPasteChange={setPayoutPasteValue}
+			payoutParseError={payoutParseError}
 			onSubmit={handleSubmit}
 			isSubmitting={isSubmitting}
 		/>

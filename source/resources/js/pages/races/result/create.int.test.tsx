@@ -26,7 +26,8 @@ describe("RaceResultCreate ページ", () => {
 
 		// Assert
 		expect(screen.getByText("レース結果入力")).toBeInTheDocument();
-		expect(screen.getByRole("textbox")).toBeInTheDocument();
+		expect(screen.getByLabelText("着順情報をペースト")).toBeInTheDocument();
+		expect(screen.getByLabelText("払い戻し情報をペースト")).toBeInTheDocument();
 		expect(
 			screen.getByRole("button", { name: "保存する" }),
 		).toBeInTheDocument();

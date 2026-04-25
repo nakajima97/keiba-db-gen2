@@ -103,7 +103,6 @@ class RaceResultHorseParser
      * 馬1頭分のブロック（行の配列）をパースする。
      *
      * @param  array<int, string>  $block
-     *
      * @return array{
      *     finishing_order: int,
      *     frame_number: int,

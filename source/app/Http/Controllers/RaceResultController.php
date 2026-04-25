@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\RaceResult\ParseException;
 use App\Http\Requests\RaceResult\StoreRaceResultRequest;
 use App\UseCases\RaceResult\ShowAction;
 use App\UseCases\RaceResult\StoreAction;
@@ -22,8 +23,8 @@ class RaceResultController extends Controller
     {
         try {
             $action->execute($request->validated(), $uid, $request->user()->id);
-        } catch (\InvalidArgumentException $e) {
-            return redirect()->back()->withErrors(['text' => $e->getMessage()])->withInput();
+        } catch (ParseException $e) {
+            return redirect()->back()->withErrors([$e->field => $e->getMessage()])->withInput();
         }
 
         return redirect()->route('tickets.index');
