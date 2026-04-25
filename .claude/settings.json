@@ -15,9 +15,11 @@
     ],
     "deny": [
       "Bash(curl *)",
-      "Read(./.env)",
-      "Read(./.env.*)",
-      "Read(./secrets/**)"
+      "Read(**/.env)",
+      "Read(**/.env.*)",
+      "Read(./secrets/**)",
+      "Bash(grep *.env)",
+      "Bash(grep *.env.*)"
     ]
   },
   "enabledPlugins": {
