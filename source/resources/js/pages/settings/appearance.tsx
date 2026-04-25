@@ -1,5 +1,5 @@
 import { Head } from "@inertiajs/react";
-import AppearanceTabs from "@/components/presentational/AppearanceTabs";
+import AppearanceTabs from "@/features/settings/presentational/AppearanceTabs";
 import Heading from "@/components/presentational/Heading";
 import { edit as editAppearance } from "@/routes/appearance";
 
