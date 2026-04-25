@@ -8,7 +8,7 @@ vi.mock("@inertiajs/react", () => ({
 }));
 
 import { router } from "@inertiajs/react";
-import { useFormSubmit } from "./use-form-submit";
+import { useFormSubmit } from "./useFormSubmit";
 
 describe("useFormSubmit", () => {
 	beforeEach(() => {

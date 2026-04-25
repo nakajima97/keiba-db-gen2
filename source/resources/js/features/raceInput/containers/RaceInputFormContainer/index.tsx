@@ -1,5 +1,5 @@
 import RaceInputForm from "@/features/raceInput/presentational/RaceInputForm";
-import { useFormSubmit } from "@/hooks/use-form-submit";
+import { useFormSubmit } from "@/hooks/useFormSubmit";
 import { useRef } from "react";
 import { toast } from "sonner";
 

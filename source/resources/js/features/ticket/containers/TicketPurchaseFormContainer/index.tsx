@@ -3,7 +3,7 @@ import {
 	BUY_TYPE_MAP,
 	type TicketTypeId,
 } from "@/features/ticket/presentational/TicketPurchaseForm";
-import { useFormSubmit } from "@/hooks/use-form-submit";
+import { useFormSubmit } from "@/hooks/useFormSubmit";
 import { useState } from "react";
 import { toast } from "sonner";
 

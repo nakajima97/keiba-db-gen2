@@ -1,5 +1,5 @@
 import RaceResultForm from "@/features/raceResult/presentational/RaceResultForm";
-import { useFormSubmit } from "@/hooks/use-form-submit";
+import { useFormSubmit } from "@/hooks/useFormSubmit";
 import { useState } from "react";
 
 type RaceResultFormContainerProps = {
