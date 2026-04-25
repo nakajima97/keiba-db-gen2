@@ -25,6 +25,7 @@ erDiagram
         bigint venue_id FK
         date race_date
         tinyint race_number "1〜12"
+        string race_name "nullable"
         timestamp created_at
         timestamp updated_at
     }

@@ -35,6 +35,7 @@ class RaceController extends Controller
                         : (string) $race->race_date,
                     'venue_name' => $race->venue->name,
                     'race_number' => $race->race_number,
+                    'race_name' => $race->race_name,
                 ]) : [],
             'venues' => $raceDate
                 ? Venue::query()

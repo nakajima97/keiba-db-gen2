@@ -3,6 +3,7 @@ export type RaceListItem = {
 	race_date: string;
 	venue_name: string;
 	race_number: number;
+	race_name: string | null;
 };
 
 export type Venue = {
