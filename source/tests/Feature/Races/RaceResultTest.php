@@ -21,22 +21,22 @@ $sampleText = implode("\n", [
 ]);
 
 // JRA公式サイトからコピーした着順データ形式（タブ区切り・3行1セットで1頭）
-// 行1: 着順\t枠\t馬番\t馬名\t性齢\t負担重量\t騎手名\tタイム\t着差\tコーナー通過順位
-// 行2: 推定上り\t馬体重（増減）\t調教師名\t単勝人気
-// 行3: 空行（セパレーター）
+// 行1: 着順\t枠（枠N色）\t馬番\t馬名\t性齢\t負担重量\t騎手名\tタイム\t着差\t
+// 行2: コーナー通過順位（スペース区切り）
+// 行3: 推定上り\t馬体重（増減）\t調教師名\t単勝人気
 $resultSampleText = implode("\n", [
-    "1\t2\t3\tテスト馬A\t牡3\t57.0\t騎手A\t1.34.5\t-\t2-2-2-1",
+    "1\t枠2黒\t3\tテスト馬A\t牡3\t57.0\t騎手A\t1:34.5\t-\t",
+    "2 2 2 1",
     "34.2\t500(+2)\t調教師A\t1",
-    "",
-    "2\t4\t7\tテスト馬B\t牝4\t55.0\t騎手B\t1.34.8\t0.3\t4-4-3-2",
+    "2\t枠4青\t7\tテスト馬B\t牝4\t55.0\t騎手B\t1:34.8\t0.3\t",
+    "4 4 3 2",
     "34.5\t480(-4)\t調教師B\t3",
-    "",
-    "3\t1\t1\tテスト馬C\t牡5\t58.0\t騎手C\t1.35.0\t0.5\t1-1-1-3",
+    "3\t枠1白\t1\tテスト馬C\t牡5\t58.0\t騎手C\t1:35.0\t0.5\t",
+    "1 1 1 3",
     "35.1\t490(初出走)\t調教師C\t2",
-    "",
-    "4\t3\t5\tテスト馬D\t牡4\t57.0\t騎手D\t1.35.3\t0.8\t3-3-4-4",
+    "4\t枠3赤\t5\tテスト馬D\t牡4\t57.0\t騎手D\t1:35.3\t0.8\t",
+    "3 3 4 4",
     "35.5\t510(0)\t調教師D\t4",
-    "",
 ]);
 
 // JRA公式サイトからコピーしたフォーマット（券種名が別行のヘッダー）
@@ -878,9 +878,9 @@ test('amount が 100円より多い場合、払い戻し金額は購入金額に
     ]);
 });
 
-// ===== race_horse_results — 着順保存ロジック =====
+// ===== race_result_horses — 着順保存ロジック =====
 
-test('valid result_text is stored with correct number of race_horse_results records', function () use ($resultSampleText, $sampleText) {
+test('valid result_text is stored with correct number of race_result_horses records', function () use ($resultSampleText, $sampleText) {
     // Arrange
     $user = User::factory()->create();
     ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
@@ -893,10 +893,10 @@ test('valid result_text is stored with correct number of race_horse_results reco
     ]);
 
     // Assert
-    expect(DB::table('race_horse_results')->where('race_id', $raceId)->count())->toBe(4);
+    expect(DB::table('race_result_horses')->where('race_id', $raceId)->count())->toBe(4);
 });
 
-test('race_horse_results records have correct field mappings', function () use ($resultSampleText, $sampleText) {
+test('race_result_horses records have correct field mappings', function () use ($resultSampleText, $sampleText) {
     // Arrange
     $user = User::factory()->create();
     ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
@@ -909,27 +909,27 @@ test('race_horse_results records have correct field mappings', function () use (
     ]);
 
     // Assert
-    $this->assertDatabaseHas('race_horse_results', [
+    $this->assertDatabaseHas('race_result_horses', [
         'race_id' => $raceId,
-        'finish_order' => 1,
-        'post_position' => 2,
+        'finishing_order' => 1,
+        'frame_number' => 2,
         'horse_number' => 3,
         'horse_name' => 'テスト馬A',
         'sex_age' => '牡3',
-        'burden_weight' => '57.0',
+        'weight' => '57.0',
         'jockey_name' => '騎手A',
-        'finish_time' => '1.34.5',
-        'margin' => '-',
-        'corner_orders' => '2-2-2-1',
-        'last_furlong' => '34.2',
+        'race_time' => '1:34.5',
+        'time_difference' => '-',
+        'corner_order' => '2 2 2 1',
+        'estimated_pace' => '34.2',
         'horse_weight' => 500,
-        'horse_weight_diff' => 2,
+        'horse_weight_change' => 2,
         'trainer_name' => '調教師A',
         'popularity' => 1,
     ]);
 });
 
-test('horse weight diff is null when horse has no race experience', function () use ($resultSampleText, $sampleText) {
+test('horse weight change is null when horse has no race experience', function () use ($resultSampleText, $sampleText) {
     // Arrange
     $user = User::factory()->create();
     ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
@@ -942,11 +942,11 @@ test('horse weight diff is null when horse has no race experience', function () 
     ]);
 
     // Assert
-    $this->assertDatabaseHas('race_horse_results', [
+    $this->assertDatabaseHas('race_result_horses', [
         'race_id' => $raceId,
         'horse_name' => 'テスト馬C',
         'horse_weight' => 490,
-        'horse_weight_diff' => null,
+        'horse_weight_change' => null,
     ]);
 });
 
@@ -964,5 +964,5 @@ test('empty result_text returns validation error and nothing is stored', functio
 
     // Assert
     $response->assertSessionHasErrors(['result_text']);
-    expect(DB::table('race_horse_results')->where('race_id', $raceId)->count())->toBe(0);
+    expect(DB::table('race_result_horses')->where('race_id', $raceId)->count())->toBe(0);
 });
