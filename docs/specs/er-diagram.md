@@ -120,6 +120,30 @@ erDiagram
     races ||--o{ race_entries : "has"
     horses ||--o{ race_entries : "participates in"
     jockeys ||--o{ race_entries : "rides in"
+
+    race_result_horses {
+        bigint id PK
+        bigint race_id FK
+        tinyint finishing_order "着順"
+        tinyint frame_number "枠番"
+        tinyint horse_number "馬番"
+        string horse_name "馬名"
+        string sex_age "性齢"
+        decimal weight "負担重量(kg)"
+        string jockey_name "騎手名"
+        string race_time "タイム"
+        string time_difference "タイム差 nullable"
+        string corner_order "コーナー順位 nullable"
+        decimal estimated_pace "推定ペース nullable"
+        smallint horse_weight "馬体重(kg) nullable"
+        smallint horse_weight_change "馬体重増減(kg) nullable"
+        string trainer_name "調教師名"
+        tinyint popularity "人気順位"
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    races ||--o{ race_result_horses : "has"
 ```
 
 ## selectionsカラムのJSONフォーマット
