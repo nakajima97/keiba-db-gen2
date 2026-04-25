@@ -8,6 +8,7 @@ use App\Models\RacePayout;
 use App\Models\RacePayoutHorse;
 use App\Models\RaceResultHorse;
 use App\Models\TicketPurchase;
+use App\Models\TicketType;
 use App\Services\RaceResultHorseParser;
 use App\UseCases\TicketPurchase\CalculatePayoutAmountAction;
 use Illuminate\Database\Eloquent\Collection;
@@ -72,8 +73,7 @@ class StoreAction
             throw new ParseException($e->getMessage(), 'text');
         }
 
-        $ticketTypeIds = DB::table('ticket_types')
-            ->whereIn('name', self::REQUIRED_TYPES)
+        $ticketTypeIds = TicketType::whereIn('name', self::REQUIRED_TYPES)
             ->pluck('id', 'name')
             ->all();
 
