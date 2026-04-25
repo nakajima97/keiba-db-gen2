@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Horse;
+use App\Models\Jockey;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -17,8 +19,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('race_result_horses', function (Blueprint $table) {
-            $table->dropForeignIdFor(\App\Models\Horse::class);
-            $table->dropForeignIdFor(\App\Models\Jockey::class);
+            $table->dropForeignIdFor(Horse::class);
+            $table->dropForeignIdFor(Jockey::class);
         });
     }
 };

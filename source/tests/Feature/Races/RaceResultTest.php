@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Horse;
+use App\Models\Jockey;
 use App\Models\User;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Facades\DB;
@@ -979,8 +981,8 @@ test('existing horse and jockey records are reused when result text contains sam
     ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
     ['raceUid' => $raceUid] = createRaceWithUid($venueId, $now);
 
-    $existingHorse = \App\Models\Horse::create(['name' => 'テスト馬A']);
-    $existingJockey = \App\Models\Jockey::create(['name' => '騎手A']);
+    $existingHorse = Horse::create(['name' => 'テスト馬A']);
+    $existingJockey = Jockey::create(['name' => '騎手A']);
 
     // Act
     $this->actingAs($user)->post(route('races.result.store', ['uid' => $raceUid]), [
