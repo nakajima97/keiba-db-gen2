@@ -9,6 +9,15 @@ export type PayoutEntry = {
 	}>;
 };
 
+export type FinishingHorse = {
+	finishing_order: number;
+	frame_number: number;
+	horse_number: number;
+	horse_name: string;
+	jockey_name: string;
+	race_time: string;
+};
+
 export type RaceResultDetailProps = {
 	race: {
 		uid: string;
@@ -16,5 +25,6 @@ export type RaceResultDetailProps = {
 		race_date: string;
 		race_number: number;
 		payouts: PayoutEntry[];
+		finishing_horses: FinishingHorse[];
 	};
 };

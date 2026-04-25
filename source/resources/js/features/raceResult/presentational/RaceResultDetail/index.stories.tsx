@@ -20,6 +20,34 @@ const baseRace: Pick<
 	race_number: 11,
 };
 
+const sampleFinishingHorses: RaceResultDetailProps["race"]["finishing_horses"] =
+	[
+		{
+			finishing_order: 1,
+			frame_number: 2,
+			horse_number: 3,
+			horse_name: "ディープスター",
+			jockey_name: "武豊",
+			race_time: "1:33.5",
+		},
+		{
+			finishing_order: 2,
+			frame_number: 3,
+			horse_number: 5,
+			horse_name: "サクラチカラ",
+			jockey_name: "川田将雅",
+			race_time: "1:33.7",
+		},
+		{
+			finishing_order: 3,
+			frame_number: 5,
+			horse_number: 8,
+			horse_name: "ゴールドウィング",
+			jockey_name: "福永祐一",
+			race_time: "1:33.9",
+		},
+	];
+
 const allPayouts: RaceResultDetailProps["race"]["payouts"] = [
 	{
 		ticket_type_label: "単勝",
@@ -139,6 +167,7 @@ export const Default: Story = {
 		race: {
 			...baseRace,
 			payouts: allPayouts,
+			finishing_horses: sampleFinishingHorses,
 		},
 	},
 };
@@ -171,6 +200,18 @@ export const ArrowNotation: Story = {
 					],
 				},
 			],
+			finishing_horses: sampleFinishingHorses,
+		},
+	},
+};
+
+export const NoFinishingHorses: Story = {
+	name: "着順データなし",
+	args: {
+		race: {
+			...baseRace,
+			payouts: allPayouts,
+			finishing_horses: [],
 		},
 	},
 };

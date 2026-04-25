@@ -3,6 +3,8 @@
 namespace App\UseCases\RaceResult;
 
 use App\Exceptions\RaceResult\ParseException;
+use App\Models\Horse;
+use App\Models\Jockey;
 use App\Models\Race;
 use App\Models\RacePayout;
 use App\Models\RacePayoutHorse;
@@ -79,7 +81,12 @@ class StoreAction
 
         DB::transaction(function () use ($entries, $resultHorseEntries, $raceId, $ticketTypeIds, $userId): void {
             foreach ($resultHorseEntries as $horseEntry) {
-                RaceResultHorse::create(array_merge(['race_id' => $raceId], $horseEntry));
+                $horse = Horse::firstOrCreate(['name' => $horseEntry['horse_name']]);
+                $jockey = Jockey::firstOrCreate(['name' => $horseEntry['jockey_name']]);
+                RaceResultHorse::create(array_merge(
+                    ['race_id' => $raceId, 'horse_id' => $horse->id, 'jockey_id' => $jockey->id],
+                    $horseEntry
+                ));
             }
 
             foreach ($entries as $entry) {

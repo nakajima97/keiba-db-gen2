@@ -22,6 +22,14 @@ class ShowResultAction
      *         popularity: int,
      *         horses: list<array{horse_number: int, sort_order: int}>,
      *     }>,
+     *     finishing_horses: list<array{
+     *         finishing_order: int,
+     *         frame_number: int,
+     *         horse_number: int,
+     *         horse_name: string,
+     *         jockey_name: string,
+     *         race_time: string,
+     *     }>,
      * }
      */
     public function execute(string $uid): array
@@ -37,6 +45,9 @@ class ShowResultAction
                 'racePayouts.ticketType',
                 'racePayouts.racePayoutHorses' => function ($query) {
                     $query->orderBy('sort_order');
+                },
+                'raceResultHorses' => function ($query) {
+                    $query->orderBy('finishing_order');
                 },
             ])
             ->firstOrFail();
@@ -56,12 +67,24 @@ class ShowResultAction
             ];
         })->values()->all();
 
+        $finishingHorses = $race->raceResultHorses->map(function ($horse) {
+            return [
+                'finishing_order' => $horse->finishing_order,
+                'frame_number' => $horse->frame_number,
+                'horse_number' => $horse->horse_number,
+                'horse_name' => $horse->horse_name,
+                'jockey_name' => $horse->jockey_name,
+                'race_time' => $horse->race_time,
+            ];
+        })->values()->all();
+
         return [
             'uid' => $race->uid,
             'venue_name' => $race->venue->name,
             'race_date' => $race->race_date,
             'race_number' => $race->race_number,
             'payouts' => $payouts,
+            'finishing_horses' => $finishingHorses,
         ];
     }
 }
