@@ -23,15 +23,17 @@ describe("RaceResultFormContainer", () => {
 		vi.clearAllMocks();
 	});
 
-	it("ハッピーパス: テキスト入力後に保存ボタンをクリックすると router.post が正しいURLとデータで呼ばれる", async () => {
+	it("ハッピーパス: 着順・払い戻しテキスト入力後に保存ボタンをクリックすると router.post が正しいURLとデータで呼ばれる", async () => {
 		// Arrange
 		const user = userEvent.setup();
 		render(<RaceResultFormContainer {...defaultProps} />);
 
-		const textarea = screen.getByRole("textbox");
+		const resultTextarea = screen.getByLabelText("着順情報をペースト");
+		const payoutTextarea = screen.getByLabelText("払い戻し情報をペースト");
 
 		// Act
-		await user.type(textarea, "sample payout text");
+		await user.type(resultTextarea, "sample result text");
+		await user.type(payoutTextarea, "sample payout text");
 		await user.click(screen.getByRole("button", { name: "保存する" }));
 
 		// Assert
@@ -39,6 +41,7 @@ describe("RaceResultFormContainer", () => {
 		expect(router.post).toHaveBeenCalledWith(
 			expect.stringContaining("test-uid-123"),
 			expect.objectContaining({
+				result_text: "sample result text",
 				text: "sample payout text",
 			}),
 			expect.any(Object),
