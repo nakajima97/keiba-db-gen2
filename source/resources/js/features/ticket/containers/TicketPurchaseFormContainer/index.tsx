@@ -1,11 +1,11 @@
-import { useState } from "react";
-import { router } from "@inertiajs/react";
-import { toast } from "sonner";
 import TicketPurchaseForm from "@/features/ticket/presentational/TicketPurchaseForm";
 import {
 	BUY_TYPE_MAP,
 	type TicketTypeId,
 } from "@/features/ticket/presentational/TicketPurchaseForm";
+import { useFormSubmit } from "@/hooks/useFormSubmit";
+import { useState } from "react";
+import { toast } from "sonner";
 
 export type TicketPurchaseFormContainerProps = {
 	initialVenue: string;
@@ -46,7 +46,19 @@ export default function TicketPurchaseFormContainer({
 	const [selectedHorses, setSelectedHorses] =
 		useState<Record<string, number[]>>(initialHorses);
 	const [amount, setAmount] = useState(initialAmount);
-	const [processing, setProcessing] = useState(false);
+
+	const { isSubmitting, handleSubmit: submit } = useFormSubmit({
+		url: "/tickets",
+		onSuccess: () => {
+			toast.success("馬券を登録しました");
+			setSelectedHorses({});
+		},
+		onError: (errors) => {
+			for (const message of Object.values(errors)) {
+				toast.error(message);
+			}
+		},
+	});
 
 	const handleTicketTypeChange = (id: TicketTypeId) => {
 		setSelectedTicketTypeId(id);
@@ -63,33 +75,15 @@ export default function TicketPurchaseFormContainer({
 	const handleSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
-		setProcessing(true);
-		router.post(
-			"/tickets",
-			{
-				venue: selectedVenue,
-				race_date: selectedRaceDate,
-				race_number: selectedRaceNumber,
-				ticket_type: selectedTicketTypeId,
-				buy_type: selectedBuyTypeId,
-				selections: selectedHorses,
-				amount,
-			},
-			{
-				onSuccess: () => {
-					toast.success("馬券を登録しました");
-					setSelectedHorses({});
-				},
-				onError: (errors) => {
-					for (const message of Object.values(errors)) {
-						toast.error(message);
-					}
-				},
-				onFinish: () => {
-					setProcessing(false);
-				},
-			},
-		);
+		submit({
+			venue: selectedVenue,
+			race_date: selectedRaceDate,
+			race_number: selectedRaceNumber,
+			ticket_type: selectedTicketTypeId,
+			buy_type: selectedBuyTypeId,
+			selections: selectedHorses,
+			amount,
+		});
 	};
 
 	return (
@@ -104,7 +98,7 @@ export default function TicketPurchaseFormContainer({
 				selectedNagashiDirection={selectedNagashiDirection}
 				selectedHorses={selectedHorses}
 				amount={amount}
-				processing={processing}
+				processing={isSubmitting}
 				onVenueChange={setSelectedVenue}
 				onRaceDateChange={setSelectedRaceDate}
 				onRaceNumberChange={setSelectedRaceNumber}
