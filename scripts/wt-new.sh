@@ -87,7 +87,7 @@ echo "==> Configuring .env..."
 cp "${MAIN_SOURCE}/.env" "${WT_SOURCE}/.env"
 
 APP_PORT="800${OFFSET}"
-VITE_PORT="$((5173 + OFFSET))"
+VITE_PORT="$((6000 + OFFSET))"
 DB_PORT="$((3306 + OFFSET))"
 DB_DATABASE="keiba_wt${OFFSET}"
 COMPOSE_PROJECT_NAME="sail-wt-${OFFSET}"
