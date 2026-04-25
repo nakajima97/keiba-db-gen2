@@ -3,7 +3,7 @@ import TicketPurchaseForm from ".";
 import type { TicketPurchaseFormProps } from ".";
 
 const meta: Meta<typeof TicketPurchaseForm> = {
-	title: "TicketPurchaseForm",
+	title: "features/ticket/presentational/TicketPurchaseForm",
 	component: TicketPurchaseForm,
 };
 

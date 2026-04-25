@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import RaceInputForm from ".";
 
 const meta: Meta<typeof RaceInputForm> = {
-	title: "features/raceInput/RaceInputForm",
+	title: "features/raceInput/presentational/RaceInputForm",
 	component: RaceInputForm,
 };
 

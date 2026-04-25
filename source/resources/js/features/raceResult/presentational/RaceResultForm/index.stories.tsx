@@ -3,7 +3,7 @@ import RaceResultForm from ".";
 import type { RaceResultFormProps } from ".";
 
 const meta: Meta<typeof RaceResultForm> = {
-	title: "RaceResultForm",
+	title: "features/raceResult/presentational/RaceResultForm",
 	component: RaceResultForm,
 };
 
