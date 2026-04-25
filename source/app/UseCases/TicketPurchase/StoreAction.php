@@ -2,11 +2,12 @@
 
 namespace App\UseCases\TicketPurchase;
 
+use App\Models\BuyType;
 use App\Models\Race;
 use App\Models\RacePayout;
 use App\Models\TicketPurchase;
+use App\Models\TicketType;
 use App\Models\Venue;
-use Illuminate\Support\Facades\DB;
 
 class StoreAction
 {
@@ -16,13 +17,9 @@ class StoreAction
 
     public function execute(array $data, int $userId): TicketPurchase
     {
-        $ticketTypeId = DB::table('ticket_types')
-            ->where('name', $data['ticket_type'])
-            ->value('id');
+        $ticketTypeId = TicketType::where('name', $data['ticket_type'])->value('id');
 
-        $buyTypeId = DB::table('buy_types')
-            ->where('name', $data['buy_type'])
-            ->value('id');
+        $buyTypeId = BuyType::where('name', $data['buy_type'])->value('id');
 
         $raceId = null;
         if (! empty($data['race_date']) && ! empty($data['race_number'])) {

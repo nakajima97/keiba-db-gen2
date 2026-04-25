@@ -86,9 +86,7 @@ export default function RaceList({
 								<tr
 									key={race.uid}
 									className="cursor-pointer border-b last:border-0 hover:bg-muted/30"
-									onClick={() =>
-										router.visit(show.url({ race: race.uid }))
-									}
+									onClick={() => router.visit(show.url({ race: race.uid }))}
 									onKeyDown={(e) => {
 										if (e.key === "Enter" || e.key === " ") {
 											router.visit(show.url({ race: race.uid }));
