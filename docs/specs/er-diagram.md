@@ -148,6 +148,31 @@ erDiagram
     races ||--o{ race_result_horses : "has"
     horses ||--o{ race_result_horses : "has"
     jockeys ||--o{ race_result_horses : "has"
+
+    race_mark_columns {
+        bigint id PK
+        bigint race_id FK
+        bigint user_id FK
+        enum column_type "own/other"
+        string label "他人列のラベル nullable"
+        smallint display_order "表示順"
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    race_marks {
+        bigint id PK
+        bigint race_mark_column_id FK
+        bigint race_entry_id FK
+        enum mark_value "◎/○/▲/△/×/✓"
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    races ||--o{ race_mark_columns : "has"
+    users ||--o{ race_mark_columns : "owns"
+    race_mark_columns ||--o{ race_marks : "has"
+    race_entries ||--o{ race_marks : "marked by"
 ```
 
 ## selectionsカラムのJSONフォーマット
