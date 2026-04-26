@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi } from "vitest";
 import RaceDetail from "./index";
 import type { RaceDetailItem } from "./types";
@@ -99,6 +100,66 @@ describe("RaceDetail", () => {
 			expect(
 				screen.getByRole("button", { name: "他人の印を追加" }),
 			).toBeInTheDocument();
+		});
+
+		it("other 列がある場合にそのラベルがヘッダーに表示される", () => {
+			// Arrange
+			const raceWithOtherColumn: RaceDetailItem = {
+				...baseRace,
+				mark_columns: [
+					{ id: 100, type: "own", label: null, display_order: 0 },
+					{ id: 101, type: "other", label: "友人A", display_order: 1 },
+				],
+			};
+
+			// Act
+			render(<RaceDetail race={raceWithOtherColumn} {...noopHandlers} />);
+
+			// Assert
+			expect(screen.getByDisplayValue("友人A")).toBeInTheDocument();
+		});
+
+		it("出走馬の行に印セレクト（role=combobox）が表示される", () => {
+			// Act
+			render(<RaceDetail race={baseRace} {...noopHandlers} />);
+
+			// Assert
+			expect(screen.getByRole("combobox")).toBeInTheDocument();
+		});
+
+		it("mark が設定されている出走馬の印セレクトに設定値が反映される", () => {
+			// Arrange
+			const raceWithMark: RaceDetailItem = {
+				...baseRace,
+				marks: [{ column_id: 100, race_entry_id: 1, mark_value: "◎" }],
+			};
+
+			// Act
+			render(<RaceDetail race={raceWithMark} {...noopHandlers} />);
+
+			// Assert
+			expect(screen.getByRole("combobox")).toHaveTextContent("◎");
+		});
+
+		it("「他人の印を追加」ボタンを押すと onAddOtherColumn が呼ばれる", async () => {
+			// Arrange
+			const onAddOtherColumn = vi.fn();
+			const user = userEvent.setup();
+
+			// Act
+			render(
+				<RaceDetail
+					race={baseRace}
+					{...noopHandlers}
+					onAddOtherColumn={onAddOtherColumn}
+				/>,
+			);
+			await user.click(
+				screen.getByRole("button", { name: "他人の印を追加" }),
+			);
+
+			// Assert
+			expect(onAddOtherColumn).toHaveBeenCalledTimes(1);
 		});
 	});
 });

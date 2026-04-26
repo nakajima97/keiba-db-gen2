@@ -128,3 +128,47 @@ test('race show returns 404 for non-existent uid', function () {
     // Assert
     $response->assertNotFound();
 });
+
+test('race show returns mark_columns including own column as inertia props', function () {
+    // Arrange
+    $user = User::factory()->create();
+    $venue = Venue::firstOrCreate(['name' => '東京']);
+    $race = Race::create([
+        'venue_id' => $venue->id,
+        'race_date' => '2026-04-05',
+        'race_number' => 1,
+    ]);
+
+    // Act
+    $response = $this->actingAs($user)->get(route('races.show', ['race' => $race->uid]));
+
+    // Assert
+    $response->assertInertia(fn (Assert $page) => $page
+        ->component('races/show')
+        ->has('race.mark_columns')
+        ->where('race.mark_columns', function ($columns) {
+            return collect($columns)->pluck('type')->contains('own');
+        })
+    );
+});
+
+test('race show returns marks as inertia props', function () {
+    // Arrange
+    $user = User::factory()->create();
+    $venue = Venue::firstOrCreate(['name' => '東京']);
+    $race = Race::create([
+        'venue_id' => $venue->id,
+        'race_date' => '2026-04-05',
+        'race_number' => 1,
+    ]);
+
+    // Act
+    $response = $this->actingAs($user)->get(route('races.show', ['race' => $race->uid]));
+
+    // Assert
+    $response->assertInertia(fn (Assert $page) => $page
+        ->component('races/show')
+        ->has('race.marks')
+        ->where('race.marks', fn ($marks) => is_array($marks))
+    );
+});
