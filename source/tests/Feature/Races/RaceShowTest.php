@@ -169,6 +169,6 @@ test('race show returns marks as inertia props', function () {
     $response->assertInertia(fn (Assert $page) => $page
         ->component('races/show')
         ->has('race.marks')
-        ->where('race.marks', fn ($marks) => is_array($marks))
+        ->where('race.marks', fn ($marks) => is_iterable($marks))
     );
 });

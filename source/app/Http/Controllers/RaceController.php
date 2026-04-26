@@ -73,10 +73,10 @@ class RaceController extends Controller
             ]);
     }
 
-    public function show(Race $race, ShowAction $action): Response
+    public function show(Race $race, Request $request, ShowAction $action): Response
     {
         return Inertia::render('races/show', [
-            'race' => $action->execute($race),
+            'race' => $action->execute($race, $request->user()),
         ]);
     }
 }

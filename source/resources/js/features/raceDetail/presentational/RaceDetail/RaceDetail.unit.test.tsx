@@ -161,5 +161,81 @@ describe("RaceDetail", () => {
 			// Assert
 			expect(onAddOtherColumn).toHaveBeenCalledTimes(1);
 		});
+
+		it("他人の印列の削除ボタンを押すと onRemoveOtherColumn が列 ID で呼ばれる", async () => {
+			// Arrange
+			const onRemoveOtherColumn = vi.fn();
+			const user = userEvent.setup();
+			const raceWithOtherColumn: RaceDetailItem = {
+				...baseRace,
+				mark_columns: [
+					{ id: 100, type: "own", label: null, display_order: 0 },
+					{ id: 101, type: "other", label: "友人A", display_order: 1 },
+				],
+			};
+
+			// Act
+			render(
+				<RaceDetail
+					race={raceWithOtherColumn}
+					{...noopHandlers}
+					onRemoveOtherColumn={onRemoveOtherColumn}
+				/>,
+			);
+			await user.click(screen.getByRole("button", { name: "この印列を削除" }));
+
+			// Assert
+			expect(onRemoveOtherColumn).toHaveBeenCalledWith(101);
+		});
+
+		it("他人の印列のラベルを変更すると onChangeColumnLabel が列 ID と入力値で呼ばれる", async () => {
+			// Arrange
+			const onChangeColumnLabel = vi.fn();
+			const user = userEvent.setup();
+			const raceWithOtherColumn: RaceDetailItem = {
+				...baseRace,
+				mark_columns: [
+					{ id: 100, type: "own", label: null, display_order: 0 },
+					{ id: 101, type: "other", label: "", display_order: 1 },
+				],
+			};
+
+			// Act
+			render(
+				<RaceDetail
+					race={raceWithOtherColumn}
+					{...noopHandlers}
+					onChangeColumnLabel={onChangeColumnLabel}
+				/>,
+			);
+			await user.type(screen.getByLabelText("他人の印列のラベル"), "X");
+
+			// Assert
+			expect(onChangeColumnLabel).toHaveBeenCalledWith(101, "X");
+		});
+
+		it("印を選択すると onMarkChange が columnId/raceEntryId/markValue で呼ばれる", async () => {
+			// Arrange
+			const onMarkChange = vi.fn();
+			const user = userEvent.setup();
+
+			// Act
+			render(
+				<RaceDetail
+					race={baseRace}
+					{...noopHandlers}
+					onMarkChange={onMarkChange}
+				/>,
+			);
+			await user.click(screen.getByRole("combobox"));
+			await user.click(screen.getByRole("option", { name: "◎" }));
+
+			// Assert
+			expect(onMarkChange).toHaveBeenCalledWith({
+				columnId: 100,
+				raceEntryId: 1,
+				markValue: "◎",
+			});
+		});
 	});
 });
