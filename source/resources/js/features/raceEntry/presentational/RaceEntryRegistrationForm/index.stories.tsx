@@ -47,3 +47,13 @@ export const WithPastedText: Story = {
 			"1\t1\tコントレイル\t福永祐一\t486\n2\t2\tグランアレグリア\t川田将雅\t470\n3\t3\tフィエールマン\t池添謙一\t458\n4\t4\tクロノジェネシス\t北村友一\t462\n5\t5\tカレンブーケドール\t津村明秀\t448",
 	},
 };
+
+export const MobileView: Story = {
+	name: "モバイル表示",
+	globals: {
+		viewport: { value: "mobile1", isRotated: false },
+	},
+	args: {
+		...baseArgs,
+	},
+};

@@ -1,6 +1,7 @@
 import { Link } from "@inertiajs/react";
 import { Button } from "@/components/shadcn/ui/button";
 import { Spinner } from "@/components/shadcn/ui/spinner";
+import ScrollableTable from "@/components/presentational/ScrollableTable";
 import { newMethod } from "@/routes/tickets";
 import { formatDateDisplay } from "@/utils/date";
 import type { TicketPurchaseListProps } from "./types";
@@ -28,89 +29,87 @@ export default function TicketPurchaseList({
 				</div>
 			) : (
 				<>
-					<div className="overflow-hidden rounded-xl border">
-						<table className="w-full text-sm">
-							<thead>
-								<tr className="border-b bg-muted/50">
-									<th className="px-4 py-3 text-left font-medium text-muted-foreground">
-										日付
-									</th>
-									<th className="px-4 py-3 text-left font-medium text-muted-foreground">
-										レース場
-									</th>
-									<th className="px-4 py-3 text-left font-medium text-muted-foreground">
-										レース番号
-									</th>
-									<th className="px-4 py-3 text-left font-medium text-muted-foreground">
-										券種
-									</th>
-									<th className="px-4 py-3 text-left font-medium text-muted-foreground">
-										買い方
-									</th>
-									<th className="px-4 py-3 text-right font-medium text-muted-foreground">
-										購入金額
-									</th>
-									<th className="px-4 py-3 text-right font-medium text-muted-foreground">
-										払い戻し金額
-									</th>
-									<th className="px-4 py-3 text-left font-medium text-muted-foreground">
-										レース結果
-									</th>
-								</tr>
-							</thead>
-							<tbody>
-								{purchases.map((purchase) => (
-									<tr
-										key={purchase.id}
-										className="border-b last:border-0 hover:bg-muted/30"
-									>
-										<td className="px-4 py-3">
-											{purchase.race_date
-												? formatDateDisplay(purchase.race_date)
-												: "-"}
-										</td>
-										<td className="px-4 py-3">{purchase.venue_name ?? "-"}</td>
-										<td className="px-4 py-3">{purchase.race_number ?? "-"}</td>
-										<td className="px-4 py-3">{purchase.ticket_type_label}</td>
-										<td className="px-4 py-3">
-											{formatSelections(purchase.selections)}
-										</td>
-										<td className="px-4 py-3 text-right">
-											{purchase.amount != null
-												? `¥${purchase.amount.toLocaleString()}`
-												: "-"}
-										</td>
-										<td className="px-4 py-3 text-right">
-											{purchase.payout_amount != null
-												? `¥${purchase.payout_amount.toLocaleString()}`
-												: "-"}
-										</td>
-										<td className="px-4 py-3">
-											{purchase.race_uid != null ? (
-												purchase.has_race_result ? (
-													<Link
-														href={`/races/${purchase.race_uid}/result/edit`}
-														className="text-sm underline"
-													>
-														確認・編集
-													</Link>
-												) : (
-													<Link
-														href={`/races/${purchase.race_uid}/result/new`}
-														className="text-sm underline"
-													>
-														結果入力
-													</Link>
-												)
+					<ScrollableTable>
+						<thead>
+							<tr className="border-b bg-muted/50">
+								<th className="px-4 py-3 text-left font-medium text-muted-foreground">
+									日付
+								</th>
+								<th className="px-4 py-3 text-left font-medium text-muted-foreground">
+									レース場
+								</th>
+								<th className="px-4 py-3 text-left font-medium text-muted-foreground">
+									レース番号
+								</th>
+								<th className="px-4 py-3 text-left font-medium text-muted-foreground">
+									券種
+								</th>
+								<th className="px-4 py-3 text-left font-medium text-muted-foreground">
+									買い方
+								</th>
+								<th className="px-4 py-3 text-right font-medium text-muted-foreground">
+									購入金額
+								</th>
+								<th className="px-4 py-3 text-right font-medium text-muted-foreground">
+									払い戻し金額
+								</th>
+								<th className="px-4 py-3 text-left font-medium text-muted-foreground">
+									レース結果
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							{purchases.map((purchase) => (
+								<tr
+									key={purchase.id}
+									className="border-b last:border-0 hover:bg-muted/30"
+								>
+									<td className="px-4 py-3">
+										{purchase.race_date
+											? formatDateDisplay(purchase.race_date)
+											: "-"}
+									</td>
+									<td className="px-4 py-3">{purchase.venue_name ?? "-"}</td>
+									<td className="px-4 py-3">{purchase.race_number ?? "-"}</td>
+									<td className="px-4 py-3">{purchase.ticket_type_label}</td>
+									<td className="px-4 py-3">
+										{formatSelections(purchase.selections)}
+									</td>
+									<td className="px-4 py-3 text-right">
+										{purchase.amount != null
+											? `¥${purchase.amount.toLocaleString()}`
+											: "-"}
+									</td>
+									<td className="px-4 py-3 text-right">
+										{purchase.payout_amount != null
+											? `¥${purchase.payout_amount.toLocaleString()}`
+											: "-"}
+									</td>
+									<td className="px-4 py-3">
+										{purchase.race_uid != null ? (
+											purchase.has_race_result ? (
+												<Link
+													href={`/races/${purchase.race_uid}/result/edit`}
+													className="text-sm underline"
+												>
+													確認・編集
+												</Link>
 											) : (
-												"-"
-											)}
-										</td>
-									</tr>
-								))}
-							</tbody>
-						</table>
-					</div>
+												<Link
+													href={`/races/${purchase.race_uid}/result/new`}
+													className="text-sm underline"
+												>
+													結果入力
+												</Link>
+											)
+										) : (
+											"-"
+										)}
+									</td>
+								</tr>
+							))}
+						</tbody>
+					</ScrollableTable>
 
 					{hasMore && (
 						<div className="flex justify-center">

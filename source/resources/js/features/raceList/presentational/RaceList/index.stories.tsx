@@ -115,3 +115,14 @@ export const FilteredByDateAndVenue: Story = {
 		selectedVenueId: "1",
 	},
 };
+
+export const MobileWithData: Story = {
+	name: "データあり（モバイル）",
+	globals: {
+		viewport: { value: "mobile1", isRotated: false },
+	},
+	args: {
+		...baseArgs,
+		races: sampleRaces,
+	},
+};

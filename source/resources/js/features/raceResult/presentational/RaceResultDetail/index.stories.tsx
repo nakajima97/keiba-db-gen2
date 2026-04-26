@@ -226,3 +226,17 @@ export const InputButtonHidden: Story = {
 		},
 	},
 };
+
+export const MobileWithData: Story = {
+	name: "データあり（モバイル）",
+	globals: {
+		viewport: { value: "mobile1", isRotated: false },
+	},
+	args: {
+		race: {
+			...baseRace,
+			payouts: allPayouts,
+			finishing_horses: sampleFinishingHorses,
+		},
+	},
+};
