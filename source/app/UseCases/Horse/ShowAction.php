@@ -29,13 +29,17 @@ class ShowAction
      */
     public function execute(Horse $horse): array
     {
-        $horse->load(['raceResultHorses.race.venue']);
+        $horse->load([
+            'raceResultHorses' => function ($query) {
+                $query->join('races', 'race_result_horses.race_id', '=', 'races.id')
+                    ->orderBy('races.race_date', 'desc')
+                    ->orderBy('races.race_number', 'asc')
+                    ->select('race_result_horses.*');
+            },
+            'raceResultHorses.race.venue',
+        ]);
 
         $raceHistories = $horse->raceResultHorses
-            ->sortBy([
-                ['race.race_date', 'desc'],
-                ['race.race_number', 'asc'],
-            ])
             ->map(fn ($result) => [
                 'race_uid' => $result->race->uid,
                 'race_date' => $result->race->race_date instanceof CarbonInterface

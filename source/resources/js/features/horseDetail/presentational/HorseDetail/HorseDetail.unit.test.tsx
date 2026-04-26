@@ -41,6 +41,22 @@ describe("HorseDetail", () => {
 			expect(screen.getByText("2020年")).toBeInTheDocument();
 		});
 
+		it("birth_year が null のとき「—」が表示される", () => {
+			// Arrange
+			const props: HorseDetailProps = {
+				horse: {
+					...baseProps.horse,
+					birth_year: null,
+				},
+			};
+
+			// Act
+			render(<HorseDetail {...props} />);
+
+			// Assert
+			expect(screen.getByText("—")).toBeInTheDocument();
+		});
+
 		it("「レース履歴」見出しが表示される", () => {
 			// Act
 			render(<HorseDetail {...baseProps} />);

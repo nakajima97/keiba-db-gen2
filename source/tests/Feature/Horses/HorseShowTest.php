@@ -1,10 +1,11 @@
 <?php
 
 use App\Models\Horse;
+use App\Models\Jockey;
 use App\Models\Race;
+use App\Models\RaceResultHorse;
 use App\Models\User;
 use App\Models\Venue;
-use Illuminate\Support\Facades\DB;
 use Inertia\Testing\AssertableInertia as Assert;
 
 // ===== GET /horses/{horse} =====
@@ -76,16 +77,11 @@ test('horse show returns race histories with all required fields as inertia prop
         'race_name' => '東京優駿',
     ]);
 
-    $now = now();
-    $jockeyId = DB::table('jockeys')->insertGetId([
-        'name' => 'テスト騎手',
-        'created_at' => $now,
-        'updated_at' => $now,
-    ]);
-    DB::table('race_result_horses')->insert([
+    $jockey = Jockey::create(['name' => 'テスト騎手']);
+    RaceResultHorse::create([
         'race_id' => $race->id,
         'horse_id' => $horse->id,
-        'jockey_id' => $jockeyId,
+        'jockey_id' => $jockey->id,
         'finishing_order' => 3,
         'frame_number' => 2,
         'horse_number' => 4,
@@ -96,8 +92,6 @@ test('horse show returns race histories with all required fields as inertia prop
         'race_time' => '1:34.5',
         'trainer_name' => 'テスト調教師',
         'popularity' => 2,
-        'created_at' => $now,
-        'updated_at' => $now,
     ]);
 
     // Act
@@ -152,16 +146,11 @@ test('horse show returns race_name as null when races.race_name is null', functi
         'race_name' => null,
     ]);
 
-    $now = now();
-    $jockeyId = DB::table('jockeys')->insertGetId([
-        'name' => 'テスト騎手',
-        'created_at' => $now,
-        'updated_at' => $now,
-    ]);
-    DB::table('race_result_horses')->insert([
+    $jockey = Jockey::create(['name' => 'テスト騎手']);
+    RaceResultHorse::create([
         'race_id' => $race->id,
         'horse_id' => $horse->id,
-        'jockey_id' => $jockeyId,
+        'jockey_id' => $jockey->id,
         'finishing_order' => 1,
         'frame_number' => 1,
         'horse_number' => 1,
@@ -172,8 +161,6 @@ test('horse show returns race_name as null when races.race_name is null', functi
         'race_time' => '1:34.5',
         'trainer_name' => 'テスト調教師',
         'popularity' => 1,
-        'created_at' => $now,
-        'updated_at' => $now,
     ]);
 
     // Act
@@ -186,6 +173,87 @@ test('horse show returns race_name as null when races.race_name is null', functi
             ->where('race_name', null)
             ->etc()
         )
+    );
+});
+
+test('horse show returns birth_year as null when horse has no birth_year', function () {
+    // Arrange
+    $user = User::factory()->create();
+    $horse = Horse::create([
+        'name' => 'テストホース',
+        'birth_year' => null,
+    ]);
+
+    // Act
+    $response = $this->actingAs($user)->get(route('horses.show', ['horse' => $horse->id]));
+
+    // Assert
+    $response->assertInertia(fn (Assert $page) => $page
+        ->component('horses/show')
+        ->has('horse', fn (Assert $horse) => $horse
+            ->where('birth_year', null)
+            ->etc()
+        )
+    );
+});
+
+test('horse show returns race_histories ordered by race_date desc then race_number asc', function () {
+    // Arrange
+    $user = User::factory()->create();
+    $venue = Venue::firstOrCreate(['name' => '東京']);
+    $horse = Horse::create([
+        'name' => 'テストホース',
+        'birth_year' => 2020,
+    ]);
+    $jockey = Jockey::create(['name' => 'テスト騎手']);
+
+    $raceOlder = Race::create([
+        'venue_id' => $venue->id,
+        'race_date' => '2026-03-08',
+        'race_number' => 1,
+        'race_name' => null,
+    ]);
+    $raceNewerR1 = Race::create([
+        'venue_id' => $venue->id,
+        'race_date' => '2026-04-05',
+        'race_number' => 1,
+        'race_name' => null,
+    ]);
+    $raceNewerR5 = Race::create([
+        'venue_id' => $venue->id,
+        'race_date' => '2026-04-05',
+        'race_number' => 5,
+        'race_name' => null,
+    ]);
+
+    foreach ([$raceOlder, $raceNewerR5, $raceNewerR1] as $race) {
+        RaceResultHorse::create([
+            'race_id' => $race->id,
+            'horse_id' => $horse->id,
+            'jockey_id' => $jockey->id,
+            'finishing_order' => 1,
+            'frame_number' => 1,
+            'horse_number' => 1,
+            'horse_name' => 'テストホース',
+            'sex_age' => '牡3',
+            'weight' => '57.0',
+            'jockey_name' => 'テスト騎手',
+            'race_time' => '1:34.5',
+            'trainer_name' => 'テスト調教師',
+            'popularity' => 1,
+        ]);
+    }
+
+    // Act
+    $response = $this->actingAs($user)->get(route('horses.show', ['horse' => $horse->id]));
+
+    // Assert
+    $response->assertInertia(fn (Assert $page) => $page
+        ->component('horses/show')
+        ->has('horse.race_histories', 3)
+        ->where('horse.race_histories.0.race_uid', $raceNewerR1->uid)
+        ->where('horse.race_histories.1.race_uid', $raceNewerR5->uid)
+        ->where('horse.race_histories.2.race_uid', $raceOlder->uid)
     );
 });
 

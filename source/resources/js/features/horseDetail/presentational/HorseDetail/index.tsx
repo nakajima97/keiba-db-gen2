@@ -10,16 +10,24 @@ export default function HorseDetail({ horse }: HorseDetailProps) {
 			<ScrollableTable>
 				<tbody>
 					<tr className="border-b">
-						<th className="w-32 bg-muted/50 px-4 py-3 text-left font-medium text-muted-foreground">
+						<th
+							scope="row"
+							className="w-32 bg-muted/50 px-4 py-3 text-left font-medium text-muted-foreground"
+						>
 							馬名
 						</th>
 						<td className="px-4 py-3">{horse.name}</td>
 					</tr>
 					<tr>
-						<th className="bg-muted/50 px-4 py-3 text-left font-medium text-muted-foreground">
+						<th
+							scope="row"
+							className="bg-muted/50 px-4 py-3 text-left font-medium text-muted-foreground"
+						>
 							生年
 						</th>
-						<td className="px-4 py-3">{horse.birth_year}年</td>
+						<td className="px-4 py-3">
+							{horse.birth_year !== null ? `${horse.birth_year}年` : "—"}
+						</td>
 					</tr>
 				</tbody>
 			</ScrollableTable>
@@ -32,25 +40,46 @@ export default function HorseDetail({ horse }: HorseDetailProps) {
 				<ScrollableTable>
 					<thead>
 						<tr className="border-b bg-muted/50">
-							<th className="px-4 py-3 text-left font-medium text-muted-foreground">
+							<th
+								scope="col"
+								className="px-4 py-3 text-left font-medium text-muted-foreground"
+							>
 								開催日
 							</th>
-							<th className="px-4 py-3 text-left font-medium text-muted-foreground">
+							<th
+								scope="col"
+								className="px-4 py-3 text-left font-medium text-muted-foreground"
+							>
 								競馬場
 							</th>
-							<th className="px-4 py-3 text-left font-medium text-muted-foreground">
+							<th
+								scope="col"
+								className="px-4 py-3 text-left font-medium text-muted-foreground"
+							>
 								レース番号
 							</th>
-							<th className="px-4 py-3 text-left font-medium text-muted-foreground">
+							<th
+								scope="col"
+								className="px-4 py-3 text-left font-medium text-muted-foreground"
+							>
 								レース名
 							</th>
-							<th className="px-4 py-3 text-left font-medium text-muted-foreground">
+							<th
+								scope="col"
+								className="px-4 py-3 text-left font-medium text-muted-foreground"
+							>
 								着順
 							</th>
-							<th className="px-4 py-3 text-left font-medium text-muted-foreground">
+							<th
+								scope="col"
+								className="px-4 py-3 text-left font-medium text-muted-foreground"
+							>
 								騎手
 							</th>
-							<th className="px-4 py-3 text-left font-medium text-muted-foreground">
+							<th
+								scope="col"
+								className="px-4 py-3 text-left font-medium text-muted-foreground"
+							>
 								人気
 							</th>
 						</tr>
