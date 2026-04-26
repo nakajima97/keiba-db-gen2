@@ -1,4 +1,5 @@
 import { Button } from "@/components/shadcn/ui/button";
+import ScrollableTable from "@/components/presentational/ScrollableTable";
 import { formatDateDisplay } from "@/utils/date";
 import type { RaceEntryRegistrationFormProps } from "./types";
 
@@ -15,30 +16,28 @@ export default function RaceEntryRegistrationForm({
 		<div className="mx-auto max-w-2xl space-y-8 p-4">
 			<h1 className="text-xl font-semibold">出走馬登録</h1>
 
-			<div className="overflow-x-auto rounded-xl border">
-				<table className="w-full text-sm">
-					<tbody>
-						<tr className="border-b">
-							<th className="w-32 bg-muted/50 px-4 py-3 text-left font-medium text-muted-foreground">
-								開催日
-							</th>
-							<td className="px-4 py-3">{formatDateDisplay(raceInfo.race_date)}</td>
-						</tr>
-						<tr className="border-b">
-							<th className="bg-muted/50 px-4 py-3 text-left font-medium text-muted-foreground">
-								競馬場
-							</th>
-							<td className="px-4 py-3">{raceInfo.venue_name}</td>
-						</tr>
-						<tr>
-							<th className="bg-muted/50 px-4 py-3 text-left font-medium text-muted-foreground">
-								レース番号
-							</th>
-							<td className="px-4 py-3">{raceInfo.race_number}R</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
+			<ScrollableTable>
+				<tbody>
+					<tr className="border-b">
+						<th className="w-32 bg-muted/50 px-4 py-3 text-left font-medium text-muted-foreground">
+							開催日
+						</th>
+						<td className="px-4 py-3">{formatDateDisplay(raceInfo.race_date)}</td>
+					</tr>
+					<tr className="border-b">
+						<th className="bg-muted/50 px-4 py-3 text-left font-medium text-muted-foreground">
+							競馬場
+						</th>
+						<td className="px-4 py-3">{raceInfo.venue_name}</td>
+					</tr>
+					<tr>
+						<th className="bg-muted/50 px-4 py-3 text-left font-medium text-muted-foreground">
+							レース番号
+						</th>
+						<td className="px-4 py-3">{raceInfo.race_number}R</td>
+					</tr>
+				</tbody>
+			</ScrollableTable>
 
 			<div className="space-y-2">
 				<label

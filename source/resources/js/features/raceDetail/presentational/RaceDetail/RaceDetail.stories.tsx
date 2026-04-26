@@ -63,3 +63,13 @@ export const WeightMissing: Story = {
 		},
 	},
 };
+
+export const MobileView: Story = {
+	name: "モバイル表示",
+	globals: {
+		viewport: { value: "mobile1", isRotated: false },
+	},
+	args: {
+		race: sampleRace,
+	},
+};

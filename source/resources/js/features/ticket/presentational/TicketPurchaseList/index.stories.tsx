@@ -157,3 +157,14 @@ export const WithNoPayoutAmount: Story = {
 		purchases: samplePurchases,
 	},
 };
+
+export const MobileWithData: Story = {
+	name: "データあり（モバイル）",
+	globals: {
+		viewport: { value: "mobile1", isRotated: false },
+	},
+	args: {
+		...baseArgs,
+		purchases: samplePurchases,
+	},
+};

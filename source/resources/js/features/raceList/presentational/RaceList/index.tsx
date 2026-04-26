@@ -2,6 +2,7 @@ import { Link, router } from "@inertiajs/react";
 import { Button } from "@/components/shadcn/ui/button";
 import { Input } from "@/components/shadcn/ui/input";
 import { Label } from "@/components/shadcn/ui/label";
+import ScrollableTable from "@/components/presentational/ScrollableTable";
 import { create, show } from "@/routes/races";
 import { formatDateDisplay } from "@/utils/date";
 import type { RaceListProps } from "./types";
@@ -64,47 +65,45 @@ export default function RaceList({
 					<Link href={create.url()}>レース情報入力</Link>
 				</div>
 			) : (
-				<div className="overflow-x-auto rounded-xl border">
-					<table className="w-full text-sm">
-						<thead>
-							<tr className="border-b bg-muted/50">
-								<th className="px-4 py-3 text-left font-medium text-muted-foreground">
-									日付
-								</th>
-								<th className="px-4 py-3 text-left font-medium text-muted-foreground">
-									開催場所
-								</th>
-								<th className="px-4 py-3 text-left font-medium text-muted-foreground">
-									レース番号
-								</th>
-								<th className="px-4 py-3 text-left font-medium text-muted-foreground">
-									レース名
-								</th>
+				<ScrollableTable>
+					<thead>
+						<tr className="border-b bg-muted/50">
+							<th className="px-4 py-3 text-left font-medium text-muted-foreground">
+								日付
+							</th>
+							<th className="px-4 py-3 text-left font-medium text-muted-foreground">
+								開催場所
+							</th>
+							<th className="px-4 py-3 text-left font-medium text-muted-foreground">
+								レース番号
+							</th>
+							<th className="px-4 py-3 text-left font-medium text-muted-foreground">
+								レース名
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						{races.map((race) => (
+							<tr
+								key={race.uid}
+								className="cursor-pointer border-b last:border-0 hover:bg-muted/30"
+								onClick={() => router.visit(show.url({ race: race.uid }))}
+								onKeyDown={(e) => {
+									if (e.key === "Enter" || e.key === " ") {
+										router.visit(show.url({ race: race.uid }));
+									}
+								}}
+							>
+								<td className="px-4 py-3">
+									{formatDateDisplay(race.race_date)}
+								</td>
+								<td className="px-4 py-3">{race.venue_name}</td>
+								<td className="px-4 py-3">{race.race_number}R</td>
+								<td className="px-4 py-3">{race.race_name ?? "—"}</td>
 							</tr>
-						</thead>
-						<tbody>
-							{races.map((race) => (
-								<tr
-									key={race.uid}
-									className="cursor-pointer border-b last:border-0 hover:bg-muted/30"
-									onClick={() => router.visit(show.url({ race: race.uid }))}
-									onKeyDown={(e) => {
-										if (e.key === "Enter" || e.key === " ") {
-											router.visit(show.url({ race: race.uid }));
-										}
-									}}
-								>
-									<td className="px-4 py-3">
-										{formatDateDisplay(race.race_date)}
-									</td>
-									<td className="px-4 py-3">{race.venue_name}</td>
-									<td className="px-4 py-3">{race.race_number}R</td>
-									<td className="px-4 py-3">{race.race_name ?? "—"}</td>
-								</tr>
-							))}
-						</tbody>
-					</table>
-				</div>
+						))}
+					</tbody>
+				</ScrollableTable>
 			)}
 		</div>
 	);

@@ -88,3 +88,21 @@ export const WithNegativeYear: Story = {
 		dailyBalances: sampleDailyBalances,
 	},
 };
+
+export const MobileWithData: Story = {
+	name: "データあり（モバイル）",
+	globals: {
+		viewport: { value: "mobile1", isRotated: false },
+	},
+	args: {
+		...baseArgs,
+		summary: {
+			year: 2026,
+			total_purchase_amount: 20000,
+			total_payout_amount: 21300,
+			total_net_amount: 1300,
+			total_return_rate: 106.5,
+		},
+		dailyBalances: sampleDailyBalances,
+	},
+};

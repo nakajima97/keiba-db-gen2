@@ -11,6 +11,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/shadcn/ui/select";
+import ScrollableTable from "@/components/presentational/ScrollableTable";
 import { formatDateDisplay } from "@/utils/date";
 import type { BalanceDashboardProps } from "./types";
 
@@ -137,62 +138,60 @@ export default function BalanceDashboard({
 						<p>記録がありません</p>
 					</div>
 				) : (
-					<div className="overflow-hidden rounded-xl border">
-						<table className="w-full text-sm">
-							<thead>
-								<tr className="border-b bg-muted/50">
-									<th className="px-4 py-3 text-left font-medium text-muted-foreground">
-										日付
-									</th>
-									<th className="px-4 py-3 text-right font-medium text-muted-foreground">
-										購入金額
-									</th>
-									<th className="px-4 py-3 text-right font-medium text-muted-foreground">
-										払い戻し金額
-									</th>
-									<th className="px-4 py-3 text-right font-medium text-muted-foreground">
-										プラスマイナス
-									</th>
-									<th className="px-4 py-3 text-right font-medium text-muted-foreground">
-										回収率
-									</th>
-								</tr>
-							</thead>
-							<tbody>
-								{dailyBalances.map((row) => (
-									<tr
-										key={row.date}
-										className="border-b last:border-0 hover:bg-muted/30"
+					<ScrollableTable>
+						<thead>
+							<tr className="border-b bg-muted/50">
+								<th className="px-4 py-3 text-left font-medium text-muted-foreground">
+									日付
+								</th>
+								<th className="px-4 py-3 text-right font-medium text-muted-foreground">
+									購入金額
+								</th>
+								<th className="px-4 py-3 text-right font-medium text-muted-foreground">
+									払い戻し金額
+								</th>
+								<th className="px-4 py-3 text-right font-medium text-muted-foreground">
+									プラスマイナス
+								</th>
+								<th className="px-4 py-3 text-right font-medium text-muted-foreground">
+									回収率
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							{dailyBalances.map((row) => (
+								<tr
+									key={row.date}
+									className="border-b last:border-0 hover:bg-muted/30"
+								>
+									<td className="px-4 py-3">{formatDateDisplay(row.date)}</td>
+									<td className="px-4 py-3 text-right">
+										¥{row.purchase_amount.toLocaleString()}
+									</td>
+									<td className="px-4 py-3 text-right">
+										¥{row.payout_amount.toLocaleString()}
+									</td>
+									<td
+										className={`px-4 py-3 text-right font-medium ${
+											row.net_amount >= 0 ? "text-green-600" : "text-red-600"
+										}`}
 									>
-										<td className="px-4 py-3">{formatDateDisplay(row.date)}</td>
-										<td className="px-4 py-3 text-right">
-											¥{row.purchase_amount.toLocaleString()}
-										</td>
-										<td className="px-4 py-3 text-right">
-											¥{row.payout_amount.toLocaleString()}
-										</td>
-										<td
-											className={`px-4 py-3 text-right font-medium ${
-												row.net_amount >= 0 ? "text-green-600" : "text-red-600"
-											}`}
-										>
-											{row.net_amount >= 0 ? "+" : ""}¥
-											{row.net_amount.toLocaleString()}
-										</td>
-										<td
-											className={`px-4 py-3 text-right ${
-												row.return_rate >= 100
-													? "text-green-600"
-													: "text-red-600"
-											}`}
-										>
-											{row.return_rate.toFixed(1)}%
-										</td>
-									</tr>
-								))}
-							</tbody>
-						</table>
-					</div>
+										{row.net_amount >= 0 ? "+" : ""}¥
+										{row.net_amount.toLocaleString()}
+									</td>
+									<td
+										className={`px-4 py-3 text-right ${
+											row.return_rate >= 100
+												? "text-green-600"
+												: "text-red-600"
+										}`}
+									>
+										{row.return_rate.toFixed(1)}%
+									</td>
+								</tr>
+							))}
+						</tbody>
+					</ScrollableTable>
 				)}
 			</div>
 		</div>
