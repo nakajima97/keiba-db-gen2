@@ -16,6 +16,7 @@ vi.mock("@inertiajs/react", () => ({
 				race_number: 3,
 				entries: [
 					{
+						id: 1,
 						frame_number: 1,
 						horse_number: 1,
 						horse_name: "テストホース",
@@ -23,6 +24,10 @@ vi.mock("@inertiajs/react", () => ({
 						weight: 480,
 					},
 				],
+				mark_columns: [
+					{ id: 100, type: "own", label: null, display_order: 0 },
+				],
+				marks: [],
 			},
 		},
 	}),

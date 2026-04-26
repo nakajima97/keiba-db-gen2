@@ -4,6 +4,8 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HorseController;
 use App\Http\Controllers\RaceController;
 use App\Http\Controllers\RaceEntryController;
+use App\Http\Controllers\RaceMarkColumnController;
+use App\Http\Controllers\RaceMarkController;
 use App\Http\Controllers\RaceResultController;
 use App\Http\Controllers\TicketPurchaseController;
 use Illuminate\Support\Facades\Route;
@@ -32,6 +34,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/races/{uid}/result/edit', [RaceResultController::class, 'edit'])->name('races.result.edit');
 
     Route::get('/horses/{horse}', [HorseController::class, 'show'])->name('horses.show');
+
+    Route::prefix('api')->group(function () {
+        Route::get('/races/{race:uid}/mark-columns', [RaceMarkColumnController::class, 'index'])->name('api.races.mark-columns.index');
+        Route::post('/races/{race:uid}/mark-columns', [RaceMarkColumnController::class, 'store'])->name('api.races.mark-columns.store');
+        Route::patch('/races/{race:uid}/mark-columns/{id}', [RaceMarkColumnController::class, 'update'])->name('api.races.mark-columns.update');
+        Route::delete('/races/{race:uid}/mark-columns/{id}', [RaceMarkColumnController::class, 'destroy'])->name('api.races.mark-columns.destroy');
+        Route::put('/races/{race:uid}/mark-columns/{column_id}/entries/{race_entry_id}/mark', [RaceMarkController::class, 'upsert'])->name('api.races.mark-columns.entries.mark.upsert');
+    });
 });
 
 require __DIR__.'/settings.php';

@@ -16,6 +16,11 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->encryptCookies(except: ['appearance', 'sidebar_state']);
 
+        $middleware->convertEmptyStringsToNull(except: [
+            fn ($request) => $request->isMethod('PUT')
+                && $request->is('api/races/*/mark-columns/*/entries/*/mark'),
+        ]);
+
         $middleware->web(append: [
             HandleAppearance::class,
             HandleInertiaRequests::class,

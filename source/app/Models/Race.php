@@ -49,4 +49,10 @@ class Race extends Model
     {
         return $this->hasMany(RaceResultHorse::class);
     }
+
+    /** @return HasMany<RaceMarkColumn, $this> */
+    public function raceMarkColumns(): HasMany
+    {
+        return $this->hasMany(RaceMarkColumn::class);
+    }
 }

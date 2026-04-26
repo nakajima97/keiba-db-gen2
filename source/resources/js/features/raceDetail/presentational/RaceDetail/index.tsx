@@ -1,10 +1,41 @@
 import { Link } from "@inertiajs/react";
+import { Plus } from "lucide-react";
 import { Button } from "@/components/shadcn/ui/button";
 import ScrollableTable from "@/components/presentational/ScrollableTable";
 import { formatDateDisplay } from "@/utils/date";
-import type { RaceDetailProps } from "./types";
+import RaceMarkSelect from "./RaceMarkSelect";
+import RaceMarkColumnHeader from "./RaceMarkColumnHeader";
+import type {
+	MarkValue,
+	RaceDetailProps,
+	RaceMarkColumn,
+	RaceMarkValue,
+} from "./types";
 
-export default function RaceDetail({ race }: RaceDetailProps) {
+function findMarkValue(
+	marks: RaceMarkValue[],
+	columnId: number,
+	raceEntryId: number,
+): MarkValue | null {
+	const found = marks.find(
+		(m) => m.column_id === columnId && m.race_entry_id === raceEntryId,
+	);
+	return found ? found.mark_value : null;
+}
+
+function sortColumns(columns: RaceMarkColumn[]): RaceMarkColumn[] {
+	return [...columns].sort((a, b) => a.display_order - b.display_order);
+}
+
+export default function RaceDetail({
+	race,
+	onMarkChange,
+	onAddOtherColumn,
+	onRemoveOtherColumn,
+	onChangeColumnLabel,
+}: RaceDetailProps) {
+	const sortedColumns = sortColumns(race.mark_columns);
+
 	return (
 		<div className="flex flex-col gap-4 p-4">
 			<h1 className="text-xl font-semibold">レース詳細</h1>
@@ -34,9 +65,20 @@ export default function RaceDetail({ race }: RaceDetailProps) {
 
 			<div className="flex items-center justify-between">
 				<h2 className="text-lg font-semibold">出馬表</h2>
-				<Button asChild variant="outline" size="sm">
-					<Link href={`/races/${race.uid}/entries/new`}>出走馬登録</Link>
-				</Button>
+				<div className="flex items-center gap-2">
+					<Button
+						type="button"
+						variant="outline"
+						size="sm"
+						onClick={onAddOtherColumn}
+					>
+						<Plus className="mr-1 h-4 w-4" />
+						他人の印を追加
+					</Button>
+					<Button asChild variant="outline" size="sm">
+						<Link href={`/races/${race.uid}/entries/new`}>出走馬登録</Link>
+					</Button>
+				</div>
 			</div>
 
 			<ScrollableTable>
@@ -57,6 +99,20 @@ export default function RaceDetail({ race }: RaceDetailProps) {
 						<th className="px-4 py-3 text-left font-medium text-muted-foreground">
 							馬体重
 						</th>
+						{sortedColumns.map((column) => (
+							<th
+								key={column.id}
+								className="px-4 py-3 text-left font-medium text-muted-foreground"
+							>
+								<RaceMarkColumnHeader
+									column={column}
+									onChangeLabel={(label) =>
+										onChangeColumnLabel(column.id, label)
+									}
+									onRemove={() => onRemoveOtherColumn(column.id)}
+								/>
+							</th>
+						))}
 					</tr>
 				</thead>
 				<tbody>
@@ -76,6 +132,23 @@ export default function RaceDetail({ race }: RaceDetailProps) {
 							<td className="px-4 py-3">
 								{entry.weight !== null ? `${entry.weight}kg` : "-"}
 							</td>
+							{sortedColumns.map((column) => (
+								<td key={column.id} className="px-4 py-3">
+									<RaceMarkSelect
+										value={findMarkValue(race.marks, column.id, entry.id)}
+										ariaLabel={`${entry.horse_name}の印（${
+											column.type === "own" ? "自分" : (column.label ?? "他人")
+										}）`}
+										onChange={(markValue) =>
+											onMarkChange({
+												columnId: column.id,
+												raceEntryId: entry.id,
+												markValue,
+											})
+										}
+									/>
+								</td>
+							))}
 						</tr>
 					))}
 				</tbody>
@@ -84,4 +157,10 @@ export default function RaceDetail({ race }: RaceDetailProps) {
 	);
 }
 
-export type { RaceDetailItem, RaceDetailProps } from "./types";
+export type {
+	RaceDetailItem,
+	RaceDetailProps,
+	MarkValue,
+	RaceMarkColumn,
+	RaceMarkValue,
+} from "./types";
