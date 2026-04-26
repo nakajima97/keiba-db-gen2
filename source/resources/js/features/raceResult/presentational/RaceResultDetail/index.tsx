@@ -71,7 +71,16 @@ export default function RaceResultDetail({ race }: RaceResultDetailProps) {
 										{horse.horse_number}
 									</td>
 									<td className="px-4 py-3">
-										{horse.horse_name}
+										{horse.horse_id !== null ? (
+											<Link
+												href={`/horses/${horse.horse_id}`}
+												className="text-primary hover:underline"
+											>
+												{horse.horse_name}
+											</Link>
+										) : (
+											horse.horse_name
+										)}
 									</td>
 									<td className="px-4 py-3">
 										{horse.jockey_name}

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\HorseController;
 use App\Http\Controllers\RaceController;
 use App\Http\Controllers\RaceEntryController;
 use App\Http\Controllers\RaceResultController;
@@ -29,6 +30,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/races/{uid}/result/new', [RaceResultController::class, 'create'])->name('races.result.create');
     Route::post('/races/{uid}/result', [RaceResultController::class, 'store'])->name('races.result.store');
     Route::get('/races/{uid}/result/edit', [RaceResultController::class, 'edit'])->name('races.result.edit');
+
+    Route::get('/horses/{horse}', [HorseController::class, 'show'])->name('horses.show');
 });
 
 require __DIR__.'/settings.php';

@@ -13,6 +13,7 @@ export type FinishingHorse = {
 	finishing_order: number;
 	frame_number: number;
 	horse_number: number;
+	horse_id: number | null;
 	horse_name: string;
 	jockey_name: string;
 	race_time: string;
