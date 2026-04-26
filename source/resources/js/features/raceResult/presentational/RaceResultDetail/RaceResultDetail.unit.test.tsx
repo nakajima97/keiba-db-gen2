@@ -24,6 +24,7 @@ const baseProps = {
 };
 
 const sampleFinishingHorse = {
+	horse_id: 7,
 	finishing_order: 1,
 	frame_number: 2,
 	horse_number: 3,
@@ -71,5 +72,22 @@ describe("RaceResultDetail", () => {
 		expect(
 			screen.queryByRole("link", { name: "レース結果入力" }),
 		).not.toBeInTheDocument();
+	});
+
+	it("着順テーブルの馬名が競走馬詳細ページへのリンクとして表示される", () => {
+		// Arrange
+		const props = {
+			race: {
+				...baseProps.race,
+				finishing_horses: [sampleFinishingHorse],
+			},
+		};
+
+		// Act
+		render(<RaceResultDetail {...props} />);
+
+		// Assert
+		const link = screen.getByRole("link", { name: "テスト馬A" });
+		expect(link).toHaveAttribute("href", "/horses/7");
 	});
 });

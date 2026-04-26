@@ -4,6 +4,16 @@ import { describe, it, expect, vi } from "vitest";
 import RaceDetail from "./index";
 import type { RaceDetailItem } from "./types";
 
+vi.mock("@inertiajs/react", () => ({
+	Link: ({
+		href,
+		children,
+	}: {
+		href: string;
+		children: React.ReactNode;
+	}) => <a href={href}>{children}</a>,
+}));
+
 const baseRace: RaceDetailItem = {
 	uid: "abc123",
 	race_date: "2026-04-05",
@@ -12,6 +22,7 @@ const baseRace: RaceDetailItem = {
 	entries: [
 		{
 			id: 1,
+			horse_id: 42,
 			frame_number: 2,
 			horse_number: 1,
 			horse_name: "テストホース",
@@ -80,6 +91,15 @@ describe("RaceDetail", () => {
 
 			// Assert
 			expect(screen.getByText("-")).toBeInTheDocument();
+		});
+
+		it("馬名が競走馬詳細ページへのリンクとして表示される", () => {
+			// Act
+			render(<RaceDetail race={baseRace} {...noopHandlers} />);
+
+			// Assert
+			const link = screen.getByRole("link", { name: "テストホース" });
+			expect(link).toHaveAttribute("href", "/horses/42");
 		});
 	});
 

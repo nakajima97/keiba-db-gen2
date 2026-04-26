@@ -120,7 +120,14 @@ export default function RaceDetail({
 						<tr key={entry.horse_number} className="border-b last:border-0">
 							<td className="px-4 py-3">{entry.frame_number}</td>
 							<td className="px-4 py-3">{entry.horse_number}</td>
-							<td className="px-4 py-3">{entry.horse_name}</td>
+							<td className="px-4 py-3">
+								<Link
+									href={`/horses/${entry.horse_id}`}
+									className="text-primary hover:underline"
+								>
+									{entry.horse_name}
+								</Link>
+							</td>
 							<td className="px-4 py-3">{entry.jockey_name}</td>
 							<td className="px-4 py-3">
 								{entry.weight !== null ? `${entry.weight}kg` : "-"}

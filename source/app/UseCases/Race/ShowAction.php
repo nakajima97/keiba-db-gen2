@@ -23,6 +23,7 @@ class ShowAction
      *         id: int,
      *         frame_number: int,
      *         horse_number: int,
+     *         horse_id: int,
      *         horse_name: string,
      *         jockey_name: string,
      *         weight: int|null
@@ -71,6 +72,7 @@ class ShowAction
                 'id' => (int) $entry->id,
                 'frame_number' => (int) $entry->frame_number,
                 'horse_number' => (int) $entry->horse_number,
+                'horse_id' => (int) $entry->horse->id,
                 'horse_name' => $entry->horse->name,
                 'jockey_name' => $entry->jockey->name,
                 'weight' => $entry->horse_weight !== null ? (int) $entry->horse_weight : null,

@@ -20,6 +20,7 @@ type Story = StoryObj<typeof RaceDetail>;
 const baseEntries: RaceDetailProps["race"]["entries"] = [
 	{
 		id: 1,
+		horse_id: 1,
 		frame_number: 1,
 		horse_number: 1,
 		horse_name: "サンプルホース1",
@@ -28,6 +29,7 @@ const baseEntries: RaceDetailProps["race"]["entries"] = [
 	},
 	{
 		id: 2,
+		horse_id: 2,
 		frame_number: 1,
 		horse_number: 2,
 		horse_name: "サンプルホース2",
@@ -36,6 +38,7 @@ const baseEntries: RaceDetailProps["race"]["entries"] = [
 	},
 	{
 		id: 3,
+		horse_id: 3,
 		frame_number: 2,
 		horse_number: 3,
 		horse_name: "サンプルホース3",
@@ -44,6 +47,7 @@ const baseEntries: RaceDetailProps["race"]["entries"] = [
 	},
 	{
 		id: 4,
+		horse_id: 4,
 		frame_number: 2,
 		horse_number: 4,
 		horse_name: "サンプルホース4",
