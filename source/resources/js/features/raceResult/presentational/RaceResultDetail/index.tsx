@@ -1,4 +1,6 @@
+import { Link } from "@inertiajs/react";
 import ScrollableTable from "@/components/presentational/ScrollableTable";
+import { Button } from "@/components/shadcn/ui/button";
 import { formatDateDisplay } from "@/utils/date";
 import type { RaceResultDetailProps } from "./types";
 import { formatHorseNumbers } from "./utils";
@@ -6,12 +8,21 @@ import { formatHorseNumbers } from "./utils";
 export default function RaceResultDetail({ race }: RaceResultDetailProps) {
 	return (
 		<div className="flex flex-col gap-4 p-4">
-			<div>
-				<h1 className="text-xl font-semibold">レース結果</h1>
-				<p className="text-sm text-muted-foreground">
-					{formatDateDisplay(race.race_date)} {race.venue_name}{" "}
-					{race.race_number}R
-				</p>
+			<div className="flex items-center justify-between">
+				<div>
+					<h1 className="text-xl font-semibold">レース結果</h1>
+					<p className="text-sm text-muted-foreground">
+						{formatDateDisplay(race.race_date)} {race.venue_name}{" "}
+						{race.race_number}R
+					</p>
+				</div>
+				{race.finishing_horses.length === 0 && (
+					<Button asChild variant="outline" size="sm">
+						<Link href={`/races/${race.uid}/result/new`}>
+							レース結果入力
+						</Link>
+					</Button>
+				)}
 			</div>
 
 			<div className="flex flex-col gap-2">

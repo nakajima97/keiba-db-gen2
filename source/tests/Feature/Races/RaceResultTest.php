@@ -159,6 +159,54 @@ test('accessing race result create page with non-existent uid returns 404', func
     $response->assertNotFound();
 });
 
+test('race result create page returns has_existing_result as false when no race result exists', function () {
+    // Arrange
+    $user = User::factory()->create();
+    ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
+    ['raceUid' => $raceUid] = createRaceWithUid($venueId, $now);
+
+    // Act
+    $response = $this->actingAs($user)->get(route('races.result.create', ['uid' => $raceUid]));
+
+    // Assert
+    $response->assertInertia(fn (Assert $page) => $page
+        ->component('races/result/create')
+        ->where('race.has_existing_result', false)
+    );
+});
+
+test('race result create page returns has_existing_result as true when race result exists', function () {
+    // Arrange
+    $user = User::factory()->create();
+    ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
+    ['raceId' => $raceId, 'raceUid' => $raceUid] = createRaceWithUid($venueId, $now);
+
+    DB::table('race_result_horses')->insert([
+        'race_id' => $raceId,
+        'finishing_order' => 1,
+        'frame_number' => 2,
+        'horse_number' => 3,
+        'horse_name' => 'テスト馬A',
+        'sex_age' => '牡3',
+        'weight' => '57.0',
+        'jockey_name' => '騎手A',
+        'race_time' => '1:34.5',
+        'trainer_name' => '調教師A',
+        'popularity' => 1,
+        'created_at' => $now,
+        'updated_at' => $now,
+    ]);
+
+    // Act
+    $response = $this->actingAs($user)->get(route('races.result.create', ['uid' => $raceUid]));
+
+    // Assert
+    $response->assertInertia(fn (Assert $page) => $page
+        ->component('races/result/create')
+        ->where('race.has_existing_result', true)
+    );
+});
+
 // ===== POST /races/{uid}/result =====
 
 test('valid payout text is stored with 8 race_payouts records', function () use ($sampleText, $resultSampleText) {

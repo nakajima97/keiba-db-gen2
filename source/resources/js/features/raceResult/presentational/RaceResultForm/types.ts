@@ -13,4 +13,5 @@ export type RaceResultFormProps = {
 	// 共通
 	onSubmit: () => void;
 	isSubmitting: boolean;
+	disabled?: boolean;
 };

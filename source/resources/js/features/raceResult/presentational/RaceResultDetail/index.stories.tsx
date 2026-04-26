@@ -206,12 +206,23 @@ export const ArrowNotation: Story = {
 };
 
 export const NoFinishingHorses: Story = {
-	name: "着順データなし",
+	name: "着順データなし（レース結果入力ボタン表示）",
 	args: {
 		race: {
 			...baseRace,
 			payouts: allPayouts,
 			finishing_horses: [],
+		},
+	},
+};
+
+export const InputButtonHidden: Story = {
+	name: "入力済み（レース結果入力ボタン非表示）",
+	args: {
+		race: {
+			...baseRace,
+			payouts: allPayouts,
+			finishing_horses: sampleFinishingHorses,
 		},
 	},
 };
