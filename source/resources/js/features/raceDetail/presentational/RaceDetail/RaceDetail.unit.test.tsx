@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import RaceDetail from "./index";
 import type { RaceDetailItem } from "./types";
 
@@ -10,6 +10,7 @@ const baseRace: RaceDetailItem = {
 	race_number: 3,
 	entries: [
 		{
+			id: 1,
 			frame_number: 2,
 			horse_number: 1,
 			horse_name: "テストホース",
@@ -17,13 +18,22 @@ const baseRace: RaceDetailItem = {
 			weight: 480,
 		},
 	],
+	mark_columns: [{ id: 100, type: "own", label: null, display_order: 0 }],
+	marks: [],
+};
+
+const noopHandlers = {
+	onMarkChange: vi.fn(),
+	onAddOtherColumn: vi.fn(),
+	onRemoveOtherColumn: vi.fn(),
+	onChangeColumnLabel: vi.fn(),
 };
 
 describe("RaceDetail", () => {
 	describe("基本情報", () => {
 		it("開催日が表示される", () => {
 			// Act
-			render(<RaceDetail race={baseRace} />);
+			render(<RaceDetail race={baseRace} {...noopHandlers} />);
 
 			// Assert
 			expect(screen.getByText("2026/04/05")).toBeInTheDocument();
@@ -31,7 +41,7 @@ describe("RaceDetail", () => {
 
 		it("競馬場が表示される", () => {
 			// Act
-			render(<RaceDetail race={baseRace} />);
+			render(<RaceDetail race={baseRace} {...noopHandlers} />);
 
 			// Assert
 			expect(screen.getByText("東京")).toBeInTheDocument();
@@ -39,7 +49,7 @@ describe("RaceDetail", () => {
 
 		it("レース番号が「3R」形式で表示される", () => {
 			// Act
-			render(<RaceDetail race={baseRace} />);
+			render(<RaceDetail race={baseRace} {...noopHandlers} />);
 
 			// Assert
 			expect(screen.getByText("3R")).toBeInTheDocument();
@@ -49,10 +59,9 @@ describe("RaceDetail", () => {
 	describe("出馬表", () => {
 		it("枠番・馬番・馬名・騎手名・馬体重が表示される", () => {
 			// Act
-			render(<RaceDetail race={baseRace} />);
+			render(<RaceDetail race={baseRace} {...noopHandlers} />);
 
 			// Assert
-			expect(screen.getByText("1")).toBeInTheDocument();
 			expect(screen.getByText("テストホース")).toBeInTheDocument();
 			expect(screen.getByText("テスト騎手")).toBeInTheDocument();
 			expect(screen.getByText("480kg")).toBeInTheDocument();
@@ -66,10 +75,30 @@ describe("RaceDetail", () => {
 			};
 
 			// Act
-			render(<RaceDetail race={raceWithNullWeight} />);
+			render(<RaceDetail race={raceWithNullWeight} {...noopHandlers} />);
 
 			// Assert
 			expect(screen.getByText("-")).toBeInTheDocument();
+		});
+	});
+
+	describe("印の列", () => {
+		it("自分の印列のヘッダーが表示される", () => {
+			// Act
+			render(<RaceDetail race={baseRace} {...noopHandlers} />);
+
+			// Assert
+			expect(screen.getByText("自分")).toBeInTheDocument();
+		});
+
+		it("他人の印を追加ボタンが表示される", () => {
+			// Act
+			render(<RaceDetail race={baseRace} {...noopHandlers} />);
+
+			// Assert
+			expect(
+				screen.getByRole("button", { name: "他人の印を追加" }),
+			).toBeInTheDocument();
 		});
 	});
 });

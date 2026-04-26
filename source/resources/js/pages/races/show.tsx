@@ -6,13 +6,21 @@ type RacesShowProps = {
 	race: RaceDetailItem;
 };
 
+const noop = () => {};
+
 export default function RacesShow() {
 	const { race } = usePage<RacesShowProps>().props;
 
 	return (
 		<>
 			<Head title="レース詳細" />
-			<RaceDetail race={race} />
+			<RaceDetail
+				race={race}
+				onMarkChange={noop}
+				onAddOtherColumn={noop}
+				onRemoveOtherColumn={noop}
+				onChangeColumnLabel={noop}
+			/>
 		</>
 	);
 }
