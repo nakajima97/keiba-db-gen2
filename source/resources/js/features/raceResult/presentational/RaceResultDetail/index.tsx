@@ -15,11 +15,13 @@ export default function RaceResultDetail({ race }: RaceResultDetailProps) {
 						{race.race_number}R
 					</p>
 				</div>
-				<Button asChild variant="outline" size="sm">
-					<Link href={`/races/${race.uid}/result/new`}>
-						レース結果入力
-					</Link>
-				</Button>
+				{race.finishing_horses.length === 0 && (
+					<Button asChild variant="outline" size="sm">
+						<Link href={`/races/${race.uid}/result/new`}>
+							レース結果入力
+						</Link>
+					</Button>
+				)}
 			</div>
 
 			<div className="flex flex-col gap-2">

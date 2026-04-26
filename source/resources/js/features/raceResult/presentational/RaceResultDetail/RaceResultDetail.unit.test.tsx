@@ -23,8 +23,17 @@ const baseProps = {
 	},
 };
 
+const sampleFinishingHorse = {
+	finishing_order: 1,
+	frame_number: 2,
+	horse_number: 3,
+	horse_name: "テスト馬A",
+	jockey_name: "騎手A",
+	race_time: "1:34.5",
+};
+
 describe("RaceResultDetail", () => {
-	it("「レース結果入力」リンクが表示される", () => {
+	it("着順データがないとき「レース結果入力」リンクが表示される", () => {
 		// Act
 		render(<RaceResultDetail {...baseProps} />);
 
@@ -34,7 +43,7 @@ describe("RaceResultDetail", () => {
 		).toBeInTheDocument();
 	});
 
-	it("「レース結果入力」リンクのhrefにraceのuidを含む/result/newパスが設定されている", () => {
+	it("着順データがないとき「レース結果入力」リンクのhrefにraceのuidを含む/result/newパスが設定されている", () => {
 		// Act
 		render(<RaceResultDetail {...baseProps} />);
 
@@ -44,5 +53,23 @@ describe("RaceResultDetail", () => {
 			"href",
 			"/races/test-uid-123/result/new",
 		);
+	});
+
+	it("着順データがあるとき「レース結果入力」リンクが表示されない", () => {
+		// Arrange
+		const props = {
+			race: {
+				...baseProps.race,
+				finishing_horses: [sampleFinishingHorse],
+			},
+		};
+
+		// Act
+		render(<RaceResultDetail {...props} />);
+
+		// Assert
+		expect(
+			screen.queryByRole("link", { name: "レース結果入力" }),
+		).not.toBeInTheDocument();
 	});
 });
