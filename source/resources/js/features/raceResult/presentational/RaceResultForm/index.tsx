@@ -15,6 +15,7 @@ export default function RaceResultForm({
 	payoutParseError,
 	onSubmit,
 	isSubmitting,
+	disabled,
 }: RaceResultFormProps) {
 	return (
 		<div className="flex flex-col gap-6 p-4">
@@ -31,10 +32,11 @@ export default function RaceResultForm({
 				</label>
 				<textarea
 					id="result-paste-value"
-					className="min-h-[200px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+					className="min-h-[200px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:text-muted-foreground"
 					placeholder="JRA公式サイトの着順情報をコピー＆ペーストしてください"
 					value={resultPasteValue}
 					onChange={(e) => onResultPasteChange(e.target.value)}
+					disabled={disabled}
 				/>
 			</div>
 
@@ -51,10 +53,11 @@ export default function RaceResultForm({
 				</label>
 				<textarea
 					id="payout-paste-value"
-					className="min-h-[200px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+					className="min-h-[200px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:text-muted-foreground"
 					placeholder="JRA公式サイトの払い戻し情報をコピー＆ペーストしてください（単勝・複勝・枠連・ワイド・馬連・馬単・3連複・3連単の全券種が必要です）"
 					value={payoutPasteValue}
 					onChange={(e) => onPayoutPasteChange(e.target.value)}
+					disabled={disabled}
 				/>
 			</div>
 
@@ -70,7 +73,8 @@ export default function RaceResultForm({
 				disabled={
 					resultPasteValue.trim() === "" ||
 					payoutPasteValue.trim() === "" ||
-					isSubmitting
+					isSubmitting ||
+					disabled
 				}
 			>
 				{isSubmitting ? "保存中..." : "保存する"}

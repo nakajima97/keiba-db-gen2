@@ -7,6 +7,7 @@ type RaceResultFormContainerProps = {
 	venueName: string;
 	raceDate: string;
 	raceNumber: number;
+	disabled?: boolean;
 };
 
 type RaceResultFormData = {
@@ -19,6 +20,7 @@ export default function RaceResultFormContainer({
 	venueName,
 	raceDate,
 	raceNumber,
+	disabled,
 }: RaceResultFormContainerProps) {
 	const [resultPasteValue, setResultPasteValue] = useState("");
 	const [payoutPasteValue, setPayoutPasteValue] = useState("");
@@ -60,6 +62,7 @@ export default function RaceResultFormContainer({
 			payoutParseError={payoutParseError}
 			onSubmit={handleSubmit}
 			isSubmitting={isSubmitting}
+			disabled={disabled}
 		/>
 	);
 }

@@ -113,3 +113,15 @@ export const Submitting: Story = {
 		isSubmitting: true,
 	},
 };
+
+export const Disabled: Story = {
+	name: "入力済み（編集不可）",
+	args: {
+		...baseArgs,
+		resultPasteValue: resultMockData,
+		resultParseError: null,
+		payoutPasteValue: payoutMockData,
+		payoutParseError: null,
+		disabled: true,
+	},
+};
