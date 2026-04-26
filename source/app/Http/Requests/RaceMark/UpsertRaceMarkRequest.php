@@ -10,7 +10,7 @@ class UpsertRaceMarkRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user() !== null;
+        return true;
     }
 
     /**
@@ -19,7 +19,7 @@ class UpsertRaceMarkRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'mark_value' => ['present', 'nullable', 'string', Rule::in(['', '◎', '○', '▲', '△', '×', '✓'])],
+            'mark_value' => ['present', 'string', Rule::in(['', '◎', '○', '▲', '△', '×', '✓'])],
         ];
     }
 }

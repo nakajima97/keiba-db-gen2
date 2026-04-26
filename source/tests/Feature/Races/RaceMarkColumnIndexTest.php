@@ -1,9 +1,9 @@
 <?php
 
 use App\Models\Race;
+use App\Models\RaceMarkColumn;
 use App\Models\User;
 use App\Models\Venue;
-use Illuminate\Support\Facades\DB;
 
 /**
  * race_mark_columns テスト用の race を作成して返す
@@ -68,37 +68,29 @@ test('mark columns are returned in display_order ascending order', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForMarkColumnIndexTest();
-    $now = now();
 
-    DB::table('race_mark_columns')->insert([
-        [
+    RaceMarkColumn::factory()
+        ->own()
+        ->create([
             'race_id' => $race->id,
             'user_id' => $user->id,
-            'column_type' => 'own',
-            'label' => null,
-            'display_order' => 0,
-            'created_at' => $now,
-            'updated_at' => $now,
-        ],
-        [
+        ]);
+    RaceMarkColumn::factory()
+        ->other()
+        ->create([
             'race_id' => $race->id,
             'user_id' => $user->id,
-            'column_type' => 'other',
             'label' => '友人B',
             'display_order' => 2,
-            'created_at' => $now,
-            'updated_at' => $now,
-        ],
-        [
+        ]);
+    RaceMarkColumn::factory()
+        ->other()
+        ->create([
             'race_id' => $race->id,
             'user_id' => $user->id,
-            'column_type' => 'other',
             'label' => '友人A',
             'display_order' => 1,
-            'created_at' => $now,
-            'updated_at' => $now,
-        ],
-    ]);
+        ]);
 
     // Act
     $response = $this->actingAs($user)->getJson('/api/races/'.$race->uid.'/mark-columns');
@@ -114,17 +106,15 @@ test('other users mark columns are not included in the list', function () {
     $user = User::factory()->create();
     $otherUser = User::factory()->create();
     $race = createRaceForMarkColumnIndexTest();
-    $now = now();
 
-    DB::table('race_mark_columns')->insert([
-        'race_id' => $race->id,
-        'user_id' => $otherUser->id,
-        'column_type' => 'other',
-        'label' => '他人の列',
-        'display_order' => 1,
-        'created_at' => $now,
-        'updated_at' => $now,
-    ]);
+    RaceMarkColumn::factory()
+        ->other()
+        ->create([
+            'race_id' => $race->id,
+            'user_id' => $otherUser->id,
+            'label' => '他人の列',
+            'display_order' => 1,
+        ]);
 
     // Act
     $response = $this->actingAs($user)->getJson('/api/races/'.$race->uid.'/mark-columns');

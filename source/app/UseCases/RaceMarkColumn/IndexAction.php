@@ -35,22 +35,20 @@ class IndexAction
 
     private function ensureOwnColumnExists(Race $race, User $user): void
     {
-        $exists = RaceMarkColumn::query()
-            ->where('race_id', $race->id)
-            ->where('user_id', $user->id)
-            ->where('column_type', 'own')
-            ->exists();
-
-        if ($exists) {
-            return;
+        try {
+            RaceMarkColumn::firstOrCreate(
+                [
+                    'race_id' => $race->id,
+                    'user_id' => $user->id,
+                    'column_type' => 'own',
+                ],
+                [
+                    'label' => null,
+                    'display_order' => 0,
+                ],
+            );
+        } catch (\Illuminate\Database\UniqueConstraintViolationException) {
+            // 別リクエストが先に作成済み。次のクエリで読めるので無視。
         }
-
-        RaceMarkColumn::create([
-            'race_id' => $race->id,
-            'user_id' => $user->id,
-            'column_type' => 'own',
-            'label' => null,
-            'display_order' => 0,
-        ]);
     }
 }

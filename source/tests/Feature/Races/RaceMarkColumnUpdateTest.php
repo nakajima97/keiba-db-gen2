@@ -1,9 +1,9 @@
 <?php
 
 use App\Models\Race;
+use App\Models\RaceMarkColumn;
 use App\Models\User;
 use App\Models\Venue;
-use Illuminate\Support\Facades\DB;
 
 /**
  * race_mark_columns 更新テスト用の race を作成して返す
@@ -19,37 +19,23 @@ function createRaceForMarkColumnUpdateTest(): Race
     ]);
 }
 
-/**
- * race_mark_columns に列を 1 件挿入して ID を返す
- *
- * @param  array{race_id:int,user_id:int,column_type:string,label:?string,display_order:int}  $overrides
- */
-function insertRaceMarkColumn(array $overrides): int
-{
-    $now = now();
-
-    return DB::table('race_mark_columns')->insertGetId(array_merge([
-        'created_at' => $now,
-        'updated_at' => $now,
-    ], $overrides));
-}
-
 // ===== PATCH /api/races/{uid}/mark-columns/{id} =====
 
 test('unauthenticated user cannot update mark column label', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForMarkColumnUpdateTest();
-    $columnId = insertRaceMarkColumn([
-        'race_id' => $race->id,
-        'user_id' => $user->id,
-        'column_type' => 'other',
-        'label' => '友人A',
-        'display_order' => 1,
-    ]);
+    $column = RaceMarkColumn::factory()
+        ->other()
+        ->create([
+            'race_id' => $race->id,
+            'user_id' => $user->id,
+            'label' => '友人A',
+            'display_order' => 1,
+        ]);
 
     // Act
-    $response = $this->patchJson('/api/races/'.$race->uid.'/mark-columns/'.$columnId, [
+    $response = $this->patchJson('/api/races/'.$race->uid.'/mark-columns/'.$column->id, [
         'label' => '友人B',
     ]);
 
@@ -61,16 +47,17 @@ test('authenticated user can update other column label', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForMarkColumnUpdateTest();
-    $columnId = insertRaceMarkColumn([
-        'race_id' => $race->id,
-        'user_id' => $user->id,
-        'column_type' => 'other',
-        'label' => '友人A',
-        'display_order' => 1,
-    ]);
+    $column = RaceMarkColumn::factory()
+        ->other()
+        ->create([
+            'race_id' => $race->id,
+            'user_id' => $user->id,
+            'label' => '友人A',
+            'display_order' => 1,
+        ]);
 
     // Act
-    $response = $this->actingAs($user)->patchJson('/api/races/'.$race->uid.'/mark-columns/'.$columnId, [
+    $response = $this->actingAs($user)->patchJson('/api/races/'.$race->uid.'/mark-columns/'.$column->id, [
         'label' => '友人B',
     ]);
 
@@ -84,16 +71,17 @@ test('updating other users mark column returns 403', function () {
     $user = User::factory()->create();
     $otherUser = User::factory()->create();
     $race = createRaceForMarkColumnUpdateTest();
-    $columnId = insertRaceMarkColumn([
-        'race_id' => $race->id,
-        'user_id' => $otherUser->id,
-        'column_type' => 'other',
-        'label' => '他人の列',
-        'display_order' => 1,
-    ]);
+    $column = RaceMarkColumn::factory()
+        ->other()
+        ->create([
+            'race_id' => $race->id,
+            'user_id' => $otherUser->id,
+            'label' => '他人の列',
+            'display_order' => 1,
+        ]);
 
     // Act
-    $response = $this->actingAs($user)->patchJson('/api/races/'.$race->uid.'/mark-columns/'.$columnId, [
+    $response = $this->actingAs($user)->patchJson('/api/races/'.$race->uid.'/mark-columns/'.$column->id, [
         'label' => '書き換え',
     ]);
 
@@ -105,16 +93,15 @@ test('updating own column returns 422', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForMarkColumnUpdateTest();
-    $columnId = insertRaceMarkColumn([
-        'race_id' => $race->id,
-        'user_id' => $user->id,
-        'column_type' => 'own',
-        'label' => null,
-        'display_order' => 0,
-    ]);
+    $column = RaceMarkColumn::factory()
+        ->own()
+        ->create([
+            'race_id' => $race->id,
+            'user_id' => $user->id,
+        ]);
 
     // Act
-    $response = $this->actingAs($user)->patchJson('/api/races/'.$race->uid.'/mark-columns/'.$columnId, [
+    $response = $this->actingAs($user)->patchJson('/api/races/'.$race->uid.'/mark-columns/'.$column->id, [
         'label' => '変更不可',
     ]);
 
@@ -126,16 +113,17 @@ test('label exceeding 32 characters returns 422 on update', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForMarkColumnUpdateTest();
-    $columnId = insertRaceMarkColumn([
-        'race_id' => $race->id,
-        'user_id' => $user->id,
-        'column_type' => 'other',
-        'label' => '友人A',
-        'display_order' => 1,
-    ]);
+    $column = RaceMarkColumn::factory()
+        ->other()
+        ->create([
+            'race_id' => $race->id,
+            'user_id' => $user->id,
+            'label' => '友人A',
+            'display_order' => 1,
+        ]);
 
     // Act
-    $response = $this->actingAs($user)->patchJson('/api/races/'.$race->uid.'/mark-columns/'.$columnId, [
+    $response = $this->actingAs($user)->patchJson('/api/races/'.$race->uid.'/mark-columns/'.$column->id, [
         'label' => str_repeat('a', 33),
     ]);
 

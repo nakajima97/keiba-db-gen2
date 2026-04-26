@@ -36,11 +36,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/horses/{horse}', [HorseController::class, 'show'])->name('horses.show');
 
     Route::prefix('api')->group(function () {
-        Route::get('/races/{uid}/mark-columns', [RaceMarkColumnController::class, 'index'])->name('api.races.mark-columns.index');
-        Route::post('/races/{uid}/mark-columns', [RaceMarkColumnController::class, 'store'])->name('api.races.mark-columns.store');
-        Route::patch('/races/{uid}/mark-columns/{id}', [RaceMarkColumnController::class, 'update'])->name('api.races.mark-columns.update');
-        Route::delete('/races/{uid}/mark-columns/{id}', [RaceMarkColumnController::class, 'destroy'])->name('api.races.mark-columns.destroy');
-        Route::put('/races/{uid}/mark-columns/{column_id}/entries/{race_entry_id}/mark', [RaceMarkController::class, 'upsert'])->name('api.races.mark-columns.entries.mark.upsert');
+        Route::get('/races/{race:uid}/mark-columns', [RaceMarkColumnController::class, 'index'])->name('api.races.mark-columns.index');
+        Route::post('/races/{race:uid}/mark-columns', [RaceMarkColumnController::class, 'store'])->name('api.races.mark-columns.store');
+        Route::patch('/races/{race:uid}/mark-columns/{id}', [RaceMarkColumnController::class, 'update'])->name('api.races.mark-columns.update');
+        Route::delete('/races/{race:uid}/mark-columns/{id}', [RaceMarkColumnController::class, 'destroy'])->name('api.races.mark-columns.destroy');
+        Route::put('/races/{race:uid}/mark-columns/{column_id}/entries/{race_entry_id}/mark', [RaceMarkController::class, 'upsert'])->name('api.races.mark-columns.entries.mark.upsert');
     });
 });
 

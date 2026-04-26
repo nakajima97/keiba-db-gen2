@@ -13,17 +13,15 @@ use Symfony\Component\HttpFoundation\Response;
 class RaceMarkController extends Controller
 {
     public function upsert(
-        string $uid,
+        Race $race,
         int $columnId,
         int $raceEntryId,
         UpsertRaceMarkRequest $request,
         UpsertAction $action,
     ): JsonResponse|Response {
-        $race = Race::query()->where('uid', $uid)->firstOrFail();
         $column = RaceMarkColumn::query()
             ->where('race_id', $race->id)
             ->findOrFail($columnId);
-        // race_entry の存在確認（404 を返す）
         RaceEntry::query()
             ->where('race_id', $race->id)
             ->findOrFail($raceEntryId);
@@ -32,7 +30,7 @@ class RaceMarkController extends Controller
             $column,
             $raceEntryId,
             $request->user(),
-            (string) ($request->validated('mark_value') ?? ''),
+            (string) $request->validated('mark_value'),
         );
 
         if ($result === null) {

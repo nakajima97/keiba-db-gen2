@@ -1,6 +1,8 @@
 <?php
 
 use App\Models\Race;
+use App\Models\RaceMark;
+use App\Models\RaceMarkColumn;
 use App\Models\User;
 use App\Models\Venue;
 use Illuminate\Support\Facades\DB;
@@ -17,21 +19,6 @@ function createRaceForMarkColumnDestroyTest(): Race
         'race_date' => '2026-04-26',
         'race_number' => 4,
     ]);
-}
-
-/**
- * race_mark_columns に列を 1 件挿入して ID を返す
- *
- * @param  array{race_id:int,user_id:int,column_type:string,label:?string,display_order:int}  $overrides
- */
-function insertRaceMarkColumnForDestroy(array $overrides): int
-{
-    $now = now();
-
-    return DB::table('race_mark_columns')->insertGetId(array_merge([
-        'created_at' => $now,
-        'updated_at' => $now,
-    ], $overrides));
 }
 
 /**
@@ -71,16 +58,17 @@ test('unauthenticated user cannot delete mark column', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForMarkColumnDestroyTest();
-    $columnId = insertRaceMarkColumnForDestroy([
-        'race_id' => $race->id,
-        'user_id' => $user->id,
-        'column_type' => 'other',
-        'label' => '友人A',
-        'display_order' => 1,
-    ]);
+    $column = RaceMarkColumn::factory()
+        ->other()
+        ->create([
+            'race_id' => $race->id,
+            'user_id' => $user->id,
+            'label' => '友人A',
+            'display_order' => 1,
+        ]);
 
     // Act
-    $response = $this->deleteJson('/api/races/'.$race->uid.'/mark-columns/'.$columnId);
+    $response = $this->deleteJson('/api/races/'.$race->uid.'/mark-columns/'.$column->id);
 
     // Assert
     $response->assertUnauthorized();
@@ -90,50 +78,49 @@ test('authenticated user can delete other mark column', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForMarkColumnDestroyTest();
-    $columnId = insertRaceMarkColumnForDestroy([
-        'race_id' => $race->id,
-        'user_id' => $user->id,
-        'column_type' => 'other',
-        'label' => '友人A',
-        'display_order' => 1,
-    ]);
+    $column = RaceMarkColumn::factory()
+        ->other()
+        ->create([
+            'race_id' => $race->id,
+            'user_id' => $user->id,
+            'label' => '友人A',
+            'display_order' => 1,
+        ]);
 
     // Act
-    $response = $this->actingAs($user)->deleteJson('/api/races/'.$race->uid.'/mark-columns/'.$columnId);
+    $response = $this->actingAs($user)->deleteJson('/api/races/'.$race->uid.'/mark-columns/'.$column->id);
 
     // Assert
     $response->assertNoContent();
-    $this->assertDatabaseMissing('race_mark_columns', ['id' => $columnId]);
+    $this->assertDatabaseMissing('race_mark_columns', ['id' => $column->id]);
 });
 
 test('related race_marks are also deleted when removing other mark column', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForMarkColumnDestroyTest();
-    $columnId = insertRaceMarkColumnForDestroy([
-        'race_id' => $race->id,
-        'user_id' => $user->id,
-        'column_type' => 'other',
-        'label' => '友人A',
-        'display_order' => 1,
-    ]);
+    $column = RaceMarkColumn::factory()
+        ->other()
+        ->create([
+            'race_id' => $race->id,
+            'user_id' => $user->id,
+            'label' => '友人A',
+            'display_order' => 1,
+        ]);
     $raceEntryId = insertRaceEntryForDestroy($race->id);
-    $now = now();
 
-    DB::table('race_marks')->insert([
-        'race_mark_column_id' => $columnId,
+    RaceMark::factory()->create([
+        'race_mark_column_id' => $column->id,
         'race_entry_id' => $raceEntryId,
         'mark_value' => '◎',
-        'created_at' => $now,
-        'updated_at' => $now,
     ]);
 
     // Act
-    $this->actingAs($user)->deleteJson('/api/races/'.$race->uid.'/mark-columns/'.$columnId);
+    $this->actingAs($user)->deleteJson('/api/races/'.$race->uid.'/mark-columns/'.$column->id);
 
     // Assert
     $this->assertDatabaseMissing('race_marks', [
-        'race_mark_column_id' => $columnId,
+        'race_mark_column_id' => $column->id,
     ]);
 });
 
@@ -142,16 +129,17 @@ test('deleting other users mark column returns 403', function () {
     $user = User::factory()->create();
     $otherUser = User::factory()->create();
     $race = createRaceForMarkColumnDestroyTest();
-    $columnId = insertRaceMarkColumnForDestroy([
-        'race_id' => $race->id,
-        'user_id' => $otherUser->id,
-        'column_type' => 'other',
-        'label' => '他人の列',
-        'display_order' => 1,
-    ]);
+    $column = RaceMarkColumn::factory()
+        ->other()
+        ->create([
+            'race_id' => $race->id,
+            'user_id' => $otherUser->id,
+            'label' => '他人の列',
+            'display_order' => 1,
+        ]);
 
     // Act
-    $response = $this->actingAs($user)->deleteJson('/api/races/'.$race->uid.'/mark-columns/'.$columnId);
+    $response = $this->actingAs($user)->deleteJson('/api/races/'.$race->uid.'/mark-columns/'.$column->id);
 
     // Assert
     $response->assertForbidden();
@@ -161,16 +149,15 @@ test('deleting own column returns 422', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForMarkColumnDestroyTest();
-    $columnId = insertRaceMarkColumnForDestroy([
-        'race_id' => $race->id,
-        'user_id' => $user->id,
-        'column_type' => 'own',
-        'label' => null,
-        'display_order' => 0,
-    ]);
+    $column = RaceMarkColumn::factory()
+        ->own()
+        ->create([
+            'race_id' => $race->id,
+            'user_id' => $user->id,
+        ]);
 
     // Act
-    $response = $this->actingAs($user)->deleteJson('/api/races/'.$race->uid.'/mark-columns/'.$columnId);
+    $response = $this->actingAs($user)->deleteJson('/api/races/'.$race->uid.'/mark-columns/'.$column->id);
 
     // Assert
     $response->assertUnprocessable();

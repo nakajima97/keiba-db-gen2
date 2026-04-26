@@ -20,7 +20,7 @@ return new class extends Migration
             $table->unsignedSmallInteger('display_order')->comment('表示順 昇順');
             $table->timestamps();
 
-            $table->index(['race_id', 'user_id', 'display_order']);
+            $table->unique(['race_id', 'user_id', 'display_order']);
         });
     }
 

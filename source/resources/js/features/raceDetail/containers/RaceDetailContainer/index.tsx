@@ -13,6 +13,9 @@ import {
 	updateColumnLabel,
 } from "@/features/raceDetail/requests/raceMarkColumns";
 import { upsertMark } from "@/features/raceDetail/requests/raceMarks";
+import { useDebouncedCallbackByKey } from "@/hooks/useDebouncedCallback";
+
+const LABEL_DEBOUNCE_MS = 500;
 
 type Props = {
 	race: RaceDetailItem;
@@ -22,12 +25,24 @@ type Props = {
  * レース詳細画面のコンテナ。
  * 印列・印データのローカル state を保持し、ユーザー操作で楽観的に更新→API 呼び出し。
  * API 失敗時は state を元に戻して toast でエラーを通知する。
+ * ラベル編集はキー入力中の連打を避けるため列ごとに 500ms デバウンスする。
  */
 export default function RaceDetailContainer({ race }: Props) {
 	const [markColumns, setMarkColumns] = useState<RaceMarkColumn[]>(
 		race.mark_columns,
 	);
 	const [marks, setMarks] = useState<RaceMarkValue[]>(race.marks);
+
+	const labelDebouncer = useDebouncedCallbackByKey(
+		async (raceUid: string, columnId: number, label: string) => {
+			try {
+				await updateColumnLabel(raceUid, columnId, label);
+			} catch (_e) {
+				toast.error("ラベルの更新に失敗しました");
+			}
+		},
+		LABEL_DEBOUNCE_MS,
+	);
 
 	const localRace: RaceDetailItem = {
 		...race,
@@ -61,6 +76,7 @@ export default function RaceDetailContainer({ race }: Props) {
 	};
 
 	const handleRemoveOtherColumn = async (columnId: number) => {
+		labelDebouncer.cancel(columnId);
 		const previousColumns = markColumns;
 		const previousMarks = marks;
 		setMarkColumns((current) => current.filter((c) => c.id !== columnId));
@@ -74,17 +90,11 @@ export default function RaceDetailContainer({ race }: Props) {
 		}
 	};
 
-	const handleChangeColumnLabel = async (columnId: number, label: string) => {
-		const previous = markColumns;
+	const handleChangeColumnLabel = (columnId: number, label: string) => {
 		setMarkColumns((current) =>
 			current.map((c) => (c.id === columnId ? { ...c, label } : c)),
 		);
-		try {
-			await updateColumnLabel(race.uid, columnId, label);
-		} catch (_e) {
-			setMarkColumns(previous);
-			toast.error("ラベルの更新に失敗しました");
-		}
+		labelDebouncer.call(columnId, race.uid, columnId, label);
 	};
 
 	const handleMarkChange = async (params: {

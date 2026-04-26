@@ -2,12 +2,17 @@
 
 namespace App\Models;
 
+use Database\Factories\RaceMarkColumnFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class RaceMarkColumn extends Model
 {
+    /** @use HasFactory<RaceMarkColumnFactory> */
+    use HasFactory;
+
     protected $fillable = [
         'race_id',
         'user_id',

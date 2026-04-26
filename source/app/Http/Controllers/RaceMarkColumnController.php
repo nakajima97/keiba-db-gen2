@@ -16,19 +16,15 @@ use Illuminate\Http\Response;
 
 class RaceMarkColumnController extends Controller
 {
-    public function index(string $uid, Request $request, IndexAction $action): JsonResponse
+    public function index(Race $race, Request $request, IndexAction $action): JsonResponse
     {
-        $race = Race::query()->where('uid', $uid)->firstOrFail();
-
         return response()->json([
             'data' => $action->execute($race, $request->user()),
         ]);
     }
 
-    public function store(string $uid, StoreRaceMarkColumnRequest $request, StoreAction $action): JsonResponse
+    public function store(Race $race, StoreRaceMarkColumnRequest $request, StoreAction $action): JsonResponse
     {
-        $race = Race::query()->where('uid', $uid)->firstOrFail();
-
         $data = $action->execute(
             $race,
             $request->user(),
@@ -39,12 +35,11 @@ class RaceMarkColumnController extends Controller
     }
 
     public function update(
-        string $uid,
+        Race $race,
         int $id,
         UpdateRaceMarkColumnRequest $request,
         UpdateAction $action,
     ): JsonResponse {
-        $race = Race::query()->where('uid', $uid)->firstOrFail();
         $column = RaceMarkColumn::query()
             ->where('race_id', $race->id)
             ->findOrFail($id);
@@ -58,9 +53,8 @@ class RaceMarkColumnController extends Controller
         return response()->json(['data' => $data]);
     }
 
-    public function destroy(string $uid, int $id, Request $request, DestroyAction $action): Response
+    public function destroy(Race $race, int $id, Request $request, DestroyAction $action): Response
     {
-        $race = Race::query()->where('uid', $uid)->firstOrFail();
         $column = RaceMarkColumn::query()
             ->where('race_id', $race->id)
             ->findOrFail($id);

@@ -1,9 +1,9 @@
 <?php
 
 use App\Models\Race;
+use App\Models\RaceMarkColumn;
 use App\Models\User;
 use App\Models\Venue;
-use Illuminate\Support\Facades\DB;
 
 /**
  * race_mark_columns 追加テスト用の race を作成して返す
@@ -70,28 +70,21 @@ test('display_order is appended to the end when creating new other column', func
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForMarkColumnStoreTest();
-    $now = now();
 
-    DB::table('race_mark_columns')->insert([
-        [
+    RaceMarkColumn::factory()
+        ->own()
+        ->create([
             'race_id' => $race->id,
             'user_id' => $user->id,
-            'column_type' => 'own',
-            'label' => null,
-            'display_order' => 0,
-            'created_at' => $now,
-            'updated_at' => $now,
-        ],
-        [
+        ]);
+    RaceMarkColumn::factory()
+        ->other()
+        ->create([
             'race_id' => $race->id,
             'user_id' => $user->id,
-            'column_type' => 'other',
             'label' => '友人A',
             'display_order' => 3,
-            'created_at' => $now,
-            'updated_at' => $now,
-        ],
-    ]);
+        ]);
 
     // Act
     $response = $this->actingAs($user)->postJson('/api/races/'.$race->uid.'/mark-columns', [
