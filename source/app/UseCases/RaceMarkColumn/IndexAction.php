@@ -5,6 +5,7 @@ namespace App\UseCases\RaceMarkColumn;
 use App\Models\Race;
 use App\Models\RaceMarkColumn;
 use App\Models\User;
+use Illuminate\Database\UniqueConstraintViolationException;
 
 /**
  * 認証ユーザー所有の印列を display_order 昇順で返す。
@@ -47,7 +48,7 @@ class IndexAction
                     'display_order' => 0,
                 ],
             );
-        } catch (\Illuminate\Database\UniqueConstraintViolationException) {
+        } catch (UniqueConstraintViolationException) {
             // 別リクエストが先に作成済み。次のクエリで読めるので無視。
         }
     }

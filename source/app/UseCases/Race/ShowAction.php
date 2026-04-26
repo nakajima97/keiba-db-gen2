@@ -6,6 +6,7 @@ use App\Models\Race;
 use App\Models\RaceMarkColumn;
 use App\Models\User;
 use Carbon\CarbonInterface;
+use Illuminate\Database\UniqueConstraintViolationException;
 
 /**
  * レースと出馬表（馬・騎手含む）に加え、認証ユーザーの印列・印データを取得し、
@@ -101,7 +102,7 @@ class ShowAction
                     'display_order' => 0,
                 ],
             );
-        } catch (\Illuminate\Database\UniqueConstraintViolationException) {
+        } catch (UniqueConstraintViolationException) {
             // 別リクエストが先に作成済み。次のクエリで読めるので無視。
         }
     }
