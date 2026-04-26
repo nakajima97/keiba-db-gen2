@@ -156,6 +156,37 @@ describe("RaceResultForm", () => {
 			).not.toBeDisabled();
 		});
 
+		it("disabled=true のとき着順情報テキストエリアが disabled になる", () => {
+			// Act
+			render(<RaceResultForm {...baseProps} disabled={true} />);
+
+			// Assert
+			expect(screen.getByLabelText("着順情報をペースト")).toBeDisabled();
+		});
+
+		it("disabled=true のとき払い戻し情報テキストエリアが disabled になる", () => {
+			// Act
+			render(<RaceResultForm {...baseProps} disabled={true} />);
+
+			// Assert
+			expect(screen.getByLabelText("払い戻し情報をペースト")).toBeDisabled();
+		});
+
+		it("disabled=true かつ両テキストエリアに入力済みでも送信ボタンが disabled になる", () => {
+			// Act
+			render(
+				<RaceResultForm
+					{...baseProps}
+					resultPasteValue="some text"
+					payoutPasteValue="some text"
+					disabled={true}
+				/>,
+			);
+
+			// Assert
+			expect(screen.getByRole("button", { name: "保存する" })).toBeDisabled();
+		});
+
 		it("isSubmitting が true のとき「保存中...」ボタンが表示され無効になる", () => {
 			// Act
 			render(

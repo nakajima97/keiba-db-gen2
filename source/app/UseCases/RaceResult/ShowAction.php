@@ -10,7 +10,7 @@ use App\Models\Race;
 class ShowAction
 {
     /**
-     * @return array{uid: string, venue_name: string, race_date: string, race_number: int}
+     * @return array{uid: string, venue_name: string, race_date: string, race_number: int, has_existing_result: bool}
      */
     public function execute(string $uid): array
     {
@@ -21,6 +21,7 @@ class ShowAction
             'venue_name' => $race->venue->name,
             'race_date' => $race->race_date,
             'race_number' => $race->race_number,
+            'has_existing_result' => $race->raceResultHorses()->exists(),
         ];
     }
 }

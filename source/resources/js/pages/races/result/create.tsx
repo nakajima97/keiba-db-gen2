@@ -7,6 +7,7 @@ type RaceResultCreateProps = {
 		venue_name: string;
 		race_date: string;
 		race_number: number;
+		has_existing_result: boolean;
 	};
 };
 
@@ -21,6 +22,7 @@ export default function RaceResultCreate() {
 				venueName={race.venue_name}
 				raceDate={race.race_date}
 				raceNumber={race.race_number}
+				disabled={race.has_existing_result}
 			/>
 		</>
 	);
