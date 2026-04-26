@@ -16,4 +16,6 @@ flowchart TD
     RacesNew -->|保存ボタン押下（競馬場・日付・番号引き継ぎ）| RacesNew
     RaceDetail -->|出走馬登録ボタン| RaceEntriesNew[出走馬登録画面\n/races/uid/entries/new]
     RaceEntriesNew -->|登録ボタン押下| RaceDetail
+    RaceDetail -->|馬名リンク| HorseDetail[競走馬詳細画面\n/horses/horse]
+    RaceResultEdit -->|馬名リンク| HorseDetail
 ```
