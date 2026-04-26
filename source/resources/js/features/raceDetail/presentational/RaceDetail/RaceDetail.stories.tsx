@@ -19,6 +19,7 @@ const sampleRace: RaceDetailProps["race"] = {
 		{
 			frame_number: 1,
 			horse_number: 1,
+			horse_id: 1,
 			horse_name: "サンプルホース1",
 			jockey_name: "騎手 一郎",
 			weight: 480,
@@ -26,6 +27,7 @@ const sampleRace: RaceDetailProps["race"] = {
 		{
 			frame_number: 1,
 			horse_number: 2,
+			horse_id: 2,
 			horse_name: "サンプルホース2",
 			jockey_name: "騎手 二郎",
 			weight: 462,
@@ -33,6 +35,7 @@ const sampleRace: RaceDetailProps["race"] = {
 		{
 			frame_number: 2,
 			horse_number: 3,
+			horse_id: 3,
 			horse_name: "サンプルホース3",
 			jockey_name: "騎手 三郎",
 			weight: null,
@@ -40,6 +43,7 @@ const sampleRace: RaceDetailProps["race"] = {
 		{
 			frame_number: 2,
 			horse_number: 4,
+			horse_id: 4,
 			horse_name: "サンプルホース4",
 			jockey_name: "騎手 四郎",
 			weight: 510,
