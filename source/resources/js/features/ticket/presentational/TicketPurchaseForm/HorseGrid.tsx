@@ -10,14 +10,14 @@ type HorseGridProps = {
 	onTextChange: (text: string) => void;
 };
 
-export function HorseGrid({
+export const HorseGrid = ({
 	label,
 	groupKey,
 	gridSize,
 	selectedHorses,
 	onToggle,
 	onTextChange,
-}: HorseGridProps) {
+}: HorseGridProps) => {
 	return (
 		<div className="space-y-2">
 			<div className="flex items-center gap-2">
@@ -56,4 +56,4 @@ export function HorseGrid({
 			</div>
 		</div>
 	);
-}
+};

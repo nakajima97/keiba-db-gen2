@@ -5,13 +5,13 @@ import {
 	AlertTitle,
 } from "@/components/shadcn/ui/alert";
 
-export default function AlertError({
+const AlertError = ({
 	errors,
 	title,
 }: {
 	errors: string[];
 	title?: string;
-}) {
+}) => {
 	return (
 		<Alert variant="destructive">
 			<AlertCircleIcon />
@@ -25,4 +25,6 @@ export default function AlertError({
 			</AlertDescription>
 		</Alert>
 	);
-}
+};
+
+export default AlertError;

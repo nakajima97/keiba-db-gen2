@@ -5,7 +5,7 @@ import { formatDateDisplay } from "@/utils/date";
 import type { RaceResultDetailProps } from "./types";
 import { formatHorseNumbers } from "./utils";
 
-export default function RaceResultDetail({ race }: RaceResultDetailProps) {
+const RaceResultDetail = ({ race }: RaceResultDetailProps) => {
 	return (
 		<div className="flex flex-col gap-4 p-4">
 			<div className="flex items-center justify-between">
@@ -134,6 +134,8 @@ export default function RaceResultDetail({ race }: RaceResultDetailProps) {
 			</ScrollableTable>
 		</div>
 	);
-}
+};
+
+export default RaceResultDetail;
 
 export type { RaceResultDetailProps } from "./types";

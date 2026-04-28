@@ -19,7 +19,7 @@ export type TicketPurchaseFormContainerProps = {
 	initialAmount: number;
 };
 
-export default function TicketPurchaseFormContainer({
+const TicketPurchaseFormContainer = ({
 	initialVenue,
 	initialRaceDate,
 	initialRaceNumber,
@@ -29,7 +29,7 @@ export default function TicketPurchaseFormContainer({
 	initialNagashiDirection,
 	initialHorses,
 	initialAmount,
-}: TicketPurchaseFormContainerProps) {
+}: TicketPurchaseFormContainerProps) => {
 	const [selectedVenue, setSelectedVenue] = useState(initialVenue);
 	const [selectedRaceDate, setSelectedRaceDate] = useState(initialRaceDate);
 	const [selectedRaceNumber, setSelectedRaceNumber] =
@@ -113,4 +113,6 @@ export default function TicketPurchaseFormContainer({
 			/>
 		</form>
 	);
-}
+};
+
+export default TicketPurchaseFormContainer;

@@ -23,7 +23,7 @@ import { useClipboard } from "@/hooks/use-clipboard";
 import { OTP_MAX_LENGTH } from "@/hooks/use-two-factor-auth";
 import { confirm } from "@/routes/two-factor";
 
-function GridScanIcon() {
+const GridScanIcon = () => {
 	return (
 		<div className="mb-3 rounded-full border border-border bg-card p-0.5 shadow-sm">
 			<div className="relative overflow-hidden rounded-full border border-border bg-muted p-2.5">
@@ -47,9 +47,9 @@ function GridScanIcon() {
 			</div>
 		</div>
 	);
-}
+};
 
-function TwoFactorSetupStep({
+const TwoFactorSetupStep = ({
 	qrCodeSvg,
 	manualSetupKey,
 	buttonText,
@@ -61,7 +61,7 @@ function TwoFactorSetupStep({
 	buttonText: string;
 	onNextStep: () => void;
 	errors: string[];
-}) {
+}) => {
 	const { resolvedAppearance } = useAppearance();
 	const [copiedText, copy] = useClipboard();
 	const IconComponent = copiedText === manualSetupKey ? Check : Copy;
@@ -138,15 +138,15 @@ function TwoFactorSetupStep({
 			)}
 		</>
 	);
-}
+};
 
-function TwoFactorVerificationStep({
+const TwoFactorVerificationStep = ({
 	onClose,
 	onBack,
 }: {
 	onClose: () => void;
 	onBack: () => void;
-}) {
+}) => {
 	const [code, setCode] = useState<string>("");
 	const pinInputContainerRef = useRef<HTMLDivElement>(null);
 
@@ -233,7 +233,7 @@ type Props = {
 	errors: string[];
 };
 
-export default function TwoFactorSetupModal({
+const TwoFactorSetupModal = ({
 	isOpen,
 	onClose,
 	requiresConfirmation,
@@ -243,7 +243,7 @@ export default function TwoFactorSetupModal({
 	clearSetupData,
 	fetchSetupData,
 	errors,
-}: Props) {
+}: Props) => {
 	const [showVerificationStep, setShowVerificationStep] =
 		useState<boolean>(false);
 
@@ -339,4 +339,6 @@ export default function TwoFactorSetupModal({
 			</DialogContent>
 		</Dialog>
 	);
-}
+};
+
+export default TwoFactorSetupModal;

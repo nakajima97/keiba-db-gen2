@@ -1,11 +1,11 @@
 import type { TicketTypeId } from "./constants";
 
-export function getHorseInputConfigKey(
+export const getHorseInputConfigKey = (
 	ticketTypeId: TicketTypeId,
 	buyTypeId: string,
 	axisCount: 1 | 2,
 	_nagashiDirection: 1 | 2 | 3,
-): string {
+): string => {
 	const showNagashiDirectionSelector =
 		buyTypeId === "nagashi" && ticketTypeId === "sanrentan";
 
@@ -18,4 +18,4 @@ export function getHorseInputConfigKey(
 		return "formation_sanrenpuku";
 	}
 	return buyTypeId;
-}
+};

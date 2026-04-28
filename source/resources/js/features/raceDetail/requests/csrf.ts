@@ -2,7 +2,7 @@
  * <meta name="csrf-token"> から CSRF トークンを取り出す。
  * テスト等で meta タグが存在しない場合は空文字列を返す。
  */
-export function getCsrfToken(): string {
+export const getCsrfToken = (): string => {
 	if (typeof document === "undefined") {
 		return "";
 	}
@@ -10,16 +10,16 @@ export function getCsrfToken(): string {
 		'meta[name="csrf-token"]',
 	);
 	return meta?.content ?? "";
-}
+};
 
 /**
  * 認証付き JSON リクエストの共通ヘッダ。
  */
-export function buildJsonHeaders(): HeadersInit {
+export const buildJsonHeaders = (): HeadersInit => {
 	return {
 		"Content-Type": "application/json",
 		Accept: "application/json",
 		"X-Requested-With": "XMLHttpRequest",
 		"X-CSRF-TOKEN": getCsrfToken(),
 	};
-}
+};

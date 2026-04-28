@@ -7,14 +7,14 @@ import { create, show } from "@/routes/races";
 import { formatDateDisplay } from "@/utils/date";
 import type { RaceListProps } from "./types";
 
-export default function RaceList({
+const RaceList = ({
 	races,
 	venues,
 	selectedDate,
 	selectedVenueId,
 	onDateChange,
 	onVenueChange,
-}: RaceListProps) {
+}: RaceListProps) => {
 	return (
 		<div className="flex flex-col gap-4 p-4">
 			<div className="flex items-center justify-between">
@@ -107,6 +107,8 @@ export default function RaceList({
 			)}
 		</div>
 	);
-}
+};
+
+export default RaceList;
 
 export type { RaceListItem, RaceListProps } from "./types";

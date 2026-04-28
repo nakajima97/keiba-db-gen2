@@ -9,13 +9,13 @@ import {
 import { toUrl } from "@/lib/utils";
 import type { NavItem } from "@/types";
 
-export function NavFooter({
+export const NavFooter = ({
 	items,
 	className,
 	...props
 }: ComponentPropsWithoutRef<typeof SidebarGroup> & {
 	items: NavItem[];
-}) {
+}) => {
 	return (
 		<SidebarGroup
 			{...props}
@@ -44,4 +44,4 @@ export function NavFooter({
 			</SidebarGroupContent>
 		</SidebarGroup>
 	);
-}
+};

@@ -5,13 +5,13 @@ import type { RaceEntryRegistrationFormProps } from "./types";
 
 export type { RaceEntryRegistrationFormProps } from "./types";
 
-export default function RaceEntryRegistrationForm({
+const RaceEntryRegistrationForm = ({
 	raceInfo,
 	pastedText,
 	isSubmitting,
 	onPastedTextChange,
 	onSubmit,
-}: RaceEntryRegistrationFormProps) {
+}: RaceEntryRegistrationFormProps) => {
 	return (
 		<div className="mx-auto max-w-2xl space-y-8 p-4">
 			<h1 className="text-xl font-semibold">出走馬登録</h1>
@@ -71,4 +71,6 @@ export default function RaceEntryRegistrationForm({
 			</div>
 		</div>
 	);
-}
+};
+
+export default RaceEntryRegistrationForm;

@@ -16,7 +16,7 @@ import {
 } from "@/components/shadcn/ui/dialog";
 import { Label } from "@/components/shadcn/ui/label";
 
-export default function DeleteUser() {
+const DeleteUser = () => {
 	const passwordInput = useRef<HTMLInputElement>(null);
 
 	return (
@@ -104,4 +104,6 @@ export default function DeleteUser() {
 			</div>
 		</div>
 	);
-}
+};
+
+export default DeleteUser;

@@ -12,28 +12,28 @@ import type {
 	RaceMarkValue,
 } from "./types";
 
-function findMarkValue(
+const findMarkValue = (
 	marks: RaceMarkValue[],
 	columnId: number,
 	raceEntryId: number,
-): MarkValue | null {
+): MarkValue | null => {
 	const found = marks.find(
 		(m) => m.column_id === columnId && m.race_entry_id === raceEntryId,
 	);
 	return found ? found.mark_value : null;
-}
+};
 
-function sortColumns(columns: RaceMarkColumn[]): RaceMarkColumn[] {
+const sortColumns = (columns: RaceMarkColumn[]): RaceMarkColumn[] => {
 	return [...columns].sort((a, b) => a.display_order - b.display_order);
-}
+};
 
-export default function RaceDetail({
+const RaceDetail = ({
 	race,
 	onMarkChange,
 	onAddOtherColumn,
 	onRemoveOtherColumn,
 	onChangeColumnLabel,
-}: RaceDetailProps) {
+}: RaceDetailProps) => {
 	const sortedColumns = sortColumns(race.mark_columns);
 
 	return (
@@ -155,7 +155,9 @@ export default function RaceDetail({
 			</ScrollableTable>
 		</div>
 	);
-}
+};
+
+export default RaceDetail;
 
 export type {
 	RaceDetailItem,

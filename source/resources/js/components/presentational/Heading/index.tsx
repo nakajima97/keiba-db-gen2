@@ -1,4 +1,4 @@
-export default function Heading({
+const Heading = ({
 	title,
 	description,
 	variant = "default",
@@ -6,7 +6,7 @@ export default function Heading({
 	title: string;
 	description?: string;
 	variant?: "default" | "small";
-}) {
+}) => {
 	return (
 		<header className={variant === "small" ? "" : "mb-8 space-y-0.5"}>
 			<h2
@@ -23,4 +23,6 @@ export default function Heading({
 			)}
 		</header>
 	);
-}
+};
+
+export default Heading;
