@@ -7,7 +7,7 @@ const mql =
 		? undefined
 		: window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`);
 
-function mediaQueryListener(callback: (event: MediaQueryListEvent) => void) {
+const mediaQueryListener = (callback: (event: MediaQueryListEvent) => void) => {
 	if (!mql) {
 		return () => {};
 	}
@@ -17,20 +17,20 @@ function mediaQueryListener(callback: (event: MediaQueryListEvent) => void) {
 	return () => {
 		mql.removeEventListener("change", callback);
 	};
-}
+};
 
-function isSmallerThanBreakpoint(): boolean {
+const isSmallerThanBreakpoint = (): boolean => {
 	return mql?.matches ?? false;
-}
+};
 
-function getServerSnapshot(): boolean {
+const getServerSnapshot = (): boolean => {
 	return false;
-}
+};
 
-export function useIsMobile(): boolean {
+export const useIsMobile = (): boolean => {
 	return useSyncExternalStore(
 		mediaQueryListener,
 		isSmallerThanBreakpoint,
 		getServerSnapshot,
 	);
-}
+};

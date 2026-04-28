@@ -8,6 +8,6 @@
  *               想定外の形式が渡された場合はハイフンのみがスラッシュに置換される。
  * @returns `YYYY/MM/DD` 形式に変換された日付文字列。
  */
-export function formatDateDisplay(date: string): string {
+export const formatDateDisplay = (date: string): string => {
 	return date.replace(/-/g, "/");
-}
+};

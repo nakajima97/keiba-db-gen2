@@ -7,13 +7,13 @@ import { useCallback, useEffect, useRef } from "react";
  *
  * 失敗時の state ロールバックを行わない用途を想定（入力中の最新値を捨てると UX が悪いため）。
  */
-export function useDebouncedCallbackByKey<TArgs extends unknown[]>(
+export const useDebouncedCallbackByKey = <TArgs extends unknown[]>(
 	fn: (...args: TArgs) => void,
 	delayMs: number,
 ): {
 	call: (key: string | number, ...args: TArgs) => void;
 	cancel: (key: string | number) => void;
-} {
+} => {
 	const fnRef = useRef(fn);
 	fnRef.current = fn;
 	const timersRef = useRef(
@@ -52,4 +52,4 @@ export function useDebouncedCallbackByKey<TArgs extends unknown[]>(
 	}, []);
 
 	return { call, cancel };
-}
+};
