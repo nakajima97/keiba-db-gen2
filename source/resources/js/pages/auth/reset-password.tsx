@@ -12,7 +12,7 @@ type Props = {
 	email: string;
 };
 
-export default function ResetPassword({ token, email }: Props) {
+const ResetPassword = ({ token, email }: Props) => {
 	return (
 		<>
 			<Head title="Reset password" />
@@ -80,7 +80,9 @@ export default function ResetPassword({ token, email }: Props) {
 			</Form>
 		</>
 	);
-}
+};
+
+export default ResetPassword;
 
 ResetPassword.layout = {
 	title: "Reset password",

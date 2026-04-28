@@ -1,6 +1,6 @@
 import AuthLayoutTemplate from "@/layouts/auth/auth-simple-layout";
 
-export default function AuthLayout({
+const AuthLayout = ({
 	title = "",
 	description = "",
 	children,
@@ -8,10 +8,12 @@ export default function AuthLayout({
 	title?: string;
 	description?: string;
 	children: React.ReactNode;
-}) {
+}) => {
 	return (
 		<AuthLayoutTemplate title={title} description={description}>
 			{children}
 		</AuthLayoutTemplate>
 	);
-}
+};
+
+export default AuthLayout;

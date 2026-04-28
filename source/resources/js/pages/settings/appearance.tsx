@@ -3,7 +3,7 @@ import AppearanceTabs from "@/features/settings/presentational/AppearanceTabs";
 import Heading from "@/components/presentational/Heading";
 import { edit as editAppearance } from "@/routes/appearance";
 
-export default function Appearance() {
+const Appearance = () => {
 	return (
 		<>
 			<Head title="Appearance settings" />
@@ -20,7 +20,9 @@ export default function Appearance() {
 			</div>
 		</>
 	);
-}
+};
+
+export default Appearance;
 
 Appearance.layout = {
 	breadcrumbs: [

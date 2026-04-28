@@ -11,7 +11,7 @@ type RaceResultCreateProps = {
 	};
 };
 
-export default function RaceResultCreate() {
+const RaceResultCreate = () => {
 	const { race } = usePage<RaceResultCreateProps>().props;
 
 	return (
@@ -26,4 +26,6 @@ export default function RaceResultCreate() {
 			/>
 		</>
 	);
-}
+};
+
+export default RaceResultCreate;

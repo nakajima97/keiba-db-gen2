@@ -28,7 +28,7 @@ const buildQuery = (date: string, venueId: string) => {
 	return query;
 };
 
-export default function RacesIndex() {
+const RacesIndex = () => {
 	const { races, venues, filters } = usePage<RacesIndexProps>().props;
 
 	const [selectedDate, setSelectedDate] = useState<string>(
@@ -89,4 +89,6 @@ export default function RacesIndex() {
 			/>
 		</>
 	);
-}
+};
+
+export default RacesIndex;

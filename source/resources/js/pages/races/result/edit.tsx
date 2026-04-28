@@ -6,7 +6,7 @@ type RaceResultEditProps = {
 	race: RaceResultDetailProps["race"];
 };
 
-export default function RaceResultEdit() {
+const RaceResultEdit = () => {
 	const { race } = usePage<RaceResultEditProps>().props;
 
 	return (
@@ -15,4 +15,6 @@ export default function RaceResultEdit() {
 			<RaceResultDetail race={race} />
 		</>
 	);
-}
+};
+
+export default RaceResultEdit;

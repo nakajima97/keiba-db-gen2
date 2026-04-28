@@ -10,7 +10,7 @@ import {
 } from "@/components/shadcn/ui/card";
 import { home } from "@/routes";
 
-export default function AuthCardLayout({
+const AuthCardLayout = ({
 	children,
 	title,
 	description,
@@ -18,7 +18,7 @@ export default function AuthCardLayout({
 	name?: string;
 	title?: string;
 	description?: string;
-}>) {
+}>) => {
 	return (
 		<div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted p-6 md:p-10">
 			<div className="flex w-full max-w-md flex-col gap-6">
@@ -43,4 +43,6 @@ export default function AuthCardLayout({
 			</div>
 		</div>
 	);
-}
+};
+
+export default AuthCardLayout;

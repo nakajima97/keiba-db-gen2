@@ -3,11 +3,11 @@ import AppLogoIcon from "@/components/presentational/AppLogoIcon";
 import { home } from "@/routes";
 import type { AuthLayoutProps } from "@/types";
 
-export default function AuthSplitLayout({
+const AuthSplitLayout = ({
 	children,
 	title,
 	description,
-}: AuthLayoutProps) {
+}: AuthLayoutProps) => {
 	const { name } = usePage().props;
 
 	return (
@@ -41,4 +41,6 @@ export default function AuthSplitLayout({
 			</div>
 		</div>
 	);
-}
+};
+
+export default AuthSplitLayout;

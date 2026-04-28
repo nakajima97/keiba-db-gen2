@@ -14,7 +14,7 @@ type Props = {
 	canRegister: boolean;
 };
 
-export default function Login({ status }: Props) {
+const Login = ({ status }: Props) => {
 	return (
 		<>
 			<Head title="Log in" />
@@ -78,7 +78,9 @@ export default function Login({ status }: Props) {
 			)}
 		</>
 	);
-}
+};
+
+export default Login;
 
 Login.layout = {
 	title: "Log in to your account",

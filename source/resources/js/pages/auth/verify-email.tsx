@@ -6,7 +6,7 @@ import { Spinner } from "@/components/shadcn/ui/spinner";
 import { logout } from "@/routes";
 import { send } from "@/routes/verification";
 
-export default function VerifyEmail({ status }: { status?: string }) {
+const VerifyEmail = ({ status }: { status?: string }) => {
 	return (
 		<>
 			<Head title="Email verification" />
@@ -34,7 +34,9 @@ export default function VerifyEmail({ status }: { status?: string }) {
 			</Form>
 		</>
 	);
-}
+};
+
+export default VerifyEmail;
 
 VerifyEmail.layout = {
 	title: "Verify email",
