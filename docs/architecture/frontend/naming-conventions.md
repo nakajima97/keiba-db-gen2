@@ -28,6 +28,7 @@
 | 定数（モジュールスコープ） | UPPER_SNAKE_CASE | `MAX_RACE_COUNT` |
 | カスタムフック | `use` + PascalCase | `useRaceList`, `useBalanceInput` |
 | イベントハンドラ | `handle` + PascalCase | `handleSubmit`, `handleRaceSelect` |
+| 関数定義 | アロー関数を使用 | `const foo = () => {}` |
 
 ## 型・インターフェース
 
