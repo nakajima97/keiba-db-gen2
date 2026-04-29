@@ -54,11 +54,17 @@ const RaceDetail = ({
 						</th>
 						<td className="px-4 py-3">{race.venue_name}</td>
 					</tr>
-					<tr>
+					<tr className="border-b">
 						<th className="bg-muted/50 px-4 py-3 text-left font-medium text-muted-foreground">
 							レース番号
 						</th>
 						<td className="px-4 py-3">{race.race_number}R</td>
+					</tr>
+					<tr>
+						<th className="bg-muted/50 px-4 py-3 text-left font-medium text-muted-foreground">
+							レース名
+						</th>
+						<td className="px-4 py-3">{race.race_name ?? "—"}</td>
 					</tr>
 				</tbody>
 			</ScrollableTable>
