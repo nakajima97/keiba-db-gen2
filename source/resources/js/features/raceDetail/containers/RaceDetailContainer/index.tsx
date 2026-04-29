@@ -8,6 +8,7 @@ import type {
 	RaceDetailItem,
 	RaceEntry,
 	RaceMarkColumn,
+	RaceMarkMemo,
 	RaceMarkValue,
 } from "@/features/raceDetail/presentational/RaceDetail/types";
 import {
@@ -16,6 +17,7 @@ import {
 	updateColumnLabel,
 } from "@/features/raceDetail/requests/raceMarkColumns";
 import { upsertMark } from "@/features/raceDetail/requests/raceMarks";
+import RaceMarkMemoModalContainer from "@/features/raceMarkMemo/containers/RaceMarkMemoModalContainer";
 import { useDebouncedCallbackByKey } from "@/hooks/useDebouncedCallback";
 import { formatDateDisplay } from "@/utils/date";
 
@@ -35,7 +37,7 @@ const buildRaceLabel = (race: Props["race"]): string => {
 
 /**
  * レース詳細画面のコンテナ。
- * 印列・印データのローカル state を保持し、ユーザー操作で楽観的に更新→API 呼び出し。
+ * 印列・印データ・印メモのローカル state を保持し、ユーザー操作で楽観的に更新→API 呼び出し。
  * API 失敗時は state を元に戻して toast でエラーを通知する。
  * ラベル編集はキー入力中の連打を避けるため列ごとに 500ms デバウンスする。
  */
@@ -44,12 +46,20 @@ const RaceDetailContainer = ({ race }: Props) => {
 		race.mark_columns,
 	);
 	const [marks, setMarks] = useState<RaceMarkValue[]>(race.marks);
+	const [markMemos, setMarkMemos] = useState<RaceMarkMemo[]>(
+		race.mark_memos ?? [],
+	);
 	const [entries, setEntries] = useState<RaceEntry[]>(race.entries);
 	const [noteModal, setNoteModal] = useState<{
 		open: boolean;
 		horseId: number | null;
 		horseName: string;
 	}>({ open: false, horseId: null, horseName: "" });
+	const [memoModal, setMemoModal] = useState<{
+		open: boolean;
+		columnId: number | null;
+		raceEntryId: number | null;
+	}>({ open: false, columnId: null, raceEntryId: null });
 
 	const labelDebouncer = useDebouncedCallbackByKey(
 		async (raceUid: string, columnId: number, label: string) => {
@@ -67,6 +77,7 @@ const RaceDetailContainer = ({ race }: Props) => {
 		entries,
 		mark_columns: markColumns,
 		marks,
+		mark_memos: markMemos,
 	};
 
 	const handleAddOtherColumn = async () => {
@@ -98,13 +109,16 @@ const RaceDetailContainer = ({ race }: Props) => {
 		labelDebouncer.cancel(columnId);
 		const previousColumns = markColumns;
 		const previousMarks = marks;
+		const previousMemos = markMemos;
 		setMarkColumns((current) => current.filter((c) => c.id !== columnId));
 		setMarks((current) => current.filter((m) => m.column_id !== columnId));
+		setMarkMemos((current) => current.filter((m) => m.column_id !== columnId));
 		try {
 			await deleteColumn(race.uid, columnId);
 		} catch (_e) {
 			setMarkColumns(previousColumns);
 			setMarks(previousMarks);
+			setMarkMemos(previousMemos);
 			toast.error("印列の削除に失敗しました");
 		}
 	};
@@ -181,11 +195,90 @@ const RaceDetailContainer = ({ race }: Props) => {
 		);
 	};
 
+	const handleMarkMemoClick = (params: {
+		columnId: number;
+		raceEntryId: number;
+	}) => {
+		setMemoModal({
+			open: true,
+			columnId: params.columnId,
+			raceEntryId: params.raceEntryId,
+		});
+	};
+
+	const handleMemoClose = () => {
+		setMemoModal((current) => ({ ...current, open: false }));
+	};
+
+	const handleMemoSaved = (params: {
+		columnId: number;
+		raceEntryId: number;
+		content: string;
+	}) => {
+		setMarkMemos((current) => {
+			const filtered = current.filter(
+				(m) =>
+					!(
+						m.column_id === params.columnId &&
+						m.race_entry_id === params.raceEntryId
+					),
+			);
+			return [
+				...filtered,
+				{
+					column_id: params.columnId,
+					race_entry_id: params.raceEntryId,
+					content: params.content,
+				},
+			];
+		});
+	};
+
+	const handleMemoDeleted = (params: {
+		columnId: number;
+		raceEntryId: number;
+	}) => {
+		setMarkMemos((current) =>
+			current.filter(
+				(m) =>
+					!(
+						m.column_id === params.columnId &&
+						m.race_entry_id === params.raceEntryId
+					),
+			),
+		);
+	};
+
 	const selectedEntry =
 		noteModal.horseId != null
 			? entries.find((e) => e.horse_id === noteModal.horseId)
 			: undefined;
 	const selectedNote = selectedEntry?.note ?? null;
+
+	const memoTargetColumn =
+		memoModal.columnId != null
+			? markColumns.find((c) => c.id === memoModal.columnId)
+			: undefined;
+	const memoTargetEntry =
+		memoModal.raceEntryId != null
+			? entries.find((e) => e.id === memoModal.raceEntryId)
+			: undefined;
+	const memoTargetMemo =
+		memoModal.columnId != null && memoModal.raceEntryId != null
+			? markMemos.find(
+					(m) =>
+						m.column_id === memoModal.columnId &&
+						m.race_entry_id === memoModal.raceEntryId,
+				)
+			: undefined;
+	const memoTargetMark =
+		memoModal.columnId != null && memoModal.raceEntryId != null
+			? marks.find(
+					(m) =>
+						m.column_id === memoModal.columnId &&
+						m.race_entry_id === memoModal.raceEntryId,
+				)
+			: undefined;
 
 	return (
 		<>
@@ -196,6 +289,7 @@ const RaceDetailContainer = ({ race }: Props) => {
 				onRemoveOtherColumn={handleRemoveOtherColumn}
 				onChangeColumnLabel={handleChangeColumnLabel}
 				onNoteClick={handleNoteClick}
+				onMarkMemoClick={handleMarkMemoClick}
 			/>
 			{noteModal.horseId != null && (
 				<HorseNoteModalContainer
@@ -215,6 +309,25 @@ const RaceDetailContainer = ({ race }: Props) => {
 					onSuccess={handleNoteSuccess}
 				/>
 			)}
+			{memoModal.columnId != null &&
+				memoModal.raceEntryId != null &&
+				memoTargetColumn != null &&
+				memoTargetEntry != null && (
+					<RaceMarkMemoModalContainer
+						open={memoModal.open}
+						mode={memoTargetMemo != null ? "edit" : "create"}
+						raceUid={race.uid}
+						columnId={memoModal.columnId}
+						raceEntryId={memoModal.raceEntryId}
+						horseName={memoTargetEntry.horse_name}
+						columnLabel={memoTargetColumn.label ?? ""}
+						markValue={memoTargetMark?.mark_value ?? null}
+						initialContent={memoTargetMemo?.content ?? ""}
+						onClose={handleMemoClose}
+						onSaved={handleMemoSaved}
+						onDeleted={handleMemoDeleted}
+					/>
+				)}
 		</>
 	);
 };

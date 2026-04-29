@@ -7,6 +7,7 @@ use App\Http\Controllers\RaceController;
 use App\Http\Controllers\RaceEntryController;
 use App\Http\Controllers\RaceMarkColumnController;
 use App\Http\Controllers\RaceMarkController;
+use App\Http\Controllers\RaceMarkMemoController;
 use App\Http\Controllers\RaceResultController;
 use App\Http\Controllers\TicketPurchaseController;
 use Illuminate\Support\Facades\Route;
@@ -42,6 +43,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::patch('/races/{race:uid}/mark-columns/{id}', [RaceMarkColumnController::class, 'update'])->name('api.races.mark-columns.update');
         Route::delete('/races/{race:uid}/mark-columns/{id}', [RaceMarkColumnController::class, 'destroy'])->name('api.races.mark-columns.destroy');
         Route::put('/races/{race:uid}/mark-columns/{column_id}/entries/{race_entry_id}/mark', [RaceMarkController::class, 'upsert'])->name('api.races.mark-columns.entries.mark.upsert');
+        Route::put('/races/{race:uid}/mark-columns/{column_id}/entries/{race_entry_id}/memo', [RaceMarkMemoController::class, 'upsert'])->name('api.races.mark-columns.entries.memo.upsert');
+        Route::delete('/races/{race:uid}/mark-columns/{column_id}/entries/{race_entry_id}/memo', [RaceMarkMemoController::class, 'destroy'])->name('api.races.mark-columns.entries.memo.destroy');
 
         Route::get('/horses/{horse}/notes', [HorseNoteController::class, 'index'])->name('api.horses.notes.index');
         Route::post('/horses/{horse}/notes', [HorseNoteController::class, 'store'])->name('api.horses.notes.store');

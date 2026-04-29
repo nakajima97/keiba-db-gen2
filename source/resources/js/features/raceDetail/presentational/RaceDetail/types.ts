@@ -27,6 +27,7 @@ export type RaceMarkValue = {
 export type RaceMarkMemo = {
 	column_id: number;
 	race_entry_id: number;
+	content: string;
 };
 
 export type RaceEntryNote = {

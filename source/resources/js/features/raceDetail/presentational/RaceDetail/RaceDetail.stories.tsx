@@ -255,9 +255,21 @@ export const WithMarkMemos: Story = {
 				// race_entry_id: 4 → 印なし・メモなし → 非表示
 			],
 			mark_memos: [
-				{ column_id: 101, race_entry_id: 1 },
-				{ column_id: 102, race_entry_id: 1 },
-				{ column_id: 102, race_entry_id: 2 },
+				{
+					column_id: 101,
+					race_entry_id: 1,
+					content: "内枠先行で展開ハマる想定。",
+				},
+				{
+					column_id: 102,
+					race_entry_id: 1,
+					content: "前走時点では本命視されていた。",
+				},
+				{
+					column_id: 102,
+					race_entry_id: 2,
+					content: "馬場が渋ればさらに有利。",
+				},
 				// 自分列(100)にはメモは付かない
 			],
 		},
@@ -280,9 +292,21 @@ export const WithMarkMemosMobile: Story = {
 				{ column_id: 102, race_entry_id: 2, mark_value: "◎" },
 			],
 			mark_memos: [
-				{ column_id: 101, race_entry_id: 1 },
-				{ column_id: 102, race_entry_id: 1 },
-				{ column_id: 102, race_entry_id: 2 },
+				{
+					column_id: 101,
+					race_entry_id: 1,
+					content: "内枠先行で展開ハマる想定。",
+				},
+				{
+					column_id: 102,
+					race_entry_id: 1,
+					content: "前走時点では本命視されていた。",
+				},
+				{
+					column_id: 102,
+					race_entry_id: 2,
+					content: "馬場が渋ればさらに有利。",
+				},
 			],
 		},
 	},
