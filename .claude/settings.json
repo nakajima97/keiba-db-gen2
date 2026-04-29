@@ -22,8 +22,6 @@
       "Bash(vendor/bin/sail artisan test*)",
       "Bash(pnpm test*)",
       "Bash(pnpm run test*)",
-      "Bash(vendor/bin/sail pnpm test*)",
-      "Bash(vendor/bin/sail pnpm run test*)",
       "Bash(pnpm lint*)",
       "Bash(pnpm run lint*)",
       "Bash(pnpm format*)",
@@ -32,14 +30,7 @@
       "Bash(pnpm run check*)",
       "Bash(pnpm tc*)",
       "Bash(pnpm run tc*)",
-      "Bash(vendor/bin/sail pnpm lint*)",
-      "Bash(vendor/bin/sail pnpm run lint*)",
-      "Bash(vendor/bin/sail pnpm format*)",
-      "Bash(vendor/bin/sail pnpm run format*)",
-      "Bash(vendor/bin/sail pnpm check*)",
-      "Bash(vendor/bin/sail pnpm run check*)",
       "Bash(vendor/bin/sail bin pint*)",
-      "Write(*.md)",
       "Write(.claude/skills/**)",
       "Write(**/*.tsx)",
       "Write(**/*.ts)",
@@ -48,7 +39,6 @@
       "Write(**/*.blade.php)",
       "Write(**/*.json)",
       "Write(**/*.md)",
-      "Read(*.md)",
       "Read(**/*.md)",
       "Edit(/.claude/skills/**)",
       "Edit(**/*.tsx)",
@@ -60,13 +50,23 @@
       "Edit(**/*.md)",
       "Bash(mkdir -p *)"
     ],
+    "ask": [
+      "Write(**/CLAUDE.md)",
+      "Edit(**/CLAUDE.md)"
+    ],
     "deny": [
       "Bash(curl *)",
       "Read(**/.env)",
       "Read(**/.env.*)",
       "Read(./secrets/**)",
       "Bash(grep *.env)",
-      "Bash(grep *.env.*)"
+      "Bash(grep *.env.*)",
+      "Write(**/package.json)",
+      "Edit(**/package.json)",
+      "Write(**/composer.json)",
+      "Edit(**/composer.json)",
+      "Write(**/.claude/settings*.json)",
+      "Edit(**/.claude/settings*.json)"
     ]
   },
   "enabledPlugins": {
