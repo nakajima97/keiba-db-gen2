@@ -5,6 +5,7 @@ namespace App\UseCases\HorseNote;
 use App\Models\Horse;
 use App\Models\HorseNote;
 use App\Models\User;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Validation\ValidationException;
 
 /**
@@ -41,20 +42,30 @@ class StoreAction
             ->exists();
 
         if ($duplicateExists) {
-            throw ValidationException::withMessages([
-                'content' => 'この競走馬・レースの組み合わせには既にメモが存在します。',
-            ]);
+            throw $this->duplicateException();
         }
 
-        $note = HorseNote::create([
-            'user_id' => $user->id,
-            'horse_id' => $horse->id,
-            'race_id' => $raceId,
-            'content' => $content,
-        ]);
+        try {
+            $note = HorseNote::create([
+                'user_id' => $user->id,
+                'horse_id' => $horse->id,
+                'race_id' => $raceId,
+                'content' => $content,
+            ]);
+        } catch (UniqueConstraintViolationException) {
+            // exists() と create() の間に他リクエストが先に作成した場合のフォールバック
+            throw $this->duplicateException();
+        }
 
         $note->load(['race.venue']);
 
         return HorseNotePresenter::present($note);
+    }
+
+    private function duplicateException(): ValidationException
+    {
+        return ValidationException::withMessages([
+            'content' => 'この競走馬・レースの組み合わせには既にメモが存在します。',
+        ]);
     }
 }

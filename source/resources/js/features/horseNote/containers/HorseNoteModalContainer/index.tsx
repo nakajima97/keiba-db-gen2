@@ -9,7 +9,7 @@ import {
 	updateNote,
 } from "@/features/horseNote/requests/horseNotes";
 import type { HorseNote } from "@/features/horseNote/types/horseNote";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 const CONTENT_MAX_LENGTH = 1000;
@@ -60,17 +60,28 @@ const HorseNoteModalContainer = ({
 		raceContext.type === "selectable" ? (raceContext.defaultUid ?? null) : null,
 	);
 
-	// open 切替時に内容をリセットする
-	const defaultRaceUid =
+	// open が false→true に切り替わった瞬間だけ state をリセットする。
+	// open=true のまま親の再レンダリングで raceContext / initialContent の参照が変わっても
+	// 入力中の内容を上書きしないように、ref で最新値を保持する。
+	const initialContentRef = useRef(initialContent);
+	const defaultRaceUidRef = useRef<string | null>(
+		raceContext.type === "selectable" ? (raceContext.defaultUid ?? null) : null,
+	);
+	initialContentRef.current = initialContent;
+	defaultRaceUidRef.current =
 		raceContext.type === "selectable" ? (raceContext.defaultUid ?? null) : null;
+
+	const previousOpenRef = useRef(false);
 	useEffect(() => {
-		if (open) {
-			setContent(initialContent);
+		const wasOpen = previousOpenRef.current;
+		previousOpenRef.current = open;
+		if (open && !wasOpen) {
+			setContent(initialContentRef.current);
 			setErrorMessage(null);
 			setSubmitting(false);
-			setSelectedRaceUid(defaultRaceUid);
+			setSelectedRaceUid(defaultRaceUidRef.current);
 		}
-	}, [open, initialContent, defaultRaceUid]);
+	}, [open]);
 
 	const handleContentChange = (value: string) => {
 		setContent(value);

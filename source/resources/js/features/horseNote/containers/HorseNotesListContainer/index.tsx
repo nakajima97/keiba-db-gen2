@@ -5,6 +5,7 @@ import type { HorseNoteRaceOption } from "@/features/horseNote/presentational/Ho
 import HorseNotesList from "@/features/horseNote/presentational/HorseNotesList";
 import type { HorseNoteListItem } from "@/features/horseNote/presentational/HorseNotesList/types";
 import type { HorseNote } from "@/features/horseNote/types/horseNote";
+import { formatDateDisplay } from "@/utils/date";
 import { useMemo, useState } from "react";
 
 type Props = {
@@ -133,8 +134,7 @@ const HorseNotesListContainer = ({
 };
 
 const buildRaceLabel = (race: NonNullable<HorseNote["race"]>): string => {
-	const date = race.race_date.replace(/-/g, "/");
-	const base = `${date} ${race.venue_name} ${race.race_number}R`;
+	const base = `${formatDateDisplay(race.race_date)} ${race.venue_name} ${race.race_number}R`;
 	return race.race_name != null ? `${base} ${race.race_name}` : base;
 };
 

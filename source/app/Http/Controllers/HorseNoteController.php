@@ -23,13 +23,11 @@ class HorseNoteController extends Controller
 
     public function store(Horse $horse, StoreHorseNoteRequest $request, StoreAction $action): JsonResponse
     {
-        $raceId = $request->validated('race_id');
-
         $data = $action->execute(
             $horse,
             $request->user(),
-            $raceId !== null ? (int) $raceId : null,
-            (string) $request->validated('content'),
+            $request->validated('race_id'),
+            $request->validated('content'),
         );
 
         return response()->json(['data' => $data], 201);
@@ -40,7 +38,7 @@ class HorseNoteController extends Controller
         $data = $action->execute(
             $note,
             $request->user(),
-            (string) $request->validated('content'),
+            $request->validated('content'),
         );
 
         return response()->json(['data' => $data]);

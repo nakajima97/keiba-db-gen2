@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('horse_notes', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->restrictOnDelete();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('horse_id')->constrained()->restrictOnDelete();
             $table->foreignId('race_id')->nullable()->constrained()->restrictOnDelete()->comment('紐づくレース。次走への備忘録など、レースに紐づかないメモは null');
             $table->string('content', 1000)->comment('メモ本文 1000文字以内 プレーンテキスト');

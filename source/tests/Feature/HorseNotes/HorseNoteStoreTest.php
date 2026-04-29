@@ -2,7 +2,9 @@
 
 use App\Models\Horse;
 use App\Models\HorseNote;
+use App\Models\Jockey;
 use App\Models\Race;
+use App\Models\RaceEntry;
 use App\Models\User;
 use App\Models\Venue;
 
@@ -31,6 +33,23 @@ function createHorseForHorseNoteStoreTest(): Horse
     ]);
 }
 
+/**
+ * 指定したレースに馬が出走している状態を作る（race_entry を作成）
+ */
+function entryHorseForHorseNoteStoreTest(Race $race, Horse $horse, int $horseNumber = 1): RaceEntry
+{
+    $jockey = Jockey::create(['name' => 'テスト騎手'.uniqid()]);
+
+    return RaceEntry::create([
+        'race_id' => $race->id,
+        'horse_id' => $horse->id,
+        'jockey_id' => $jockey->id,
+        'frame_number' => 1,
+        'horse_number' => $horseNumber,
+        'weight' => 56.0,
+    ]);
+}
+
 // ===== POST /api/horses/{horse}/notes =====
 
 test('unauthenticated user cannot create horse note', function () {
@@ -51,6 +70,7 @@ test('authenticated user can create horse note with race_id', function () {
     $user = User::factory()->create();
     $horse = createHorseForHorseNoteStoreTest();
     $race = createRaceForHorseNoteStoreTest();
+    entryHorseForHorseNoteStoreTest($race, $horse);
 
     // Act
     $response = $this->actingAs($user)->postJson('/api/horses/'.$horse->id.'/notes', [
@@ -155,6 +175,7 @@ test('duplicate note for same user, horse, and race_id returns 422', function ()
     $user = User::factory()->create();
     $horse = createHorseForHorseNoteStoreTest();
     $race = createRaceForHorseNoteStoreTest();
+    entryHorseForHorseNoteStoreTest($race, $horse);
 
     HorseNote::factory()->create([
         'user_id' => $user->id,
@@ -171,6 +192,24 @@ test('duplicate note for same user, horse, and race_id returns 422', function ()
 
     // Assert
     $response->assertUnprocessable();
+});
+
+test('creating horse note with race_id that the horse has not run returns 422', function () {
+    // Arrange
+    $user = User::factory()->create();
+    $horse = createHorseForHorseNoteStoreTest();
+    $race = createRaceForHorseNoteStoreTest();
+    // 出走情報を作らないまま race_id を指定する
+
+    // Act
+    $response = $this->actingAs($user)->postJson('/api/horses/'.$horse->id.'/notes', [
+        'race_id' => $race->id,
+        'content' => '出走していないレースに紐づくメモ',
+    ]);
+
+    // Assert
+    $response->assertUnprocessable();
+    $response->assertJsonValidationErrors(['race_id']);
 });
 
 test('duplicate note for same user, horse, and null race_id returns 422', function () {
