@@ -1,11 +1,13 @@
-import { Button } from "@/components/shadcn/ui/button";
+import BackButton from "@/components/presentational/BackButton";
 import ScrollableTable from "@/components/presentational/ScrollableTable";
+import { Button } from "@/components/shadcn/ui/button";
 import { formatDateDisplay } from "@/utils/date";
 import type { RaceEntryRegistrationFormProps } from "./types";
 
 export type { RaceEntryRegistrationFormProps } from "./types";
 
 const RaceEntryRegistrationForm = ({
+	raceUid,
 	raceInfo,
 	pastedText,
 	isSubmitting,
@@ -14,6 +16,10 @@ const RaceEntryRegistrationForm = ({
 }: RaceEntryRegistrationFormProps) => {
 	return (
 		<div className="mx-auto max-w-2xl space-y-8 p-4">
+			<div>
+				<BackButton label="レース詳細へ戻る" href={`/races/${raceUid}`} />
+			</div>
+
 			<h1 className="text-xl font-semibold">出走馬登録</h1>
 
 			<ScrollableTable>

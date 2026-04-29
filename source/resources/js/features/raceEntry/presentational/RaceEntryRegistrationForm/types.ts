@@ -5,6 +5,7 @@ export type RaceInfo = {
 };
 
 export type RaceEntryRegistrationFormProps = {
+	raceUid: string;
 	raceInfo: RaceInfo;
 	pastedText: string;
 	isSubmitting: boolean;

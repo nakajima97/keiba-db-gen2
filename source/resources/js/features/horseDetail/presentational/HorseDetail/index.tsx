@@ -1,3 +1,4 @@
+import BackButton from "@/components/presentational/BackButton";
 import ScrollableTable from "@/components/presentational/ScrollableTable";
 import { formatDateDisplay } from "@/utils/date";
 import type { HorseDetailProps } from "./types";
@@ -5,6 +6,9 @@ import type { HorseDetailProps } from "./types";
 const HorseDetail = ({ horse }: HorseDetailProps) => {
 	return (
 		<div className="flex flex-col gap-4 p-4">
+			<div>
+				<BackButton label="戻る" />
+			</div>
 			<h1 className="text-xl font-semibold">競走馬詳細</h1>
 
 			<ScrollableTable>

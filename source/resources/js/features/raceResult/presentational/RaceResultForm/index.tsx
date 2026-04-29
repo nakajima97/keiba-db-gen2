@@ -1,9 +1,11 @@
-import { Button } from "@/components/shadcn/ui/button";
 import AlertError from "@/components/presentational/AlertError";
+import BackButton from "@/components/presentational/BackButton";
+import { Button } from "@/components/shadcn/ui/button";
 import { formatDateDisplay } from "@/utils/date";
 import type { RaceResultFormProps } from "./types";
 
 const RaceResultForm = ({
+	raceUid,
 	venueName,
 	raceDate,
 	raceNumber,
@@ -19,6 +21,12 @@ const RaceResultForm = ({
 }: RaceResultFormProps) => {
 	return (
 		<div className="flex flex-col gap-6 p-4">
+			<div>
+				<BackButton
+					label="レース結果へ戻る"
+					href={`/races/${raceUid}/result/edit`}
+				/>
+			</div>
 			<div>
 				<h1 className="text-xl font-semibold">レース結果入力</h1>
 				<p className="text-sm text-muted-foreground">

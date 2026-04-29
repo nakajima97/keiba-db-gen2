@@ -1,4 +1,5 @@
 import { Link } from "@inertiajs/react";
+import BackButton from "@/components/presentational/BackButton";
 import ScrollableTable from "@/components/presentational/ScrollableTable";
 import { Button } from "@/components/shadcn/ui/button";
 import { formatDateDisplay } from "@/utils/date";
@@ -8,6 +9,9 @@ import { formatHorseNumbers } from "./utils";
 const RaceResultDetail = ({ race }: RaceResultDetailProps) => {
 	return (
 		<div className="flex flex-col gap-4 p-4">
+			<div>
+				<BackButton label="購入馬券一覧へ戻る" href="/tickets" />
+			</div>
 			<div className="flex items-center justify-between">
 				<div>
 					<h1 className="text-xl font-semibold">レース結果</h1>

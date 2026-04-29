@@ -12,6 +12,7 @@ type Story = StoryObj<typeof RaceResultForm>;
 
 const baseArgs: Pick<
 	RaceResultFormProps,
+	| "raceUid"
 	| "venueName"
 	| "raceDate"
 	| "raceNumber"
@@ -20,6 +21,7 @@ const baseArgs: Pick<
 	| "onSubmit"
 	| "isSubmitting"
 > = {
+	raceUid: "test-race-uid-123",
 	venueName: "東京",
 	raceDate: "2026-04-08",
 	raceNumber: 11,

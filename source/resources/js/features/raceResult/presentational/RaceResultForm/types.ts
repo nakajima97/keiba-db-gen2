@@ -1,4 +1,5 @@
 export type RaceResultFormProps = {
+	raceUid: string;
 	venueName: string;
 	raceDate: string;
 	raceNumber: number;

@@ -1,3 +1,4 @@
+import BackButton from "@/components/presentational/BackButton";
 import { Button } from "@/components/shadcn/ui/button";
 import { Input } from "@/components/shadcn/ui/input";
 import { Label } from "@/components/shadcn/ui/label";
@@ -69,6 +70,9 @@ const RaceInputForm = ({
 
 	return (
 		<div className="flex flex-col gap-6 p-4">
+			<div>
+				<BackButton label="レース一覧へ戻る" href="/races" />
+			</div>
 			<div>
 				<h1 className="text-xl font-semibold">レース情報入力</h1>
 				<p className="text-sm text-muted-foreground">
