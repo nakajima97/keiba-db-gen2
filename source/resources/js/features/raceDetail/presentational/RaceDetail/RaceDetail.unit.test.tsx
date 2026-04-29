@@ -19,6 +19,7 @@ const baseRace: RaceDetailItem = {
 	race_date: "2026-04-05",
 	venue_name: "東京",
 	race_number: 3,
+	race_name: "皐月賞",
 	entries: [
 		{
 			id: 1,
@@ -65,6 +66,30 @@ describe("RaceDetail", () => {
 
 			// Assert
 			expect(screen.getByText("3R")).toBeInTheDocument();
+		});
+
+		it("レース名が表示される", () => {
+			// Act
+			render(<RaceDetail race={baseRace} {...noopHandlers} />);
+
+			// Assert
+			expect(screen.getByText("レース名")).toBeInTheDocument();
+			expect(screen.getByText("皐月賞")).toBeInTheDocument();
+		});
+
+		it("レース名が null の場合「—」が表示される", () => {
+			// Arrange
+			const raceWithNullName: RaceDetailItem = {
+				...baseRace,
+				race_name: null,
+			};
+
+			// Act
+			render(<RaceDetail race={raceWithNullName} {...noopHandlers} />);
+
+			// Assert
+			expect(screen.getByText("レース名")).toBeInTheDocument();
+			expect(screen.getByText("—")).toBeInTheDocument();
 		});
 	});
 

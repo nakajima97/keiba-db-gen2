@@ -83,20 +83,16 @@ class ShowAction
             'venue_name' => $race->venue->name,
             'race_number' => (int) $race->race_number,
             'race_name' => $race->race_name,
-            'entries' => $race->raceEntries->map(function ($entry) use ($notesByHorseId) {
-                $horseId = (int) $entry->horse->id;
-
-                return [
-                    'id' => (int) $entry->id,
-                    'frame_number' => (int) $entry->frame_number,
-                    'horse_number' => (int) $entry->horse_number,
-                    'horse_id' => $horseId,
-                    'horse_name' => $entry->horse->name,
-                    'jockey_name' => $entry->jockey->name,
-                    'weight' => $entry->horse_weight !== null ? (int) $entry->horse_weight : null,
-                    'note' => $notesByHorseId[$horseId] ?? null,
-                ];
-            })->all(),
+            'entries' => $race->raceEntries->map(fn ($entry) => [
+                'id' => (int) $entry->id,
+                'frame_number' => (int) $entry->frame_number,
+                'horse_number' => (int) $entry->horse_number,
+                'horse_id' => (int) $entry->horse->id,
+                'horse_name' => $entry->horse->name,
+                'jockey_name' => $entry->jockey->name,
+                'weight' => $entry->horse_weight !== null ? (int) $entry->horse_weight : null,
+                'note' => $notesByHorseId[(int) $entry->horse->id] ?? null,
+            ])->all(),
             'mark_columns' => $columns->map(fn (RaceMarkColumn $column): array => [
                 'id' => (int) $column->id,
                 'type' => $column->column_type,

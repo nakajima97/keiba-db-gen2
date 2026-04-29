@@ -46,6 +46,7 @@ export type RaceDetailItem = {
 	race_date: string;
 	venue_name: string;
 	race_number: number;
+	race_name: string | null;
 	entries: RaceEntry[];
 	mark_columns: RaceMarkColumn[];
 	marks: RaceMarkValue[];

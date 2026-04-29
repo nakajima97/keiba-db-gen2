@@ -72,6 +72,7 @@ const emptyMarksRace: RaceDetailProps["race"] = {
 	race_date: "2026-04-19",
 	venue_name: "東京",
 	race_number: 1,
+	race_name: "皐月賞",
 	entries: baseEntries,
 	mark_columns: ownColumnOnly,
 	marks: [],
@@ -81,6 +82,16 @@ export const NoMarks: Story = {
 	name: "印が一切設定されていない（自分の印列のみ）",
 	args: {
 		race: emptyMarksRace,
+	},
+};
+
+export const RaceNameEmpty: Story = {
+	name: "レース名が未登録（race_name が null）",
+	args: {
+		race: {
+			...emptyMarksRace,
+			race_name: null,
+		},
 	},
 };
 
