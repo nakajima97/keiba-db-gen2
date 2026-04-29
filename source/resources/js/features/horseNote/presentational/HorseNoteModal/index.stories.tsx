@@ -21,9 +21,9 @@ export default meta;
 type Story = StoryObj<typeof HorseNoteModal>;
 
 const sampleRaceOptions = [
-	{ uid: "abc001", label: "2026/04/19 東京 11R 皐月賞" },
-	{ uid: "abc002", label: "2026/04/26 東京 9R 4歳上1勝クラス" },
-	{ uid: "abc003", label: "2026/05/03 京都 12R 4歳上2勝クラス" },
+	{ id: 1, uid: "abc001", label: "2026/04/19 東京 11R 皐月賞" },
+	{ id: 2, uid: "abc002", label: "2026/04/26 東京 9R 4歳上1勝クラス" },
+	{ id: 3, uid: "abc003", label: "2026/05/03 京都 12R 4歳上2勝クラス" },
 ];
 
 export const CreateFromRaceResultPage: Story = {

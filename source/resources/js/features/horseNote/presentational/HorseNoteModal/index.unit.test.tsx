@@ -163,8 +163,8 @@ describe("HorseNoteModal", () => {
 					raceContext={{
 						type: "selectable",
 						options: [
-							{ uid: "abc001", label: "2026/04/19 東京 11R 皐月賞" },
-							{ uid: "abc002", label: "2026/04/26 東京 9R 1勝クラス" },
+							{ id: 1, uid: "abc001", label: "2026/04/19 東京 11R 皐月賞" },
+							{ id: 2, uid: "abc002", label: "2026/04/26 東京 9R 1勝クラス" },
 						],
 						selectedUid: null,
 					}}
@@ -192,7 +192,7 @@ describe("HorseNoteModal", () => {
 					raceContext={{
 						type: "selectable",
 						options: [
-							{ uid: "abc001", label: "2026/04/19 東京 11R 皐月賞" },
+							{ id: 1, uid: "abc001", label: "2026/04/19 東京 11R 皐月賞" },
 						],
 						selectedUid: null,
 					}}

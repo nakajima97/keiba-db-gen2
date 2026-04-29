@@ -15,6 +15,7 @@ vi.mock("@inertiajs/react", () => ({
 				birth_year: 2022,
 				race_histories: [
 					{
+						race_id: 11,
 						race_uid: "abc001",
 						race_date: "2026-04-19",
 						venue_name: "東京",

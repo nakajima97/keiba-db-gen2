@@ -92,7 +92,14 @@ const HorseNoteModalContainer = ({
 		try {
 			let note: HorseNote;
 			if (mode === "create") {
-				note = await createNote(horseId, raceId ?? null, content);
+				const resolvedRaceId =
+					raceContext.type === "selectable"
+						? selectedRaceUid != null
+							? (raceContext.options.find((o) => o.uid === selectedRaceUid)
+									?.id ?? null)
+							: null
+						: (raceId ?? null);
+				note = await createNote(horseId, resolvedRaceId, content);
 			} else {
 				if (noteId == null) {
 					throw new Error("noteId is required for edit mode");

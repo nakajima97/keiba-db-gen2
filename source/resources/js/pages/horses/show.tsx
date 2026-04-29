@@ -51,6 +51,7 @@ const HorsesShow = () => {
 
 	const raceOptions: HorseNoteRaceOption[] = horse.race_histories.map(
 		(history) => ({
+			id: history.race_id,
 			uid: history.race_uid,
 			label: buildRaceLabel({
 				uid: history.race_uid,

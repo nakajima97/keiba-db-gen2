@@ -1,4 +1,5 @@
 export type RaceHistoryItem = {
+	race_id: number;
 	race_uid: string;
 	race_date: string;
 	venue_name: string;

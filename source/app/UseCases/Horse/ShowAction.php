@@ -19,6 +19,7 @@ class ShowAction
      *     name: string,
      *     birth_year: int|null,
      *     race_histories: list<array{
+     *         race_id: int,
      *         race_uid: string,
      *         race_date: string,
      *         venue_name: string,
@@ -53,6 +54,7 @@ class ShowAction
 
         $raceHistories = $horse->raceResultHorses
             ->map(fn ($result) => [
+                'race_id' => (int) $result->race->id,
                 'race_uid' => $result->race->uid,
                 'race_date' => $result->race->race_date instanceof CarbonInterface
                     ? $result->race->race_date->format('Y-m-d')

@@ -1,6 +1,7 @@
 export type HorseNoteModalMode = "create" | "edit";
 
 export type HorseNoteRaceOption = {
+	id: number;
 	uid: string;
 	label: string;
 };
