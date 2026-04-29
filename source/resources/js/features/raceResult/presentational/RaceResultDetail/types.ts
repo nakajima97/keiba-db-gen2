@@ -9,6 +9,12 @@ export type PayoutEntry = {
 	}>;
 };
 
+export type FinishingHorseNote = {
+	id?: number;
+	content: string;
+	source: "race" | "horse";
+};
+
 export type FinishingHorse = {
 	finishing_order: number;
 	frame_number: number;
@@ -17,6 +23,7 @@ export type FinishingHorse = {
 	horse_name: string;
 	jockey_name: string;
 	race_time: string;
+	note?: FinishingHorseNote | null;
 };
 
 export type RaceResultDetailProps = {
@@ -28,4 +35,5 @@ export type RaceResultDetailProps = {
 		payouts: PayoutEntry[];
 		finishing_horses: FinishingHorse[];
 	};
+	onNoteClick?: (horseId: number) => void;
 };

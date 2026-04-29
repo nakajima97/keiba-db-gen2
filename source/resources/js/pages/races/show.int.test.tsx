@@ -10,6 +10,7 @@ vi.mock("@inertiajs/react", () => ({
 	usePage: () => ({
 		props: {
 			race: {
+				id: 200,
 				uid: "abc123",
 				race_date: "2026-04-05",
 				venue_name: "東京",
@@ -20,9 +21,11 @@ vi.mock("@inertiajs/react", () => ({
 						id: 1,
 						frame_number: 1,
 						horse_number: 1,
+						horse_id: 100,
 						horse_name: "テストホース",
 						jockey_name: "テスト騎手",
 						weight: 480,
+						note: null,
 					},
 				],
 				mark_columns: [
@@ -47,5 +50,8 @@ describe("RacesShow ページ", () => {
 		expect(screen.getByText("テストホース")).toBeInTheDocument();
 		expect(screen.getByText("テスト騎手")).toBeInTheDocument();
 		expect(screen.getByText("480kg")).toBeInTheDocument();
+		expect(
+			screen.getByRole("button", { name: "テストホースのメモ" }),
+		).toBeInTheDocument();
 	});
 });

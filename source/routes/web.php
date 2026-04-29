@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HorseController;
+use App\Http\Controllers\HorseNoteController;
 use App\Http\Controllers\RaceController;
 use App\Http\Controllers\RaceEntryController;
 use App\Http\Controllers\RaceMarkColumnController;
@@ -41,6 +42,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::patch('/races/{race:uid}/mark-columns/{id}', [RaceMarkColumnController::class, 'update'])->name('api.races.mark-columns.update');
         Route::delete('/races/{race:uid}/mark-columns/{id}', [RaceMarkColumnController::class, 'destroy'])->name('api.races.mark-columns.destroy');
         Route::put('/races/{race:uid}/mark-columns/{column_id}/entries/{race_entry_id}/mark', [RaceMarkController::class, 'upsert'])->name('api.races.mark-columns.entries.mark.upsert');
+
+        Route::get('/horses/{horse}/notes', [HorseNoteController::class, 'index'])->name('api.horses.notes.index');
+        Route::post('/horses/{horse}/notes', [HorseNoteController::class, 'store'])->name('api.horses.notes.store');
+        Route::put('/horse-notes/{note}', [HorseNoteController::class, 'update'])->name('api.horse-notes.update');
     });
 });
 

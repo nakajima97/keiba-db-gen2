@@ -101,6 +101,7 @@ test('horse show returns race histories with all required fields as inertia prop
     $response->assertInertia(fn (Assert $page) => $page
         ->component('horses/show')
         ->has('horse.race_histories', 1, fn (Assert $history) => $history
+            ->where('race_id', $race->id)
             ->where('race_date', '2026-04-05')
             ->where('venue_name', '東京')
             ->where('race_number', 5)

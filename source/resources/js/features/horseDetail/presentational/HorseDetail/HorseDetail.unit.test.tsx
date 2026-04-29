@@ -5,6 +5,7 @@ import HorseDetail from "./index";
 import type { HorseDetailProps, RaceHistoryItem } from "./types";
 
 const baseRaceHistory: RaceHistoryItem = {
+	race_id: 1,
 	race_uid: "race-uid-1",
 	race_date: "2026-04-05",
 	venue_name: "東京",

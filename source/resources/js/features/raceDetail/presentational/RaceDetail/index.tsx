@@ -2,6 +2,7 @@ import { Link } from "@inertiajs/react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/shadcn/ui/button";
 import ScrollableTable from "@/components/presentational/ScrollableTable";
+import HorseNoteIconButton from "@/features/horseNote/presentational/HorseNoteIconButton";
 import { formatDateDisplay } from "@/utils/date";
 import RaceMarkSelect from "./RaceMarkSelect";
 import RaceMarkColumnHeader from "./RaceMarkColumnHeader";
@@ -33,6 +34,7 @@ const RaceDetail = ({
 	onAddOtherColumn,
 	onRemoveOtherColumn,
 	onChangeColumnLabel,
+	onNoteClick,
 }: RaceDetailProps) => {
 	const sortedColumns = sortColumns(race.mark_columns);
 
@@ -127,12 +129,19 @@ const RaceDetail = ({
 							<td className="px-4 py-3">{entry.frame_number}</td>
 							<td className="px-4 py-3">{entry.horse_number}</td>
 							<td className="px-4 py-3">
-								<Link
-									href={`/horses/${entry.horse_id}`}
-									className="text-primary hover:underline"
-								>
-									{entry.horse_name}
-								</Link>
+								<div className="flex items-center gap-1">
+									<Link
+										href={`/horses/${entry.horse_id}`}
+										className="text-primary hover:underline"
+									>
+										{entry.horse_name}
+									</Link>
+									<HorseNoteIconButton
+										hasNote={entry.note != null}
+										ariaLabel={`${entry.horse_name}のメモ`}
+										onClick={() => onNoteClick?.(entry.horse_id)}
+									/>
+								</div>
 							</td>
 							<td className="px-4 py-3">{entry.jockey_name}</td>
 							<td className="px-4 py-3">

@@ -3,10 +3,14 @@
 namespace App\UseCases\Horse;
 
 use App\Models\Horse;
+use App\Models\HorseNote;
+use App\Models\User;
+use App\UseCases\HorseNote\HorseNotePresenter;
 use Carbon\CarbonInterface;
 
 /**
- * 競走馬とそのレース履歴（出走したレース・競馬場含む）を取得し、競走馬詳細画面の表示用データを返す。
+ * 競走馬とそのレース履歴（出走したレース・競馬場含む）と認証ユーザーのメモを取得し、
+ * 競走馬詳細画面の表示用データを返す。
  */
 class ShowAction
 {
@@ -16,6 +20,7 @@ class ShowAction
      *     name: string,
      *     birth_year: int|null,
      *     race_histories: list<array{
+     *         race_id: int,
      *         race_uid: string,
      *         race_date: string,
      *         venue_name: string,
@@ -25,9 +30,18 @@ class ShowAction
      *         jockey_name: string,
      *         popularity: int,
      *     }>,
+     *     notes: list<array{
+     *         id: int,
+     *         horse_id: int,
+     *         race_id: int|null,
+     *         race: array{uid: string, race_date: string, venue_name: string, race_number: int, race_name: string|null}|null,
+     *         content: string,
+     *         created_at: string,
+     *         updated_at: string,
+     *     }>,
      * }
      */
-    public function execute(Horse $horse): array
+    public function execute(Horse $horse, User $user): array
     {
         $horse->load([
             'raceResultHorses' => function ($query) {
@@ -41,6 +55,7 @@ class ShowAction
 
         $raceHistories = $horse->raceResultHorses
             ->map(fn ($result) => [
+                'race_id' => (int) $result->race->id,
                 'race_uid' => $result->race->uid,
                 'race_date' => $result->race->race_date instanceof CarbonInterface
                     ? $result->race->race_date->format('Y-m-d')
@@ -55,11 +70,22 @@ class ShowAction
             ->values()
             ->all();
 
+        $notes = HorseNote::query()
+            ->with(['race.venue'])
+            ->where('user_id', $user->id)
+            ->where('horse_id', $horse->id)
+            ->orderBy('updated_at', 'desc')
+            ->get()
+            ->map(fn (HorseNote $note): array => HorseNotePresenter::present($note))
+            ->values()
+            ->all();
+
         return [
             'id' => $horse->id,
             'name' => $horse->name,
             'birth_year' => $horse->birth_year !== null ? (int) $horse->birth_year : null,
             'race_histories' => $raceHistories,
+            'notes' => $notes,
         ];
     }
 }

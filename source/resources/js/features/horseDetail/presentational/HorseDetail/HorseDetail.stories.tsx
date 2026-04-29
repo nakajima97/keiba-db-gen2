@@ -16,6 +16,7 @@ const sampleHorse: HorseDetailProps["horse"] = {
 	birth_year: 2020,
 	race_histories: [
 		{
+			race_id: 1,
 			race_uid: "race001",
 			race_date: "2026-04-19",
 			venue_name: "東京",
@@ -26,6 +27,7 @@ const sampleHorse: HorseDetailProps["horse"] = {
 			popularity: 3,
 		},
 		{
+			race_id: 2,
 			race_uid: "race002",
 			race_date: "2026-03-08",
 			venue_name: "阪神",
@@ -36,6 +38,7 @@ const sampleHorse: HorseDetailProps["horse"] = {
 			popularity: 1,
 		},
 		{
+			race_id: 3,
 			race_uid: "race003",
 			race_date: "2026-01-25",
 			venue_name: "中山",

@@ -2,12 +2,13 @@ import { Link } from "@inertiajs/react";
 import BackButton from "@/components/presentational/BackButton";
 import ScrollableTable from "@/components/presentational/ScrollableTable";
 import { Button } from "@/components/shadcn/ui/button";
+import HorseNoteCell from "@/features/horseNote/presentational/HorseNoteCell";
 import { index as ticketsIndex } from "@/routes/tickets";
 import { formatDateDisplay } from "@/utils/date";
 import type { RaceResultDetailProps } from "./types";
 import { formatHorseNumbers } from "./utils";
 
-const RaceResultDetail = ({ race }: RaceResultDetailProps) => {
+const RaceResultDetail = ({ race, onNoteClick }: RaceResultDetailProps) => {
 	return (
 		<div className="flex flex-col gap-4 p-4">
 			<div>
@@ -58,6 +59,9 @@ const RaceResultDetail = ({ race }: RaceResultDetailProps) => {
 								<th className="px-4 py-3 text-right font-medium text-muted-foreground">
 									タイム
 								</th>
+								<th className="px-4 py-3 text-left font-medium text-muted-foreground">
+									メモ
+								</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -92,6 +96,21 @@ const RaceResultDetail = ({ race }: RaceResultDetailProps) => {
 									</td>
 									<td className="px-4 py-3 text-right">
 										{horse.race_time}
+									</td>
+									<td className="px-4 py-3">
+										{horse.horse_id !== null ? (
+											<HorseNoteCell
+												content={horse.note?.content ?? null}
+												source={horse.note?.source ?? null}
+												onClick={() => {
+													if (horse.horse_id !== null) {
+														onNoteClick?.(horse.horse_id);
+													}
+												}}
+											/>
+										) : (
+											<span className="text-sm text-muted-foreground">—</span>
+										)}
 									</td>
 								</tr>
 							))}

@@ -19,6 +19,8 @@ tags:
     description: レースの印列（自分の印列・他人の印列）の管理
   - name: race-marks
     description: 出走馬ごとの印の値の設定・解除
+  - name: horse-notes
+    description: 競走馬ごとのメモ（issue #25）の管理。レース紐づきあり・なしの両方に対応する
 
 paths:
   /api/races/{uid}/mark-columns:
@@ -223,6 +225,131 @@ paths:
         "422":
           $ref: "#/components/responses/ValidationError"
 
+  /api/horses/{horse}/notes:
+    parameters:
+      - $ref: "#/components/parameters/HorseId"
+    get:
+      tags: [horse-notes]
+      summary: 競走馬の全メモ一覧取得
+      description: |
+        指定競走馬に対する、認証ユーザーの全メモを返す。
+        レース紐づきあり・なしの両方を含む。`updated_at` 降順で返す。
+        競走馬詳細画面（`/horses/{horse}`）で使用する。
+      operationId: listHorseNotes
+      security:
+        - sessionAuth: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/HorseNote"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    post:
+      tags: [horse-notes]
+      summary: メモを作成
+      description: |
+        指定競走馬に対するメモを 1 件作成する。
+        `race_id` を指定するとそのレースに紐づくメモになり、省略または null の場合はレースに紐づかないメモ（次走への備忘録など）になる。
+        同一ユーザー × 同一馬 × 同一 race_id（null 含む）の組み合わせで既にメモが存在する場合は 422 を返す。
+      operationId: createHorseNote
+      security:
+        - sessionAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [content]
+              properties:
+                race_id:
+                  type: [integer, "null"]
+                  format: int64
+                  description: 紐づけるレース ID。null または省略でレースに紐づかないメモ
+                content:
+                  type: string
+                  minLength: 1
+                  maxLength: 1000
+                  description: メモ本文。プレーンテキスト、改行可
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/HorseNote"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+  /api/horse-notes/{note}:
+    parameters:
+      - name: note
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: メモ ID（horse_notes.id）
+    put:
+      tags: [horse-notes]
+      summary: メモを更新
+      description: |
+        指定メモの本文を更新する。`content` のみ更新可能で、紐づく馬・レースは変更できない。
+        他ユーザー所有のメモに対するリクエストは 403 を返す。
+      operationId: updateHorseNote
+      security:
+        - sessionAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [content]
+              properties:
+                content:
+                  type: string
+                  minLength: 1
+                  maxLength: 1000
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/HorseNote"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
 components:
   parameters:
     RaceUid:
@@ -232,6 +359,15 @@ components:
       schema:
         type: string
       description: レースの公開 UID（races.uid）
+
+    HorseId:
+      name: horse
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+      description: 競走馬 ID（horses.id）
 
   securitySchemes:
     sessionAuth:
@@ -292,6 +428,47 @@ components:
           description: 出走馬 ID（race_entries.id）
         mark_value:
           $ref: "#/components/schemas/MarkValue"
+
+    HorseNote:
+      type: object
+      required: [id, horse_id, race_id, content, created_at, updated_at]
+      properties:
+        id:
+          type: integer
+          format: int64
+        horse_id:
+          type: integer
+          format: int64
+        race_id:
+          type: [integer, "null"]
+          format: int64
+          description: 紐づくレース ID。null の場合はレースに紐づかないメモ
+        race:
+          type: [object, "null"]
+          description: レース紐づきありの場合に、表示用のレース情報を含む
+          required: [uid, race_date, venue_name, race_number, race_name]
+          properties:
+            uid:
+              type: string
+            race_date:
+              type: string
+              format: date
+            venue_name:
+              type: string
+            race_number:
+              type: integer
+            race_name:
+              type: [string, "null"]
+        content:
+          type: string
+          maxLength: 1000
+          description: メモ本文 プレーンテキスト
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
 
     Error:
       type: object
