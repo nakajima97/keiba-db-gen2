@@ -108,3 +108,18 @@ export const updateNote = async (
 	const json = (await response.json()) as ApiResponse;
 	return json.data;
 };
+
+/**
+ * 既存メモを削除する。成功時は 204 No Content を返すためレスポンスボディは扱わない。
+ */
+export const deleteNote = async (noteId: number): Promise<void> => {
+	const response = await fetch(`/api/horse-notes/${noteId}`, {
+		method: "DELETE",
+		headers: buildJsonHeaders(),
+		credentials: "same-origin",
+	});
+	if (!response.ok) {
+		const message = await extractErrorMessage(response);
+		throw new HorseNoteRequestError(message, response.status);
+	}
+};

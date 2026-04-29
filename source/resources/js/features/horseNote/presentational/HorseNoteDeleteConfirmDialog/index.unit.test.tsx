@@ -98,4 +98,21 @@ describe("HorseNoteDeleteConfirmDialog", () => {
 			).toBeDisabled();
 		});
 	});
+
+	describe("エラー表示", () => {
+		it("errorMessage が指定されている場合、エラーメッセージが表示される", () => {
+			// Act
+			render(
+				<HorseNoteDeleteConfirmDialog
+					{...baseProps}
+					errorMessage="メモの削除に失敗しました"
+				/>,
+			);
+
+			// Assert
+			expect(
+				screen.getByText("メモの削除に失敗しました"),
+			).toBeInTheDocument();
+		});
+	});
 });
