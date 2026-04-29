@@ -51,6 +51,7 @@ const RaceResultFormContainer = ({
 
 	return (
 		<RaceResultForm
+			raceUid={raceUid}
 			venueName={venueName}
 			raceDate={raceDate}
 			raceNumber={raceNumber}

@@ -3,6 +3,16 @@ import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import RaceInputForm from "./index";
 
+vi.mock("@inertiajs/react", () => ({
+	Link: ({
+		href,
+		children,
+	}: {
+		href: string;
+		children: React.ReactNode;
+	}) => <a href={href}>{children}</a>,
+}));
+
 vi.mock("@/components/shadcn/ui/select", () => ({
 	Select: ({
 		value,
@@ -261,6 +271,27 @@ describe("RaceInputForm", () => {
 
 			// Assert
 			expect(screen.getByLabelText("レース名")).toHaveValue("天皇賞（春）");
+		});
+	});
+
+	describe("戻るボタン", () => {
+		it("「レース一覧へ戻る」テキストのリンクが表示される", () => {
+			// Act
+			render(<RaceInputForm {...baseProps} />);
+
+			// Assert
+			expect(
+				screen.getByRole("link", { name: "レース一覧へ戻る" }),
+			).toBeInTheDocument();
+		});
+
+		it("「レース一覧へ戻る」リンクの href が `/races` になっている", () => {
+			// Act
+			render(<RaceInputForm {...baseProps} />);
+
+			// Assert
+			const link = screen.getByRole("link", { name: "レース一覧へ戻る" });
+			expect(link).toHaveAttribute("href", "/races");
 		});
 	});
 });

@@ -11,6 +11,7 @@ export default meta;
 type Story = StoryObj<typeof RaceEntryRegistrationForm>;
 
 const baseArgs: RaceEntryRegistrationFormProps = {
+	raceUid: "test-race-uid-123",
 	raceInfo: {
 		race_date: "2026-04-26",
 		venue_name: "東京",

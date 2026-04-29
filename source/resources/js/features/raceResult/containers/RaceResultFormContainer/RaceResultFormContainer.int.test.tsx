@@ -7,6 +7,13 @@ vi.mock("@inertiajs/react", () => ({
 	router: {
 		post: vi.fn(),
 	},
+	Link: ({
+		href,
+		children,
+	}: {
+		href: string;
+		children: React.ReactNode;
+	}) => <a href={href}>{children}</a>,
 }));
 
 import { router } from "@inertiajs/react";

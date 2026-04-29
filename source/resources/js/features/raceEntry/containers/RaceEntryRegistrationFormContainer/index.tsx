@@ -38,6 +38,7 @@ const RaceEntryRegistrationFormContainer = ({
 
 	return (
 		<RaceEntryRegistrationForm
+			raceUid={raceUid}
 			raceInfo={raceInfo}
 			pastedText={pastedText}
 			isSubmitting={isSubmitting}

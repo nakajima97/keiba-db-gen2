@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
 import HorseDetail from "./index";
 import type { HorseDetailProps, RaceHistoryItem } from "./types";
 
@@ -196,6 +197,34 @@ describe("HorseDetail", () => {
 
 			// Assert
 			expect(screen.getByText("東京優駿")).toBeInTheDocument();
+		});
+	});
+
+	describe("戻るボタン", () => {
+		it("「戻る」ボタンが表示される", () => {
+			// Act
+			render(<HorseDetail {...baseProps} />);
+
+			// Assert
+			expect(
+				screen.getByRole("button", { name: "戻る" }),
+			).toBeInTheDocument();
+		});
+
+		it("「戻る」ボタンをクリックすると window.history.back が呼ばれる", async () => {
+			// Arrange
+			const backSpy = vi
+				.spyOn(window.history, "back")
+				.mockImplementation(() => {});
+			const user = userEvent.setup();
+
+			// Act
+			render(<HorseDetail {...baseProps} />);
+			await user.click(screen.getByRole("button", { name: "戻る" }));
+
+			// Assert
+			expect(backSpy).toHaveBeenCalledTimes(1);
+			backSpy.mockRestore();
 		});
 	});
 });

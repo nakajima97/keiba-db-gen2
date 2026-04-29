@@ -1,3 +1,4 @@
+import BackButton from "@/components/presentational/BackButton";
 import { Button } from "@/components/shadcn/ui/button";
 import { Input } from "@/components/shadcn/ui/input";
 import { HorseSelectionSection } from "./HorseSelectionSection";
@@ -35,6 +36,10 @@ const TicketPurchaseForm = ({
 }: TicketPurchaseFormProps) => {
 	return (
 		<div className="mx-auto max-w-2xl space-y-8 p-4">
+			<div>
+				<BackButton label="戻る" />
+			</div>
+
 			<RaceInfoSection
 				selectedVenue={selectedVenue}
 				selectedRaceDate={selectedRaceDate}
