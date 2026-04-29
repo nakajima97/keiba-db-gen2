@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi } from "vitest";
 import HorseNoteModal from "./index";
@@ -104,6 +104,21 @@ describe("HorseNoteModal", () => {
 
 			// Assert
 			expect(onContentChange).toHaveBeenCalledWith("あ");
+		});
+
+		it('mode="edit" でモーダルを開くと、textarea のカーソルが末尾に配置される', async () => {
+			// Act
+			render(
+				<HorseNoteModal {...baseProps} mode="edit" content="既存メモ" />,
+			);
+
+			// Assert
+			await waitFor(() => {
+				const textarea = screen.getByLabelText("メモ") as HTMLTextAreaElement;
+				expect(textarea).toHaveFocus();
+				expect(textarea.selectionStart).toBe(4);
+				expect(textarea.selectionEnd).toBe(4);
+			});
 		});
 
 		it("文字数カウンタが表示される", () => {

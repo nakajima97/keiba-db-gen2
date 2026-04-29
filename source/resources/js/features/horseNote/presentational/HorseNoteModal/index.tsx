@@ -9,6 +9,7 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/shadcn/ui/dialog";
+import { useRef } from "react";
 import type { HorseNoteModalProps } from "./types";
 
 const HorseNoteModal = ({
@@ -25,13 +26,25 @@ const HorseNoteModal = ({
 	onOpenChange,
 	onSubmit,
 }: HorseNoteModalProps) => {
+	const textareaRef = useRef<HTMLTextAreaElement>(null);
 	const isOverLimit = content.length > contentMaxLength;
 	const isEmpty = content.trim() === "";
 	const title = mode === "create" ? "メモを追加" : "メモを編集";
 
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
-			<DialogContent className="sm:max-w-lg">
+			<DialogContent
+				className="sm:max-w-lg"
+				onOpenAutoFocus={(event) => {
+					if (mode === "edit" && textareaRef.current) {
+						event.preventDefault();
+						const textarea = textareaRef.current;
+						const length = textarea.value.length;
+						textarea.focus();
+						textarea.setSelectionRange(length, length);
+					}
+				}}
+			>
 				<DialogHeader>
 					<DialogTitle>{title}</DialogTitle>
 					<DialogDescription>{horseName}</DialogDescription>
@@ -78,6 +91,7 @@ const HorseNoteModal = ({
 							メモ
 						</label>
 						<textarea
+							ref={textareaRef}
 							id="horse-note-content"
 							className="min-h-[160px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:text-muted-foreground"
 							placeholder="次走への備忘録、調子の所感などを記入"
