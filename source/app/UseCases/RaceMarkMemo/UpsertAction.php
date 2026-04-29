@@ -7,6 +7,7 @@ use App\Models\RaceMarkMemo;
 use App\Models\User;
 use Carbon\CarbonInterface;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 /**
@@ -47,30 +48,34 @@ class UpsertAction
             ]);
         }
 
-        $existing = RaceMarkMemo::query()
-            ->where('race_mark_column_id', $column->id)
-            ->where('race_entry_id', $raceEntryId)
-            ->first();
+        // 並行リクエストでのユニーク制約違反を避けるため、行ロックを取って upsert する。
+        return DB::transaction(function () use ($column, $raceEntryId, $content): array {
+            $existing = RaceMarkMemo::query()
+                ->where('race_mark_column_id', $column->id)
+                ->where('race_entry_id', $raceEntryId)
+                ->lockForUpdate()
+                ->first();
 
-        if ($existing !== null) {
-            $existing->update(['content' => $content]);
+            if ($existing !== null) {
+                $existing->update(['content' => $content]);
+
+                return [
+                    'created' => false,
+                    'memo' => $this->present($existing),
+                ];
+            }
+
+            $memo = RaceMarkMemo::create([
+                'race_mark_column_id' => $column->id,
+                'race_entry_id' => $raceEntryId,
+                'content' => $content,
+            ]);
 
             return [
-                'created' => false,
-                'memo' => $this->present($existing),
+                'created' => true,
+                'memo' => $this->present($memo),
             ];
-        }
-
-        $memo = RaceMarkMemo::create([
-            'race_mark_column_id' => $column->id,
-            'race_entry_id' => $raceEntryId,
-            'content' => $content,
-        ]);
-
-        return [
-            'created' => true,
-            'memo' => $this->present($memo),
-        ];
+        });
     }
 
     /**

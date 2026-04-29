@@ -51,6 +51,9 @@ class RaceMarkMemoController extends Controller
         $column = RaceMarkColumn::query()
             ->where('race_id', $race->id)
             ->findOrFail($columnId);
+        RaceEntry::query()
+            ->where('race_id', $race->id)
+            ->findOrFail($raceEntryId);
 
         $action->execute($column, $raceEntryId, $request->user());
 
