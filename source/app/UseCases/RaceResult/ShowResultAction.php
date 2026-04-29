@@ -111,5 +111,4 @@ class ShowResultAction
             'finishing_horses' => $finishingHorses,
         ];
     }
-
 }
