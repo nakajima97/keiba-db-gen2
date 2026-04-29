@@ -20,6 +20,7 @@ class ShowAction
      *     race_date: string,
      *     venue_name: string,
      *     race_number: int,
+     *     race_name: string|null,
      *     entries: array<int, array{
      *         id: int,
      *         frame_number: int,
@@ -69,6 +70,7 @@ class ShowAction
                 : (string) $race->race_date,
             'venue_name' => $race->venue->name,
             'race_number' => (int) $race->race_number,
+            'race_name' => $race->race_name,
             'entries' => $race->raceEntries->map(fn ($entry) => [
                 'id' => (int) $entry->id,
                 'frame_number' => (int) $entry->frame_number,
