@@ -24,6 +24,11 @@ export type RaceMarkValue = {
 	mark_value: MarkValue;
 };
 
+export type RaceEntryNote = {
+	content: string;
+	source: "race" | "horse";
+};
+
 export type RaceEntry = {
 	id: number;
 	frame_number: number;
@@ -32,6 +37,7 @@ export type RaceEntry = {
 	horse_name: string;
 	jockey_name: string;
 	weight: number | null;
+	note?: RaceEntryNote | null;
 };
 
 export type RaceDetailItem = {
@@ -54,4 +60,5 @@ export type RaceDetailProps = {
 	onAddOtherColumn: () => void;
 	onRemoveOtherColumn: (columnId: number) => void;
 	onChangeColumnLabel: (columnId: number, label: string) => void;
+	onNoteClick?: (horseId: number) => void;
 };

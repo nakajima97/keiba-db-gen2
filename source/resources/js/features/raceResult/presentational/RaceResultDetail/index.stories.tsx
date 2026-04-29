@@ -5,6 +5,9 @@ import type { RaceResultDetailProps } from ".";
 const meta: Meta<typeof RaceResultDetail> = {
 	title: "features/raceResult/presentational/RaceResultDetail",
 	component: RaceResultDetail,
+	args: {
+		onNoteClick: () => {},
+	},
 };
 
 export default meta;
@@ -30,6 +33,7 @@ const sampleFinishingHorses: RaceResultDetailProps["race"]["finishing_horses"] =
 			horse_name: "ディープスター",
 			jockey_name: "武豊",
 			race_time: "1:33.5",
+			note: null,
 		},
 		{
 			finishing_order: 2,
@@ -39,6 +43,7 @@ const sampleFinishingHorses: RaceResultDetailProps["race"]["finishing_horses"] =
 			horse_name: "サクラチカラ",
 			jockey_name: "川田将雅",
 			race_time: "1:33.7",
+			note: null,
 		},
 		{
 			finishing_order: 3,
@@ -48,6 +53,48 @@ const sampleFinishingHorses: RaceResultDetailProps["race"]["finishing_horses"] =
 			horse_name: "ゴールドウィング",
 			jockey_name: "福永祐一",
 			race_time: "1:33.9",
+			note: null,
+		},
+	];
+
+const finishingHorsesWithNotes: RaceResultDetailProps["race"]["finishing_horses"] =
+	[
+		{
+			finishing_order: 1,
+			frame_number: 2,
+			horse_number: 3,
+			horse_id: 1,
+			horse_name: "ディープスター",
+			jockey_name: "武豊",
+			race_time: "1:33.5",
+			note: {
+				content: "前走は外枠で出遅れ気味。今回は内枠で本命視できる。",
+				source: "race",
+			},
+		},
+		{
+			finishing_order: 2,
+			frame_number: 3,
+			horse_number: 5,
+			horse_id: 2,
+			horse_name: "サクラチカラ",
+			jockey_name: "川田将雅",
+			race_time: "1:33.7",
+			note: {
+				content:
+					"次この条件だったら買いたい。芝1600mの稍重がベスト条件。",
+				source: "horse",
+			},
+		},
+		{
+			finishing_order: 3,
+			frame_number: 5,
+			horse_number: 8,
+			horse_id: 3,
+			horse_name: "ゴールドウィング",
+			jockey_name: "福永祐一",
+			race_time: "1:33.9",
+			note: null,
 		},
 	];
 
@@ -240,6 +287,31 @@ export const MobileWithData: Story = {
 			...baseRace,
 			payouts: allPayouts,
 			finishing_horses: sampleFinishingHorses,
+		},
+	},
+};
+
+export const WithNotes: Story = {
+	name: "メモ列あり（メモあり/紐づきなしフォールバック/メモなし混在）",
+	args: {
+		race: {
+			...baseRace,
+			payouts: allPayouts,
+			finishing_horses: finishingHorsesWithNotes,
+		},
+	},
+};
+
+export const WithNotesMobile: Story = {
+	name: "メモ列あり（モバイル）",
+	globals: {
+		viewport: { value: "mobile1", isRotated: false },
+	},
+	args: {
+		race: {
+			...baseRace,
+			payouts: allPayouts,
+			finishing_horses: finishingHorsesWithNotes,
 		},
 	},
 };

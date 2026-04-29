@@ -11,6 +11,7 @@ const meta: Meta<typeof RaceDetail> = {
 		onAddOtherColumn: fn(),
 		onRemoveOtherColumn: fn(),
 		onChangeColumnLabel: fn(),
+		onNoteClick: fn(),
 	},
 };
 
@@ -163,6 +164,58 @@ export const MobileView: Story = {
 			marks: [
 				{ column_id: 100, race_entry_id: 1, mark_value: "◎" },
 				{ column_id: 101, race_entry_id: 2, mark_value: "○" },
+			],
+		},
+	},
+};
+
+const entriesWithNotes: RaceDetailProps["race"]["entries"] = [
+	{
+		...baseEntries[0],
+		note: {
+			content: "前走は外枠で出遅れ気味。今回は内枠で本命視できる。",
+			source: "race",
+		},
+	},
+	{
+		...baseEntries[1],
+		note: {
+			content: "次この条件だったら買いたい。芝1600mの稍重がベスト条件。",
+			source: "horse",
+		},
+	},
+	baseEntries[2],
+	baseEntries[3],
+];
+
+export const WithNotes: Story = {
+	name: "メモアイコンあり（メモあり馬・レース紐づきなしフォールバック・メモなし混在）",
+	args: {
+		race: {
+			...emptyMarksRace,
+			entries: entriesWithNotes,
+			mark_columns: ownAndTwoOtherColumns,
+			marks: [
+				{ column_id: 100, race_entry_id: 1, mark_value: "◎" },
+				{ column_id: 100, race_entry_id: 2, mark_value: "○" },
+			],
+		},
+	},
+};
+
+export const WithNotesMobile: Story = {
+	name: "メモアイコンあり（モバイル）",
+	globals: {
+		viewport: { value: "mobile1", isRotated: false },
+	},
+	args: {
+		race: {
+			...emptyMarksRace,
+			entries: entriesWithNotes,
+			mark_columns: ownAndTwoOtherColumns,
+			marks: [
+				{ column_id: 100, race_entry_id: 1, mark_value: "◎" },
+				{ column_id: 100, race_entry_id: 2, mark_value: "○" },
 			],
 		},
 	},
