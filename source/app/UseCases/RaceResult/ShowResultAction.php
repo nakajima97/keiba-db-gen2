@@ -2,15 +2,17 @@
 
 namespace App\UseCases\RaceResult;
 
-use App\Models\HorseNote;
 use App\Models\Race;
 use App\Models\User;
+use App\UseCases\HorseNote\LoadNotesByHorseId;
 
 /**
  * uid でレースを取得し、レース結果確認・編集画面の表示用データ（払戻情報・競走馬メモを含む）を返す。
  */
 class ShowResultAction
 {
+    public function __construct(private LoadNotesByHorseId $loadNotesByHorseId) {}
+
     /**
      * @return array{
      *     id: int,
@@ -81,7 +83,7 @@ class ShowResultAction
             ->values()
             ->all();
 
-        $notesByHorseId = $this->loadNotesByHorseId($user, $horseIds, (int) $race->id);
+        $notesByHorseId = $this->loadNotesByHorseId->execute($user, $horseIds, (int) $race->id);
 
         $finishingHorses = $race->raceResultHorses->map(function ($horse) use ($notesByHorseId) {
             $horseId = $horse->horse_id !== null ? (int) $horse->horse_id : null;
@@ -110,42 +112,4 @@ class ShowResultAction
         ];
     }
 
-    /**
-     * @param  list<int>  $horseIds
-     * @return array<int, array{id: int, content: string, source: string}>
-     */
-    private function loadNotesByHorseId(User $user, array $horseIds, int $raceId): array
-    {
-        if ($horseIds === []) {
-            return [];
-        }
-
-        $notes = HorseNote::query()
-            ->where('user_id', $user->id)
-            ->whereIn('horse_id', $horseIds)
-            ->where(function ($query) use ($raceId) {
-                $query->where('race_id', $raceId)->orWhereNull('race_id');
-            })
-            ->get();
-
-        $byHorseId = [];
-        foreach ($notes as $note) {
-            $horseId = (int) $note->horse_id;
-            $isRaceLinked = $note->race_id !== null;
-            $candidate = [
-                'id' => (int) $note->id,
-                'content' => $note->content,
-                'source' => $isRaceLinked ? 'race' : 'horse',
-            ];
-
-            // race-linked メモを優先。
-            if (isset($byHorseId[$horseId]) && $byHorseId[$horseId]['source'] === 'race') {
-                continue;
-            }
-
-            $byHorseId[$horseId] = $candidate;
-        }
-
-        return $byHorseId;
-    }
 }

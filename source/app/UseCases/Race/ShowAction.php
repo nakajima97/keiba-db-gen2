@@ -2,10 +2,10 @@
 
 namespace App\UseCases\Race;
 
-use App\Models\HorseNote;
 use App\Models\Race;
 use App\Models\RaceMarkColumn;
 use App\Models\User;
+use App\UseCases\HorseNote\LoadNotesByHorseId;
 use Carbon\CarbonInterface;
 use Illuminate\Database\UniqueConstraintViolationException;
 
@@ -15,6 +15,8 @@ use Illuminate\Database\UniqueConstraintViolationException;
  */
 class ShowAction
 {
+    public function __construct(private LoadNotesByHorseId $loadNotesByHorseId) {}
+
     /**
      * @return array{
      *     id: int,
@@ -72,7 +74,7 @@ class ShowAction
             ->values()
             ->all();
 
-        $notesByHorseId = $this->loadNotesByHorseId($user, $horseIds, $race->id);
+        $notesByHorseId = $this->loadNotesByHorseId->execute($user, $horseIds, (int) $race->id);
 
         return [
             'id' => (int) $race->id,
@@ -101,45 +103,6 @@ class ShowAction
             ])->all(),
             'marks' => $marks,
         ];
-    }
-
-    /**
-     * @param  list<int>  $horseIds
-     * @return array<int, array{id: int, content: string, source: string}>
-     */
-    private function loadNotesByHorseId(User $user, array $horseIds, int $raceId): array
-    {
-        if ($horseIds === []) {
-            return [];
-        }
-
-        $notes = HorseNote::query()
-            ->where('user_id', $user->id)
-            ->whereIn('horse_id', $horseIds)
-            ->where(function ($query) use ($raceId) {
-                $query->where('race_id', $raceId)->orWhereNull('race_id');
-            })
-            ->get();
-
-        $byHorseId = [];
-        foreach ($notes as $note) {
-            $horseId = (int) $note->horse_id;
-            $isRaceLinked = $note->race_id !== null;
-            $candidate = [
-                'id' => (int) $note->id,
-                'content' => $note->content,
-                'source' => $isRaceLinked ? 'race' : 'horse',
-            ];
-
-            // race-linked メモを優先。既に race-linked が入っていれば上書きしない。
-            if (isset($byHorseId[$horseId]) && $byHorseId[$horseId]['source'] === 'race') {
-                continue;
-            }
-
-            $byHorseId[$horseId] = $candidate;
-        }
-
-        return $byHorseId;
     }
 
     private function ensureOwnColumnExists(Race $race, User $user): void

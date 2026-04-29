@@ -5,7 +5,6 @@ namespace App\UseCases\HorseNote;
 use App\Models\Horse;
 use App\Models\HorseNote;
 use App\Models\User;
-use Carbon\CarbonInterface;
 use Illuminate\Validation\ValidationException;
 
 /**
@@ -56,31 +55,6 @@ class StoreAction
 
         $note->load(['race.venue']);
 
-        $race = null;
-        if ($note->race !== null) {
-            $race = [
-                'uid' => $note->race->uid,
-                'race_date' => $note->race->race_date instanceof CarbonInterface
-                    ? $note->race->race_date->format('Y-m-d')
-                    : (string) $note->race->race_date,
-                'venue_name' => $note->race->venue->name,
-                'race_number' => (int) $note->race->race_number,
-                'race_name' => $note->race->race_name,
-            ];
-        }
-
-        return [
-            'id' => (int) $note->id,
-            'horse_id' => (int) $note->horse_id,
-            'race_id' => $note->race_id !== null ? (int) $note->race_id : null,
-            'race' => $race,
-            'content' => $note->content,
-            'created_at' => $note->created_at instanceof CarbonInterface
-                ? $note->created_at->toIso8601String()
-                : (string) $note->created_at,
-            'updated_at' => $note->updated_at instanceof CarbonInterface
-                ? $note->updated_at->toIso8601String()
-                : (string) $note->updated_at,
-        ];
+        return HorseNotePresenter::present($note);
     }
 }
