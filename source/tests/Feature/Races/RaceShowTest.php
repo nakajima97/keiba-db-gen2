@@ -50,6 +50,7 @@ test('race show returns race basic info as inertia props', function () {
         'venue_id' => $venue->id,
         'race_date' => '2026-04-05',
         'race_number' => 3,
+        'race_name' => '皐月賞',
     ]);
 
     // Act
@@ -62,6 +63,30 @@ test('race show returns race basic info as inertia props', function () {
             ->where('race_date', '2026-04-05')
             ->where('venue_name', '東京')
             ->where('race_number', 3)
+            ->where('race_name', '皐月賞')
+            ->etc()
+        )
+    );
+});
+
+test('レース名が null のレースは Inertia props で race_name が null として返される', function () {
+    // Arrange
+    $user = User::factory()->create();
+    $venue = Venue::firstOrCreate(['name' => '東京']);
+    $race = Race::create([
+        'venue_id' => $venue->id,
+        'race_date' => '2026-04-05',
+        'race_number' => 1,
+    ]);
+
+    // Act
+    $response = $this->actingAs($user)->get(route('races.show', ['race' => $race->uid]));
+
+    // Assert
+    $response->assertInertia(fn (Assert $page) => $page
+        ->component('races/show')
+        ->has('race', fn (Assert $race) => $race
+            ->where('race_name', null)
             ->etc()
         )
     );

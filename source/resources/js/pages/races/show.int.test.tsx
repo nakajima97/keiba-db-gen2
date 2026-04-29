@@ -14,6 +14,7 @@ vi.mock("@inertiajs/react", () => ({
 				race_date: "2026-04-05",
 				venue_name: "東京",
 				race_number: 3,
+				race_name: "皐月賞",
 				entries: [
 					{
 						id: 1,
@@ -42,6 +43,7 @@ describe("RacesShow ページ", () => {
 		expect(screen.getByText("2026/04/05")).toBeInTheDocument();
 		expect(screen.getByText("東京")).toBeInTheDocument();
 		expect(screen.getByText("3R")).toBeInTheDocument();
+		expect(screen.getByText("皐月賞")).toBeInTheDocument();
 		expect(screen.getByText("テストホース")).toBeInTheDocument();
 		expect(screen.getByText("テスト騎手")).toBeInTheDocument();
 		expect(screen.getByText("480kg")).toBeInTheDocument();
