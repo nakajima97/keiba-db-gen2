@@ -7,6 +7,8 @@
 | PATCH | `/api/races/{uid}/mark-columns/{id}` | 他人の印列のラベルを更新する。 | 必要 |
 | DELETE | `/api/races/{uid}/mark-columns/{id}` | 他人の印列を削除する（自分の印列は削除不可）。 | 必要 |
 | PUT | `/api/races/{uid}/mark-columns/{column_id}/entries/{race_entry_id}/mark` | 印を設定または解除する（mark_value 空文字列で解除）。自動保存用。 | 必要 |
+| PUT | `/api/races/{uid}/mark-columns/{column_id}/entries/{race_entry_id}/memo` | 印メモを作成または更新する（他人列のみ、自分列は422）。 | 必要 |
+| DELETE | `/api/races/{uid}/mark-columns/{column_id}/entries/{race_entry_id}/memo` | 印メモを削除する（他人列のみ、自分列は422）。 | 必要 |
 | GET | `/api/horses/{horse}/notes` | 認証ユーザーが所有する当該馬の全メモ（レース紐づきあり・なし含む）を取得する。 | 必要 |
 | POST | `/api/horses/{horse}/notes` | 競走馬に対するメモを作成する（race_id は任意、null可）。 | 必要 |
 | PUT | `/api/horse-notes/{note}` | メモ本文を更新する（content のみ更新可能）。 | 必要 |

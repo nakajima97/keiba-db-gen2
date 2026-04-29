@@ -174,6 +174,18 @@ erDiagram
     race_mark_columns ||--o{ race_marks : "has"
     race_entries ||--o{ race_marks : "marked by"
 
+    race_mark_memos {
+        bigint id PK
+        bigint race_mark_column_id FK "他人列(other)のみ"
+        bigint race_entry_id FK
+        string content "メモ本文 1000字以内 プレーンテキスト"
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    race_mark_columns ||--o{ race_mark_memos : "has"
+    race_entries ||--o{ race_mark_memos : "noted by"
+
     horse_notes {
         bigint id PK
         bigint user_id FK

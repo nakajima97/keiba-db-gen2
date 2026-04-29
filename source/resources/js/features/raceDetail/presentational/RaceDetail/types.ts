@@ -24,6 +24,11 @@ export type RaceMarkValue = {
 	mark_value: MarkValue;
 };
 
+export type RaceMarkMemo = {
+	column_id: number;
+	race_entry_id: number;
+};
+
 export type RaceEntryNote = {
 	id?: number;
 	content: string;
@@ -50,6 +55,7 @@ export type RaceDetailItem = {
 	entries: RaceEntry[];
 	mark_columns: RaceMarkColumn[];
 	marks: RaceMarkValue[];
+	mark_memos?: RaceMarkMemo[];
 };
 
 export type RaceDetailProps = {
@@ -63,4 +69,8 @@ export type RaceDetailProps = {
 	onRemoveOtherColumn: (columnId: number) => void;
 	onChangeColumnLabel: (columnId: number, label: string) => void;
 	onNoteClick?: (horseId: number) => void;
+	onMarkMemoClick?: (params: {
+		columnId: number;
+		raceEntryId: number;
+	}) => void;
 };
