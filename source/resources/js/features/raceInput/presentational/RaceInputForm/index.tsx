@@ -9,6 +9,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/shadcn/ui/select";
+import { index as racesIndex } from "@/routes/races";
 import { useState } from "react";
 
 type Props = {
@@ -71,7 +72,7 @@ const RaceInputForm = ({
 	return (
 		<div className="flex flex-col gap-6 p-4">
 			<div>
-				<BackButton label="レース一覧へ戻る" href="/races" />
+				<BackButton label="レース一覧へ戻る" href={racesIndex.url()} />
 			</div>
 			<div>
 				<h1 className="text-xl font-semibold">レース情報入力</h1>

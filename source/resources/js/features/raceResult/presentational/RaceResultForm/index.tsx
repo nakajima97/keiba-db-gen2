@@ -1,6 +1,7 @@
 import AlertError from "@/components/presentational/AlertError";
 import BackButton from "@/components/presentational/BackButton";
 import { Button } from "@/components/shadcn/ui/button";
+import { edit as raceResultEdit } from "@/routes/races/result";
 import { formatDateDisplay } from "@/utils/date";
 import type { RaceResultFormProps } from "./types";
 
@@ -24,7 +25,7 @@ const RaceResultForm = ({
 			<div>
 				<BackButton
 					label="レース結果へ戻る"
-					href={`/races/${raceUid}/result/edit`}
+					href={raceResultEdit.url({ uid: raceUid })}
 				/>
 			</div>
 			<div>
