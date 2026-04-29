@@ -30,6 +30,8 @@
 | イベントハンドラ | `handle` + PascalCase | `handleSubmit`, `handleRaceSelect` |
 | 関数定義 | アロー関数を使用 | `const foo = () => {}` |
 
+`export default` する場合は const に代入してから default export する。自動生成・サードパーティ由来のコードは対象外で、`biome.json` の `files.ignore` で除外している。
+
 ## 型・インターフェース
 
 | 対象 | 規則 | 例 |
