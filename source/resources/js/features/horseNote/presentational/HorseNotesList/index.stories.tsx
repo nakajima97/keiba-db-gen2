@@ -7,6 +7,7 @@ const meta: Meta<typeof HorseNotesList> = {
 	args: {
 		onAddClick: () => {},
 		onEditClick: () => {},
+		onDeleteClick: () => {},
 	},
 };
 

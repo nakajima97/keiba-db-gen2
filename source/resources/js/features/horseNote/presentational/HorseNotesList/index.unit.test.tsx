@@ -39,6 +39,7 @@ describe("HorseNotesList", () => {
 					notes={[raceLinkedNote, horseLinkedNote]}
 					onAddClick={() => {}}
 					onEditClick={() => {}}
+					onDeleteClick={() => {}}
 				/>,
 			);
 
@@ -56,6 +57,7 @@ describe("HorseNotesList", () => {
 					notes={[]}
 					onAddClick={() => {}}
 					onEditClick={() => {}}
+					onDeleteClick={() => {}}
 				/>,
 			);
 
@@ -72,6 +74,7 @@ describe("HorseNotesList", () => {
 					notes={[]}
 					onAddClick={() => {}}
 					onEditClick={() => {}}
+					onDeleteClick={() => {}}
 				/>,
 			);
 
@@ -92,6 +95,7 @@ describe("HorseNotesList", () => {
 					notes={[]}
 					onAddClick={onAddClick}
 					onEditClick={() => {}}
+					onDeleteClick={() => {}}
 				/>,
 			);
 			await user.click(screen.getByRole("button", { name: "メモを追加" }));
@@ -113,12 +117,35 @@ describe("HorseNotesList", () => {
 					notes={[raceLinkedNote]}
 					onAddClick={() => {}}
 					onEditClick={onEditClick}
+					onDeleteClick={() => {}}
 				/>,
 			);
 			await user.click(screen.getByRole("button", { name: "編集" }));
 
 			// Assert
 			expect(onEditClick).toHaveBeenCalledWith(1);
+		});
+	});
+
+	describe("削除操作", () => {
+		it("削除ボタンを押すと onDeleteClick がメモ ID で呼ばれる", async () => {
+			// Arrange
+			const onDeleteClick = vi.fn();
+			const user = userEvent.setup();
+
+			// Act
+			render(
+				<HorseNotesList
+					notes={[raceLinkedNote]}
+					onAddClick={() => {}}
+					onEditClick={() => {}}
+					onDeleteClick={onDeleteClick}
+				/>,
+			);
+			await user.click(screen.getByRole("button", { name: "削除" }));
+
+			// Assert
+			expect(onDeleteClick).toHaveBeenCalledWith(1);
 		});
 	});
 
@@ -130,6 +157,7 @@ describe("HorseNotesList", () => {
 					notes={[raceLinkedNote]}
 					onAddClick={() => {}}
 					onEditClick={() => {}}
+					onDeleteClick={() => {}}
 				/>,
 			);
 
@@ -148,6 +176,7 @@ describe("HorseNotesList", () => {
 					notes={[horseLinkedNote]}
 					onAddClick={() => {}}
 					onEditClick={() => {}}
+					onDeleteClick={() => {}}
 				/>,
 			);
 

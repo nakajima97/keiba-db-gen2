@@ -7,6 +7,7 @@ const HorseNotesList = ({
 	notes,
 	onAddClick,
 	onEditClick,
+	onDeleteClick,
 }: HorseNotesListProps) => {
 	return (
 		<div className="flex flex-col gap-3">
@@ -51,13 +52,21 @@ const HorseNotesList = ({
 								</span>
 							</div>
 							<p className="whitespace-pre-wrap text-sm">{note.content}</p>
-							<div className="flex justify-end">
+							<div className="flex justify-end gap-1">
 								<Button
 									variant="ghost"
 									size="sm"
 									onClick={() => onEditClick(note.id)}
 								>
 									編集
+								</Button>
+								<Button
+									variant="ghost"
+									size="sm"
+									className="text-destructive hover:text-destructive"
+									onClick={() => onDeleteClick(note.id)}
+								>
+									削除
 								</Button>
 							</div>
 						</li>

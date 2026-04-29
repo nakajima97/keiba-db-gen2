@@ -1,12 +1,18 @@
 import HorseNoteModalContainer, {
 	type HorseNoteModalRaceContext,
 } from "@/features/horseNote/containers/HorseNoteModalContainer";
+import HorseNoteDeleteConfirmDialog from "@/features/horseNote/presentational/HorseNoteDeleteConfirmDialog";
 import type { HorseNoteRaceOption } from "@/features/horseNote/presentational/HorseNoteModal/types";
 import HorseNotesList from "@/features/horseNote/presentational/HorseNotesList";
 import type { HorseNoteListItem } from "@/features/horseNote/presentational/HorseNotesList/types";
+import {
+	HorseNoteRequestError,
+	deleteNote,
+} from "@/features/horseNote/requests/horseNotes";
 import type { HorseNote } from "@/features/horseNote/types/horseNote";
 import { formatDateDisplay } from "@/utils/date";
 import { useMemo, useState } from "react";
+import { toast } from "sonner";
 
 type Props = {
 	horseId: number;
@@ -19,6 +25,11 @@ type EditTarget = {
 	id: number;
 	content: string;
 	raceContext: HorseNoteModalRaceContext;
+};
+
+type DeleteTarget = {
+	id: number;
+	content: string;
 };
 
 /**
@@ -36,6 +47,12 @@ const HorseNotesListContainer = ({
 	const [open, setOpen] = useState<boolean>(false);
 	const [mode, setMode] = useState<"create" | "edit">("create");
 	const [editTarget, setEditTarget] = useState<EditTarget | null>(null);
+	const [deleteOpen, setDeleteOpen] = useState<boolean>(false);
+	const [deleteSubmitting, setDeleteSubmitting] = useState<boolean>(false);
+	const [deleteErrorMessage, setDeleteErrorMessage] = useState<string | null>(
+		null,
+	);
+	const [deleteTarget, setDeleteTarget] = useState<DeleteTarget | null>(null);
 
 	const createRaceContext = useMemo<HorseNoteModalRaceContext>(() => {
 		if (raceOptions.length === 0) {
@@ -76,6 +93,61 @@ const HorseNotesListContainer = ({
 		setOpen(false);
 	};
 
+	const handleDeleteClick = (noteId: number) => {
+		const target = notes.find((n) => n.id === noteId);
+		if (target == null) {
+			return;
+		}
+		setDeleteTarget({
+			id: target.id,
+			content: target.content,
+		});
+		setDeleteErrorMessage(null);
+		setDeleteOpen(true);
+	};
+
+	const handleDeleteOpenChange = (next: boolean) => {
+		if (next) {
+			return;
+		}
+		if (deleteSubmitting) {
+			return;
+		}
+		setDeleteOpen(false);
+		setDeleteErrorMessage(null);
+	};
+
+	const handleDeleteConfirm = async () => {
+		if (deleteTarget == null) {
+			return;
+		}
+		setDeleteSubmitting(true);
+		setDeleteErrorMessage(null);
+		try {
+			await deleteNote(deleteTarget.id);
+			setNotes((current) => current.filter((n) => n.id !== deleteTarget.id));
+			setDeleteOpen(false);
+			setDeleteTarget(null);
+		} catch (e) {
+			// 別タブ等で先に削除済みのケース。サーバ実態に合わせ一覧からも除去して案内する。
+			if (e instanceof HorseNoteRequestError && e.status === 404) {
+				setNotes((current) => current.filter((n) => n.id !== deleteTarget.id));
+				setDeleteOpen(false);
+				setDeleteTarget(null);
+				toast.info("対象のメモは既に削除されています。");
+				return;
+			}
+			const message =
+				e instanceof HorseNoteRequestError
+					? e.message
+					: "メモの削除に失敗しました";
+			setDeleteErrorMessage(message);
+			toast.error(message);
+		} finally {
+			setDeleteSubmitting(false);
+		}
+	};
+
 	const handleSuccess = (note: HorseNote) => {
 		const item: HorseNoteListItem = {
 			id: note.id,
@@ -112,6 +184,7 @@ const HorseNotesListContainer = ({
 				notes={notes}
 				onAddClick={handleAddClick}
 				onEditClick={handleEditClick}
+				onDeleteClick={handleDeleteClick}
 			/>
 			<HorseNoteModalContainer
 				open={open}
@@ -128,6 +201,14 @@ const HorseNotesListContainer = ({
 				raceContext={modalRaceContext}
 				onClose={handleClose}
 				onSuccess={handleSuccess}
+			/>
+			<HorseNoteDeleteConfirmDialog
+				open={deleteOpen}
+				noteContent={deleteTarget?.content ?? ""}
+				submitting={deleteSubmitting}
+				errorMessage={deleteErrorMessage}
+				onOpenChange={handleDeleteOpenChange}
+				onConfirm={handleDeleteConfirm}
 			/>
 		</>
 	);

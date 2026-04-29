@@ -1,6 +1,6 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import HorseNotesListContainer from "./index";
 
 vi.mock("@inertiajs/react", () => ({
@@ -10,6 +10,10 @@ vi.mock("@inertiajs/react", () => ({
 }));
 
 describe("HorseNotesListContainer", () => {
+	afterEach(() => {
+		vi.restoreAllMocks();
+	});
+
 	it("ハッピーパス: メモ追加ボタンを押すとモーダルが create モードで開く", async () => {
 		// Arrange
 		const user = userEvent.setup();
@@ -39,5 +43,43 @@ describe("HorseNotesListContainer", () => {
 			screen.getByRole("heading", { name: "メモを追加" }),
 		).toBeInTheDocument();
 		expect(screen.getByText("ディープスター")).toBeInTheDocument();
+	});
+
+	it("ハッピーパス: 削除ボタン押下→確認ダイアログ表示→削除するでメモが一覧から消える", async () => {
+		// Arrange
+		const user = userEvent.setup();
+		vi.spyOn(global, "fetch").mockResolvedValue(
+			new Response(null, { status: 204 }),
+		);
+		render(
+			<HorseNotesListContainer
+				horseId={100}
+				horseName="ディープスター"
+				initialNotes={[
+					{
+						id: 10,
+						content: "削除対象メモ",
+						race: null,
+						created_at: "2026-04-25T10:00:00Z",
+						updated_at: "2026-04-25T10:00:00Z",
+					},
+				]}
+				raceOptions={[]}
+			/>,
+		);
+
+		// Act
+		await user.click(screen.getByRole("button", { name: "削除" }));
+		expect(screen.getByRole("dialog")).toBeInTheDocument();
+		await user.click(screen.getByRole("button", { name: "削除する" }));
+
+		// Assert
+		await waitFor(() => {
+			expect(screen.queryByText("削除対象メモ")).not.toBeInTheDocument();
+		});
+		const [url, init] = (global.fetch as ReturnType<typeof vi.fn>).mock
+			.calls[0] as [string, RequestInit];
+		expect(url).toBe("/api/horse-notes/10");
+		expect(init.method).toBe("DELETE");
 	});
 });

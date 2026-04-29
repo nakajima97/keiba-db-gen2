@@ -46,6 +46,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/horses/{horse}/notes', [HorseNoteController::class, 'index'])->name('api.horses.notes.index');
         Route::post('/horses/{horse}/notes', [HorseNoteController::class, 'store'])->name('api.horses.notes.store');
         Route::put('/horse-notes/{note}', [HorseNoteController::class, 'update'])->name('api.horse-notes.update');
+        Route::delete('/horse-notes/{note}', [HorseNoteController::class, 'destroy'])->name('api.horse-notes.destroy');
     });
 });
 
