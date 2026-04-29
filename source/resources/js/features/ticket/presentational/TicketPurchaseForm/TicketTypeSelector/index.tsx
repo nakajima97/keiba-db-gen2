@@ -3,12 +3,12 @@ import { BUY_TYPE_MAP, TICKET_TYPES } from "../constants";
 import { Section } from "../Section";
 import type { TicketTypeSelectorProps } from "./types";
 
-export function TicketTypeSelector({
+export const TicketTypeSelector = ({
 	selectedTicketTypeId,
 	selectedBuyTypeId,
 	onTicketTypeChange,
 	onBuyTypeChange,
-}: TicketTypeSelectorProps) {
+}: TicketTypeSelectorProps) => {
 	const buyTypes = BUY_TYPE_MAP[selectedTicketTypeId];
 
 	return (
@@ -48,4 +48,4 @@ export function TicketTypeSelector({
 			</Section>
 		</>
 	);
-}
+};

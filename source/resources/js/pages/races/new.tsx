@@ -8,7 +8,7 @@ type RacesNewProps = {
 	last_race_number?: number;
 };
 
-export default function RacesNew() {
+const RacesNew = () => {
 	const { venues, last_venue_id, last_race_date, last_race_number } =
 		usePage<RacesNewProps>().props;
 
@@ -23,4 +23,6 @@ export default function RacesNew() {
 			/>
 		</>
 	);
-}
+};
+
+export default RacesNew;

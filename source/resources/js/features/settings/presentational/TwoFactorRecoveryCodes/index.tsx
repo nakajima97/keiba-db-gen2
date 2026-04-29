@@ -18,11 +18,11 @@ type Props = {
 	errors: string[];
 };
 
-export default function TwoFactorRecoveryCodes({
+const TwoFactorRecoveryCodes = ({
 	recoveryCodesList,
 	fetchRecoveryCodes,
 	errors,
-}: Props) {
+}: Props) => {
 	const [codesAreVisible, setCodesAreVisible] = useState<boolean>(false);
 	const codesSectionRef = useRef<HTMLUListElement | null>(null);
 	const canRegenerateCodes = recoveryCodesList.length > 0 && codesAreVisible;
@@ -147,4 +147,6 @@ export default function TwoFactorRecoveryCodes({
 			</CardContent>
 		</Card>
 	);
-}
+};
+
+export default TwoFactorRecoveryCodes;

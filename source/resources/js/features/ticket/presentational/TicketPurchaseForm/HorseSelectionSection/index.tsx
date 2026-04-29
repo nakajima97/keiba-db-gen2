@@ -6,7 +6,7 @@ import { Section } from "../Section";
 import { getHorseInputConfigKey } from "../utils";
 import type { HorseSelectionSectionProps } from "./types";
 
-export function HorseSelectionSection({
+export const HorseSelectionSection = ({
 	selectedTicketTypeId,
 	selectedBuyTypeId,
 	selectedAxisCount,
@@ -15,7 +15,7 @@ export function HorseSelectionSection({
 	onAxisCountChange,
 	onNagashiDirectionChange,
 	onHorsesChange,
-}: HorseSelectionSectionProps) {
+}: HorseSelectionSectionProps) => {
 	const gridSize = GRID_SIZE[selectedTicketTypeId] ?? 18;
 
 	const showAxisCountSelector =
@@ -106,4 +106,4 @@ export function HorseSelectionSection({
 			</div>
 		</Section>
 	);
-}
+};

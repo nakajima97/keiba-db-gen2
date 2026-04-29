@@ -5,7 +5,7 @@ export type CopiedValue = string | null;
 export type CopyFn = (text: string) => Promise<boolean>;
 export type UseClipboardReturn = [CopiedValue, CopyFn];
 
-export function useClipboard(): UseClipboardReturn {
+export const useClipboard = (): UseClipboardReturn => {
 	const [copiedText, setCopiedText] = useState<CopiedValue>(null);
 
 	const copy: CopyFn = async (text) => {
@@ -29,4 +29,4 @@ export function useClipboard(): UseClipboardReturn {
 	};
 
 	return [copiedText, copy];
-}
+};

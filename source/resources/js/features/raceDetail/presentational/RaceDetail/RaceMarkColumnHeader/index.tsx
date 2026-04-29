@@ -9,11 +9,11 @@ type Props = {
 	onRemove: () => void;
 };
 
-export default function RaceMarkColumnHeader({
+const RaceMarkColumnHeader = ({
 	column,
 	onChangeLabel,
 	onRemove,
-}: Props) {
+}: Props) => {
 	if (column.type === "own") {
 		return <span className="font-medium text-muted-foreground">自分</span>;
 	}
@@ -39,4 +39,6 @@ export default function RaceMarkColumnHeader({
 			</Button>
 		</div>
 	);
-}
+};
+
+export default RaceMarkColumnHeader;

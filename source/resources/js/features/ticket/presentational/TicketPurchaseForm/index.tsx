@@ -12,7 +12,7 @@ export type { TicketTypeId } from "./constants";
 export { getHorseInputConfigKey } from "./utils";
 export type { TicketPurchaseFormProps } from "./types";
 
-export default function TicketPurchaseForm({
+const TicketPurchaseForm = ({
 	selectedVenue,
 	selectedRaceDate,
 	selectedRaceNumber,
@@ -32,7 +32,7 @@ export default function TicketPurchaseForm({
 	onNagashiDirectionChange,
 	onHorsesChange,
 	onAmountChange,
-}: TicketPurchaseFormProps) {
+}: TicketPurchaseFormProps) => {
 	return (
 		<div className="mx-auto max-w-2xl space-y-8 p-4">
 			<RaceInfoSection
@@ -123,4 +123,6 @@ export default function TicketPurchaseForm({
 			</div>
 		</div>
 	);
-}
+};
+
+export default TicketPurchaseForm;

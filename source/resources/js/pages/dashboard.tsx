@@ -13,7 +13,7 @@ type DashboardPageProps = {
 	daily_balances: DailyBalance[];
 };
 
-export default function Dashboard() {
+const Dashboard = () => {
 	const { selected_year, available_years, summary, daily_balances } =
 		usePage<DashboardPageProps>().props;
 
@@ -37,7 +37,9 @@ export default function Dashboard() {
 			/>
 		</>
 	);
-}
+};
+
+export default Dashboard;
 
 Dashboard.layout = {
 	breadcrumbs: [

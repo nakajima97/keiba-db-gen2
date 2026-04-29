@@ -12,14 +12,14 @@ import { VENUES } from "../constants";
 import { Section } from "../Section";
 import type { RaceInfoSectionProps } from "./types";
 
-export function RaceInfoSection({
+export const RaceInfoSection = ({
 	selectedVenue,
 	selectedRaceDate,
 	selectedRaceNumber,
 	onVenueChange,
 	onRaceDateChange,
 	onRaceNumberChange,
-}: RaceInfoSectionProps) {
+}: RaceInfoSectionProps) => {
 	return (
 		<Section title="レース情報">
 			<div className="space-y-4">
@@ -86,4 +86,4 @@ export function RaceInfoSection({
 			</div>
 		</Section>
 	);
-}
+};

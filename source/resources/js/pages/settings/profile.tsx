@@ -10,13 +10,13 @@ import { Label } from "@/components/shadcn/ui/label";
 import { edit } from "@/routes/profile";
 import { send } from "@/routes/verification";
 
-export default function Profile({
+const Profile = ({
 	mustVerifyEmail,
 	status,
 }: {
 	mustVerifyEmail: boolean;
 	status?: string;
-}) {
+}) => {
 	const { auth } = usePage().props;
 
 	return (
@@ -119,7 +119,9 @@ export default function Profile({
 			<DeleteUser />
 		</>
 	);
-}
+};
+
+export default Profile;
 
 Profile.layout = {
 	breadcrumbs: [

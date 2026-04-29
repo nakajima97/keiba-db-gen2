@@ -6,7 +6,7 @@ import { Label } from "@/components/shadcn/ui/label";
 import { Spinner } from "@/components/shadcn/ui/spinner";
 import { store } from "@/routes/password/confirm";
 
-export default function ConfirmPassword() {
+const ConfirmPassword = () => {
 	return (
 		<>
 			<Head title="Confirm password" />
@@ -42,7 +42,9 @@ export default function ConfirmPassword() {
 			</Form>
 		</>
 	);
-}
+};
+
+export default ConfirmPassword;
 
 ConfirmPassword.layout = {
 	title: "Confirm your password",

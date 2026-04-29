@@ -7,7 +7,7 @@ type RacesEntriesNewProps = {
 	race_info: RaceInfo;
 };
 
-export default function RacesEntriesNew() {
+const RacesEntriesNew = () => {
 	const { race_uid, race_info } = usePage<RacesEntriesNewProps>().props;
 
 	return (
@@ -19,4 +19,6 @@ export default function RacesEntriesNew() {
 			/>
 		</>
 	);
-}
+};
+
+export default RacesEntriesNew;

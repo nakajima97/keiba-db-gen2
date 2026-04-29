@@ -27,7 +27,7 @@ type Props = {
  * API 失敗時は state を元に戻して toast でエラーを通知する。
  * ラベル編集はキー入力中の連打を避けるため列ごとに 500ms デバウンスする。
  */
-export default function RaceDetailContainer({ race }: Props) {
+const RaceDetailContainer = ({ race }: Props) => {
 	const [markColumns, setMarkColumns] = useState<RaceMarkColumn[]>(
 		race.mark_columns,
 	);
@@ -137,4 +137,6 @@ export default function RaceDetailContainer({ race }: Props) {
 			onChangeColumnLabel={handleChangeColumnLabel}
 		/>
 	);
-}
+};
+
+export default RaceDetailContainer;

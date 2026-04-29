@@ -19,13 +19,13 @@ type RaceInputFormData = {
 	paste_text: string;
 };
 
-export default function RaceInputFormContainer({
+const RaceInputFormContainer = ({
 	venues,
 	initialVenueId,
 	initialRaceDate,
 	initialRaceNumber,
 	initialRaceName,
-}: RaceInputFormContainerProps) {
+}: RaceInputFormContainerProps) => {
 	// フォームから受け取る送信成功時のリセット関数を保持する。
 	// useFormSubmit の onSuccess は最新のクロージャを参照する必要があるため ref で受け渡す。
 	const formOnSuccessRef = useRef<(() => void) | undefined>(undefined);
@@ -58,4 +58,6 @@ export default function RaceInputFormContainer({
 			onSubmit={handleSubmit}
 		/>
 	);
-}
+};
+
+export default RaceInputFormContainer;

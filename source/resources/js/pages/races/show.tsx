@@ -6,7 +6,7 @@ type RacesShowProps = {
 	race: RaceDetailItem;
 };
 
-export default function RacesShow() {
+const RacesShow = () => {
 	const { race } = usePage<RacesShowProps>().props;
 
 	return (
@@ -15,4 +15,6 @@ export default function RacesShow() {
 			<RaceDetailContainer race={race} />
 		</>
 	);
-}
+};
+
+export default RacesShow;

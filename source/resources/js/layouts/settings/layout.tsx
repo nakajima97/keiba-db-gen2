@@ -28,7 +28,7 @@ const sidebarNavItems: NavItem[] = [
 	},
 ];
 
-export default function SettingsLayout({ children }: PropsWithChildren) {
+const SettingsLayout = ({ children }: PropsWithChildren) => {
 	const { isCurrentOrParentUrl } = useCurrentUrl();
 
 	return (
@@ -71,4 +71,6 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
 			</div>
 		</div>
 	);
-}
+};
+
+export default SettingsLayout;

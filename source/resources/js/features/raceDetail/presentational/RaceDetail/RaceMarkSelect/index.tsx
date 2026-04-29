@@ -15,7 +15,7 @@ type Props = {
 	ariaLabel?: string;
 };
 
-export default function RaceMarkSelect({ value, onChange, ariaLabel }: Props) {
+const RaceMarkSelect = ({ value, onChange, ariaLabel }: Props) => {
 	return (
 		<Select
 			value={value ?? UNSELECTED_VALUE}
@@ -40,4 +40,6 @@ export default function RaceMarkSelect({ value, onChange, ariaLabel }: Props) {
 			</SelectContent>
 		</Select>
 	);
-}
+};
+
+export default RaceMarkSelect;

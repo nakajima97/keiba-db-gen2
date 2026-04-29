@@ -9,7 +9,7 @@ import {
 import { useCurrentUrl } from "@/hooks/use-current-url";
 import type { NavItem } from "@/types";
 
-export function NavMain({ items = [] }: { items: NavItem[] }) {
+export const NavMain = ({ items = [] }: { items: NavItem[] }) => {
 	const { isCurrentUrl } = useCurrentUrl();
 
 	return (
@@ -33,4 +33,4 @@ export function NavMain({ items = [] }: { items: NavItem[] }) {
 			</SidebarMenu>
 		</SidebarGroup>
 	);
-}
+};

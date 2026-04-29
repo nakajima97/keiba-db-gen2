@@ -9,7 +9,7 @@ import type { Selections } from "./types";
  * - columns形式: "1,2 - 3,4 - 5,6,7"
  * @param selections - DBから取得した馬番選択情報（JSON）
  */
-export function formatSelections(selections: Selections): string {
+export const formatSelections = (selections: Selections): string => {
 	if ("horses" in selections) {
 		return selections.horses.join("-");
 	}
@@ -34,4 +34,4 @@ export function formatSelections(selections: Selections): string {
 			.join(" - ");
 	}
 	return selections.columns.map((col) => col.join(",")).join(" - ");
-}
+};

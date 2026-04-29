@@ -3,7 +3,7 @@ type SectionProps = {
 	children: React.ReactNode;
 };
 
-export function Section({ title, children }: SectionProps) {
+export const Section = ({ title, children }: SectionProps) => {
 	return (
 		<section className="space-y-3">
 			<h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
@@ -12,4 +12,4 @@ export function Section({ title, children }: SectionProps) {
 			<div>{children}</div>
 		</section>
 	);
-}
+};

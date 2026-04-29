@@ -8,7 +8,7 @@ type TicketsIndexProps = {
 	nextCursor: string | null;
 };
 
-export default function TicketsIndex() {
+const TicketsIndex = () => {
 	const { purchases, nextCursor } = usePage<TicketsIndexProps>().props;
 	const [isLoading, setIsLoading] = useState(false);
 
@@ -33,4 +33,6 @@ export default function TicketsIndex() {
 			/>
 		</>
 	);
-}
+};
+
+export default TicketsIndex;

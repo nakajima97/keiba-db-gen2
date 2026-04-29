@@ -30,14 +30,14 @@ type Props = {
 
 const RACE_NUMBERS = Array.from({ length: 12 }, (_, i) => i + 1);
 
-export default function RaceInputForm({
+const RaceInputForm = ({
 	venues,
 	initialVenueId,
 	initialRaceDate,
 	initialRaceNumber,
 	initialRaceName,
 	onSubmit,
-}: Props) {
+}: Props) => {
 	const [venueId, setVenueId] = useState<string>(
 		initialVenueId ? String(initialVenueId) : "",
 	);
@@ -147,6 +147,8 @@ export default function RaceInputForm({
 			</Button>
 		</div>
 	);
-}
+};
+
+export default RaceInputForm;
 
 export type { Props as RaceInputFormProps };

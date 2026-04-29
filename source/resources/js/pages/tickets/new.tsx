@@ -7,7 +7,7 @@ type TicketsNewProps = {
 	lastRaceNumber: number;
 };
 
-export default function TicketsNew() {
+const TicketsNew = () => {
 	const { lastVenue, lastRaceDate, lastRaceNumber } =
 		usePage<TicketsNewProps>().props;
 
@@ -27,4 +27,6 @@ export default function TicketsNew() {
 			/>
 		</>
 	);
-}
+};
+
+export default TicketsNew;

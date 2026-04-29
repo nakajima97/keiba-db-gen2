@@ -1,6 +1,6 @@
 import AppLogoIcon from "@/components/presentational/AppLogoIcon";
 
-export default function AppLogo() {
+const AppLogo = () => {
 	return (
 		<>
 			<div className="flex aspect-square size-8 items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground">
@@ -13,4 +13,6 @@ export default function AppLogo() {
 			</div>
 		</>
 	);
-}
+};
+
+export default AppLogo;

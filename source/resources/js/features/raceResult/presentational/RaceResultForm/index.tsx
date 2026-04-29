@@ -3,7 +3,7 @@ import AlertError from "@/components/presentational/AlertError";
 import { formatDateDisplay } from "@/utils/date";
 import type { RaceResultFormProps } from "./types";
 
-export default function RaceResultForm({
+const RaceResultForm = ({
 	venueName,
 	raceDate,
 	raceNumber,
@@ -16,7 +16,7 @@ export default function RaceResultForm({
 	onSubmit,
 	isSubmitting,
 	disabled,
-}: RaceResultFormProps) {
+}: RaceResultFormProps) => {
 	return (
 		<div className="flex flex-col gap-6 p-4">
 			<div>
@@ -81,6 +81,8 @@ export default function RaceResultForm({
 			</Button>
 		</div>
 	);
-}
+};
+
+export default RaceResultForm;
 
 export type { RaceResultFormProps } from "./types";

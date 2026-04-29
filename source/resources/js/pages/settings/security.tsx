@@ -20,11 +20,11 @@ type Props = {
 	twoFactorEnabled?: boolean;
 };
 
-export default function Security({
+const Security = ({
 	canManageTwoFactor = false,
 	requiresConfirmation = false,
 	twoFactorEnabled = false,
-}: Props) {
+}: Props) => {
 	const passwordInput = useRef<HTMLInputElement>(null);
 	const currentPasswordInput = useRef<HTMLInputElement>(null);
 
@@ -234,7 +234,9 @@ export default function Security({
 			)}
 		</>
 	);
-}
+};
+
+export default Security;
 
 Security.layout = {
 	breadcrumbs: [

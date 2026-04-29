@@ -6,13 +6,13 @@ import {
 import { useInitials } from "@/hooks/use-initials";
 import type { User } from "@/types";
 
-export function UserInfo({
+export const UserInfo = ({
 	user,
 	showEmail = false,
 }: {
 	user: User;
 	showEmail?: boolean;
-}) {
+}) => {
 	const getInitials = useInitials();
 
 	return (
@@ -33,4 +33,4 @@ export function UserInfo({
 			</div>
 		</>
 	);
-}
+};

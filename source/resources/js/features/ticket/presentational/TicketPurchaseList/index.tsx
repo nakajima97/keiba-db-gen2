@@ -7,12 +7,12 @@ import { formatDateDisplay } from "@/utils/date";
 import type { TicketPurchaseListProps } from "./types";
 import { formatSelections } from "./utils";
 
-export default function TicketPurchaseList({
+const TicketPurchaseList = ({
 	purchases,
 	hasMore,
 	isLoading,
 	onLoadMore,
-}: TicketPurchaseListProps) {
+}: TicketPurchaseListProps) => {
 	return (
 		<div className="flex flex-col gap-4 p-4">
 			<div className="flex items-center justify-between">
@@ -133,6 +133,8 @@ export default function TicketPurchaseList({
 			)}
 		</div>
 	);
-}
+};
+
+export default TicketPurchaseList;
 
 export type { TicketPurchaseListItem, TicketPurchaseListProps } from "./types";

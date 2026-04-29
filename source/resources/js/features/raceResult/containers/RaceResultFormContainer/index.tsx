@@ -15,13 +15,13 @@ type RaceResultFormData = {
 	text: string;
 };
 
-export default function RaceResultFormContainer({
+const RaceResultFormContainer = ({
 	raceUid,
 	venueName,
 	raceDate,
 	raceNumber,
 	disabled,
-}: RaceResultFormContainerProps) {
+}: RaceResultFormContainerProps) => {
 	const [resultPasteValue, setResultPasteValue] = useState("");
 	const [payoutPasteValue, setPayoutPasteValue] = useState("");
 	const [resultParseError, setResultParseError] = useState<string | null>(null);
@@ -65,4 +65,6 @@ export default function RaceResultFormContainer({
 			disabled={disabled}
 		/>
 	);
-}
+};
+
+export default RaceResultFormContainer;

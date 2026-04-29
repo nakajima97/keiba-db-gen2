@@ -49,7 +49,7 @@ const footerNavItems: NavItem[] = [
 	},
 ];
 
-export function AppSidebar() {
+export const AppSidebar = () => {
 	return (
 		<Sidebar collapsible="icon" variant="inset">
 			<SidebarHeader>
@@ -74,4 +74,4 @@ export function AppSidebar() {
 			</SidebarFooter>
 		</Sidebar>
 	);
-}
+};

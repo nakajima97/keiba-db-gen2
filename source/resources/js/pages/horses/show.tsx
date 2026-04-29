@@ -6,7 +6,7 @@ type HorsesShowProps = {
 	horse: HorseDetailItem;
 };
 
-export default function HorsesShow() {
+const HorsesShow = () => {
 	const { horse } = usePage<HorsesShowProps>().props;
 
 	return (
@@ -15,4 +15,6 @@ export default function HorsesShow() {
 			<HorseDetail horse={horse} />
 		</>
 	);
-}
+};
+
+export default HorsesShow;

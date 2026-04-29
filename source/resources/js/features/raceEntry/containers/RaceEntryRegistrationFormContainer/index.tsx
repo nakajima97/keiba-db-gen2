@@ -13,10 +13,10 @@ type RaceEntryFormData = {
 	paste_text: string;
 };
 
-export default function RaceEntryRegistrationFormContainer({
+const RaceEntryRegistrationFormContainer = ({
 	raceUid,
 	raceInfo,
-}: RaceEntryRegistrationFormContainerProps) {
+}: RaceEntryRegistrationFormContainerProps) => {
 	const [pastedText, setPastedText] = useState("");
 
 	const { isSubmitting, handleSubmit: submit } = useFormSubmit<RaceEntryFormData>({
@@ -45,4 +45,6 @@ export default function RaceEntryRegistrationFormContainer({
 			onSubmit={handleSubmit}
 		/>
 	);
-}
+};
+
+export default RaceEntryRegistrationFormContainer;

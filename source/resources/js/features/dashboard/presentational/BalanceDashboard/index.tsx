@@ -15,13 +15,13 @@ import ScrollableTable from "@/components/presentational/ScrollableTable";
 import { formatDateDisplay } from "@/utils/date";
 import type { BalanceDashboardProps } from "./types";
 
-export default function BalanceDashboard({
+const BalanceDashboard = ({
 	selectedYear,
 	availableYears,
 	summary,
 	dailyBalances,
 	onYearChange,
-}: BalanceDashboardProps) {
+}: BalanceDashboardProps) => {
 	return (
 		<div className="flex flex-col gap-6 p-4">
 			<div className="flex items-center justify-between">
@@ -196,7 +196,9 @@ export default function BalanceDashboard({
 			</div>
 		</div>
 	);
-}
+};
+
+export default BalanceDashboard;
 
 export type {
 	BalanceDashboardProps,
