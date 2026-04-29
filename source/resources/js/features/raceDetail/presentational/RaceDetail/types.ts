@@ -25,6 +25,7 @@ export type RaceMarkValue = {
 };
 
 export type RaceEntryNote = {
+	id?: number;
 	content: string;
 	source: "race" | "horse";
 };

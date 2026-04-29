@@ -10,6 +10,7 @@ export type PayoutEntry = {
 };
 
 export type FinishingHorseNote = {
+	id?: number;
 	content: string;
 	source: "race" | "horse";
 };

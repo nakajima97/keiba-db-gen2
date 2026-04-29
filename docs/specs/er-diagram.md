@@ -173,6 +173,20 @@ erDiagram
     users ||--o{ race_mark_columns : "owns"
     race_mark_columns ||--o{ race_marks : "has"
     race_entries ||--o{ race_marks : "marked by"
+
+    horse_notes {
+        bigint id PK
+        bigint user_id FK
+        bigint horse_id FK
+        bigint race_id FK "nullable レース紐づきなし=null"
+        string content "メモ本文 1000字以内 プレーンテキスト"
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    users ||--o{ horse_notes : "owns"
+    horses ||--o{ horse_notes : "has"
+    races ||--o{ horse_notes : "linked to"
 ```
 
 ## selectionsカラムのJSONフォーマット

@@ -3,7 +3,10 @@ import RaceDetailContainer from "@/features/raceDetail/containers/RaceDetailCont
 import type { RaceDetailItem } from "@/features/raceDetail/presentational/RaceDetail/types";
 
 type RacesShowProps = {
-	race: RaceDetailItem;
+	race: RaceDetailItem & {
+		id?: number;
+		race_name?: string | null;
+	};
 };
 
 const RacesShow = () => {

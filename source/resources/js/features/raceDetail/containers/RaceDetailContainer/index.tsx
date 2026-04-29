@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { toast } from "sonner";
+import HorseNoteModalContainer from "@/features/horseNote/containers/HorseNoteModalContainer";
+import type { HorseNote } from "@/features/horseNote/types/horseNote";
 import RaceDetail from "@/features/raceDetail/presentational/RaceDetail";
 import type {
 	MarkValue,
 	RaceDetailItem,
+	RaceEntry,
 	RaceMarkColumn,
 	RaceMarkValue,
 } from "@/features/raceDetail/presentational/RaceDetail/types";
@@ -14,11 +17,20 @@ import {
 } from "@/features/raceDetail/requests/raceMarkColumns";
 import { upsertMark } from "@/features/raceDetail/requests/raceMarks";
 import { useDebouncedCallbackByKey } from "@/hooks/useDebouncedCallback";
+import { formatDateDisplay } from "@/utils/date";
 
 const LABEL_DEBOUNCE_MS = 500;
 
 type Props = {
-	race: RaceDetailItem;
+	race: RaceDetailItem & {
+		id?: number;
+		race_name?: string | null;
+	};
+};
+
+const buildRaceLabel = (race: Props["race"]): string => {
+	const base = `${formatDateDisplay(race.race_date)} ${race.venue_name} ${race.race_number}R`;
+	return race.race_name != null ? `${base} ${race.race_name}` : base;
 };
 
 /**
@@ -32,6 +44,12 @@ const RaceDetailContainer = ({ race }: Props) => {
 		race.mark_columns,
 	);
 	const [marks, setMarks] = useState<RaceMarkValue[]>(race.marks);
+	const [entries, setEntries] = useState<RaceEntry[]>(race.entries);
+	const [noteModal, setNoteModal] = useState<{
+		open: boolean;
+		horseId: number | null;
+		horseName: string;
+	}>({ open: false, horseId: null, horseName: "" });
 
 	const labelDebouncer = useDebouncedCallbackByKey(
 		async (raceUid: string, columnId: number, label: string) => {
@@ -46,6 +64,7 @@ const RaceDetailContainer = ({ race }: Props) => {
 
 	const localRace: RaceDetailItem = {
 		...race,
+		entries,
 		mark_columns: markColumns,
 		marks,
 	};
@@ -128,14 +147,75 @@ const RaceDetailContainer = ({ race }: Props) => {
 		}
 	};
 
+	const handleNoteClick = (horseId: number) => {
+		const entry = entries.find((e) => e.horse_id === horseId);
+		if (entry == null) {
+			return;
+		}
+		setNoteModal({
+			open: true,
+			horseId: entry.horse_id,
+			horseName: entry.horse_name,
+		});
+	};
+
+	const handleNoteClose = () => {
+		setNoteModal((current) => ({ ...current, open: false }));
+	};
+
+	const handleNoteSuccess = (note: HorseNote) => {
+		setEntries((current) =>
+			current.map((entry) => {
+				if (entry.horse_id !== note.horse_id) {
+					return entry;
+				}
+				return {
+					...entry,
+					note: {
+						id: note.id,
+						content: note.content,
+						source: note.race_id != null ? "race" : "horse",
+					},
+				};
+			}),
+		);
+	};
+
+	const selectedEntry =
+		noteModal.horseId != null
+			? entries.find((e) => e.horse_id === noteModal.horseId)
+			: undefined;
+	const selectedNote = selectedEntry?.note ?? null;
+
 	return (
-		<RaceDetail
-			race={localRace}
-			onMarkChange={handleMarkChange}
-			onAddOtherColumn={handleAddOtherColumn}
-			onRemoveOtherColumn={handleRemoveOtherColumn}
-			onChangeColumnLabel={handleChangeColumnLabel}
-		/>
+		<>
+			<RaceDetail
+				race={localRace}
+				onMarkChange={handleMarkChange}
+				onAddOtherColumn={handleAddOtherColumn}
+				onRemoveOtherColumn={handleRemoveOtherColumn}
+				onChangeColumnLabel={handleChangeColumnLabel}
+				onNoteClick={handleNoteClick}
+			/>
+			{noteModal.horseId != null && (
+				<HorseNoteModalContainer
+					open={noteModal.open}
+					mode={selectedNote != null ? "edit" : "create"}
+					horseId={noteModal.horseId}
+					horseName={noteModal.horseName}
+					noteId={selectedNote?.id}
+					initialContent={selectedNote?.content ?? ""}
+					raceId={selectedNote != null ? null : (race.id ?? null)}
+					raceContext={
+						selectedNote != null && selectedNote.source === "horse"
+							? { type: "none" }
+							: { type: "fixed", label: buildRaceLabel(race) }
+					}
+					onClose={handleNoteClose}
+					onSuccess={handleNoteSuccess}
+				/>
+			)}
+		</>
 	);
 };
 

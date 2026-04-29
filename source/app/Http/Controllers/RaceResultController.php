@@ -8,6 +8,7 @@ use App\UseCases\RaceResult\ShowAction;
 use App\UseCases\RaceResult\ShowResultAction;
 use App\UseCases\RaceResult\StoreAction;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -31,10 +32,10 @@ class RaceResultController extends Controller
         return redirect()->route('tickets.index');
     }
 
-    public function edit(string $uid, ShowResultAction $action): Response
+    public function edit(string $uid, Request $request, ShowResultAction $action): Response
     {
         return Inertia::render('races/result/edit', [
-            'race' => $action->execute($uid),
+            'race' => $action->execute($uid, $request->user()),
         ]);
     }
 }

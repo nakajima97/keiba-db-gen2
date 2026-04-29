@@ -1,9 +1,12 @@
-import { Head, usePage } from "@inertiajs/react";
-import RaceResultDetail from "@/features/raceResult/presentational/RaceResultDetail";
+import RaceResultDetailContainer from "@/features/raceResult/containers/RaceResultDetailContainer";
 import type { RaceResultDetailProps } from "@/features/raceResult/presentational/RaceResultDetail";
+import { Head, usePage } from "@inertiajs/react";
 
 type RaceResultEditProps = {
-	race: RaceResultDetailProps["race"];
+	race: RaceResultDetailProps["race"] & {
+		id?: number;
+		race_name?: string | null;
+	};
 };
 
 const RaceResultEdit = () => {
@@ -12,7 +15,7 @@ const RaceResultEdit = () => {
 	return (
 		<>
 			<Head title="レース結果" />
-			<RaceResultDetail race={race} />
+			<RaceResultDetailContainer race={race} />
 		</>
 	);
 };
