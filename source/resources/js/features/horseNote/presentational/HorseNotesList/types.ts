@@ -13,4 +13,5 @@ export type HorseNotesListProps = {
 	notes: HorseNoteListItem[];
 	onAddClick: () => void;
 	onEditClick: (noteId: number) => void;
+	onDeleteClick: (noteId: number) => void;
 };

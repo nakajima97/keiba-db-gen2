@@ -10,3 +10,4 @@
 | GET | `/api/horses/{horse}/notes` | 認証ユーザーが所有する当該馬の全メモ（レース紐づきあり・なし含む）を取得する。 | 必要 |
 | POST | `/api/horses/{horse}/notes` | 競走馬に対するメモを作成する（race_id は任意、null可）。 | 必要 |
 | PUT | `/api/horse-notes/{note}` | メモ本文を更新する（content のみ更新可能）。 | 必要 |
+| DELETE | `/api/horse-notes/{note}` | メモを物理削除する（自分のメモのみ削除可能、他ユーザー所有のメモは 403）。 | 必要 |
