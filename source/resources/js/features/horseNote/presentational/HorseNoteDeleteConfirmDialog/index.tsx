@@ -13,7 +13,7 @@ import type { HorseNoteDeleteConfirmDialogProps } from "./types";
 
 const HorseNoteDeleteConfirmDialog = ({
 	open,
-	noteContentPreview,
+	noteContent,
 	submitting,
 	errorMessage,
 	onOpenChange,
@@ -30,9 +30,9 @@ const HorseNoteDeleteConfirmDialog = ({
 				</DialogHeader>
 
 				<div className="flex flex-col gap-4">
-					<div className="rounded-md border bg-muted/40 p-3">
+					<div className="max-h-48 overflow-y-auto rounded-md border bg-muted/40 p-3">
 						<p className="whitespace-pre-wrap break-words text-sm text-muted-foreground">
-							{noteContentPreview}
+							{noteContent}
 						</p>
 					</div>
 

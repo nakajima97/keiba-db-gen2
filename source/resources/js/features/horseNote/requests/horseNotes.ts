@@ -31,7 +31,16 @@ export class HorseNoteRequestError extends Error {
 	}
 }
 
-const extractErrorMessage = async (response: Response): Promise<string> => {
+/**
+ * 対象が存在しない（404）ときに表示するメッセージ。
+ * 別タブ等で先に削除されたメモへ更新・削除を行ったケースを想定する。
+ */
+const NOTE_NOT_FOUND_MESSAGE =
+	"対象のメモが見つかりません。すでに削除された可能性があります。";
+
+export const extractErrorMessage = async (
+	response: Response,
+): Promise<string> => {
 	if (response.status === 422) {
 		try {
 			const json = (await response.json()) as ValidationErrorBody;
@@ -45,6 +54,9 @@ const extractErrorMessage = async (response: Response): Promise<string> => {
 		} catch (_e) {
 			// JSON parse 失敗時はフォールバック
 		}
+	}
+	if (response.status === 404) {
+		return NOTE_NOT_FOUND_MESSAGE;
 	}
 	return `Request failed: ${response.status}`;
 };

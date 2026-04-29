@@ -29,7 +29,7 @@ type EditTarget = {
 
 type DeleteTarget = {
 	id: number;
-	contentPreview: string;
+	content: string;
 };
 
 /**
@@ -100,7 +100,7 @@ const HorseNotesListContainer = ({
 		}
 		setDeleteTarget({
 			id: target.id,
-			contentPreview: target.content,
+			content: target.content,
 		});
 		setDeleteErrorMessage(null);
 		setDeleteOpen(true);
@@ -129,6 +129,14 @@ const HorseNotesListContainer = ({
 			setDeleteOpen(false);
 			setDeleteTarget(null);
 		} catch (e) {
+			// 別タブ等で先に削除済みのケース。サーバ実態に合わせ一覧からも除去して案内する。
+			if (e instanceof HorseNoteRequestError && e.status === 404) {
+				setNotes((current) => current.filter((n) => n.id !== deleteTarget.id));
+				setDeleteOpen(false);
+				setDeleteTarget(null);
+				toast.info("対象のメモは既に削除されています。");
+				return;
+			}
 			const message =
 				e instanceof HorseNoteRequestError
 					? e.message
@@ -196,7 +204,7 @@ const HorseNotesListContainer = ({
 			/>
 			<HorseNoteDeleteConfirmDialog
 				open={deleteOpen}
-				noteContentPreview={deleteTarget?.contentPreview ?? ""}
+				noteContent={deleteTarget?.content ?? ""}
 				submitting={deleteSubmitting}
 				errorMessage={deleteErrorMessage}
 				onOpenChange={handleDeleteOpenChange}

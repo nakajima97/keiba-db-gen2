@@ -6,7 +6,7 @@ import type { HorseNoteDeleteConfirmDialogProps } from "./types";
 
 const baseProps: HorseNoteDeleteConfirmDialogProps = {
 	open: true,
-	noteContentPreview: "削除対象メモの本文プレビュー",
+	noteContent: "削除対象メモの本文",
 	submitting: false,
 	errorMessage: null,
 	onOpenChange: () => {},
@@ -33,17 +33,17 @@ describe("HorseNoteDeleteConfirmDialog", () => {
 	});
 
 	describe("コンテンツ表示", () => {
-		it("noteContentPreview に指定したメモ本文プレビューが表示される", () => {
+		it("noteContent に指定したメモ本文が表示される", () => {
 			// Act
 			render(
 				<HorseNoteDeleteConfirmDialog
 					{...baseProps}
-					noteContentPreview="プレビュー本文テキスト"
+					noteContent="表示用の本文テキスト"
 				/>,
 			);
 
 			// Assert
-			expect(screen.getByText("プレビュー本文テキスト")).toBeInTheDocument();
+			expect(screen.getByText("表示用の本文テキスト")).toBeInTheDocument();
 		});
 	});
 

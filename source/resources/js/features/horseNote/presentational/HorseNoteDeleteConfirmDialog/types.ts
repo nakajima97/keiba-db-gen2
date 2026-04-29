@@ -1,6 +1,6 @@
 export type HorseNoteDeleteConfirmDialogProps = {
 	open: boolean;
-	noteContentPreview: string;
+	noteContent: string;
 	submitting: boolean;
 	errorMessage: string | null;
 	onOpenChange: (open: boolean) => void;
