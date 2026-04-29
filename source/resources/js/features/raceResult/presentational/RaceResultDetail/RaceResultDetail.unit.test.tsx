@@ -90,4 +90,25 @@ describe("RaceResultDetail", () => {
 		const link = screen.getByRole("link", { name: "テスト馬A" });
 		expect(link).toHaveAttribute("href", "/horses/7");
 	});
+
+	describe("戻るボタン", () => {
+		it("「購入馬券一覧へ戻る」テキストのリンクが表示される", () => {
+			// Act
+			render(<RaceResultDetail {...baseProps} />);
+
+			// Assert
+			expect(
+				screen.getByRole("link", { name: "購入馬券一覧へ戻る" }),
+			).toBeInTheDocument();
+		});
+
+		it("「購入馬券一覧へ戻る」リンクの href が `/tickets` になっている", () => {
+			// Act
+			render(<RaceResultDetail {...baseProps} />);
+
+			// Assert
+			const link = screen.getByRole("link", { name: "購入馬券一覧へ戻る" });
+			expect(link).toHaveAttribute("href", "/tickets");
+		});
+	});
 });

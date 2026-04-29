@@ -3,7 +3,18 @@ import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi } from "vitest";
 import RaceResultForm from "./index";
 
+vi.mock("@inertiajs/react", () => ({
+	Link: ({
+		href,
+		children,
+	}: {
+		href: string;
+		children: React.ReactNode;
+	}) => <a href={href}>{children}</a>,
+}));
+
 const baseProps = {
+	raceUid: "test-race-uid",
 	venueName: "東京",
 	raceDate: "2026-04-05",
 	raceNumber: 1,
@@ -200,6 +211,30 @@ describe("RaceResultForm", () => {
 
 			// Assert
 			expect(screen.getByRole("button", { name: "保存中..." })).toBeDisabled();
+		});
+	});
+
+	describe("戻るボタン", () => {
+		it("「レース結果へ戻る」テキストのリンクが表示される", () => {
+			// Act
+			render(<RaceResultForm {...baseProps} />);
+
+			// Assert
+			expect(
+				screen.getByRole("link", { name: "レース結果へ戻る" }),
+			).toBeInTheDocument();
+		});
+
+		it("「レース結果へ戻る」リンクの href が `/races/{raceUid}/result/edit` になっている", () => {
+			// Act
+			render(<RaceResultForm {...baseProps} />);
+
+			// Assert
+			const link = screen.getByRole("link", { name: "レース結果へ戻る" });
+			expect(link).toHaveAttribute(
+				"href",
+				"/races/test-race-uid/result/edit",
+			);
 		});
 	});
 });
