@@ -6,10 +6,12 @@ import HorseNoteIconButton from "@/features/horseNote/presentational/HorseNoteIc
 import { formatDateDisplay } from "@/utils/date";
 import RaceMarkSelect from "./RaceMarkSelect";
 import RaceMarkColumnHeader from "./RaceMarkColumnHeader";
+import RaceMarkMemoIcon from "./RaceMarkMemoIcon";
 import type {
 	MarkValue,
 	RaceDetailProps,
 	RaceMarkColumn,
+	RaceMarkMemo,
 	RaceMarkValue,
 } from "./types";
 
@@ -24,6 +26,16 @@ const findMarkValue = (
 	return found ? found.mark_value : null;
 };
 
+const hasMarkMemo = (
+	memos: RaceMarkMemo[],
+	columnId: number,
+	raceEntryId: number,
+): boolean => {
+	return memos.some(
+		(m) => m.column_id === columnId && m.race_entry_id === raceEntryId,
+	);
+};
+
 const sortColumns = (columns: RaceMarkColumn[]): RaceMarkColumn[] => {
 	return [...columns].sort((a, b) => a.display_order - b.display_order);
 };
@@ -35,6 +47,7 @@ const RaceDetail = ({
 	onRemoveOtherColumn,
 	onChangeColumnLabel,
 	onNoteClick,
+	onMarkMemoClick,
 }: RaceDetailProps) => {
 	const sortedColumns = sortColumns(race.mark_columns);
 
@@ -147,23 +160,53 @@ const RaceDetail = ({
 							<td className="px-4 py-3">
 								{entry.weight !== null ? `${entry.weight}kg` : "-"}
 							</td>
-							{sortedColumns.map((column) => (
-								<td key={column.id} className="px-4 py-3">
-									<RaceMarkSelect
-										value={findMarkValue(race.marks, column.id, entry.id)}
-										ariaLabel={`${entry.horse_name}の印（${
-											column.type === "own" ? "自分" : (column.label ?? "他人")
-										}）`}
-										onChange={(markValue) =>
-											onMarkChange({
-												columnId: column.id,
-												raceEntryId: entry.id,
-												markValue,
-											})
-										}
-									/>
-								</td>
-							))}
+							{sortedColumns.map((column) => {
+								const markValue = findMarkValue(
+									race.marks,
+									column.id,
+									entry.id,
+								);
+								const memoExists = hasMarkMemo(
+									race.mark_memos ?? [],
+									column.id,
+									entry.id,
+								);
+								const showMemoIcon =
+									column.type === "other" && (markValue !== null || memoExists);
+								return (
+									<td key={column.id} className="px-4 py-3">
+										<div className="flex items-center gap-1">
+											<RaceMarkSelect
+												value={markValue}
+												ariaLabel={`${entry.horse_name}の印（${
+													column.type === "own"
+														? "自分"
+														: (column.label ?? "他人")
+												}）`}
+												onChange={(nextMarkValue) =>
+													onMarkChange({
+														columnId: column.id,
+														raceEntryId: entry.id,
+														markValue: nextMarkValue,
+													})
+												}
+											/>
+											{showMemoIcon && (
+												<RaceMarkMemoIcon
+													state={memoExists ? "edit" : "add"}
+													ariaLabel={`${entry.horse_name}の${column.label ?? "他人"}の印メモ`}
+													onClick={() =>
+														onMarkMemoClick?.({
+															columnId: column.id,
+															raceEntryId: entry.id,
+														})
+													}
+												/>
+											)}
+										</div>
+									</td>
+								);
+							})}
 						</tr>
 					))}
 				</tbody>
@@ -179,5 +222,6 @@ export type {
 	RaceDetailProps,
 	MarkValue,
 	RaceMarkColumn,
+	RaceMarkMemo,
 	RaceMarkValue,
 } from "./types";

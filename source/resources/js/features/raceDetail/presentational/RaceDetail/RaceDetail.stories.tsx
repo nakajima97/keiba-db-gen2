@@ -12,6 +12,7 @@ const meta: Meta<typeof RaceDetail> = {
 		onRemoveOtherColumn: fn(),
 		onChangeColumnLabel: fn(),
 		onNoteClick: fn(),
+		onMarkMemoClick: fn(),
 	},
 };
 
@@ -227,6 +228,85 @@ export const WithNotesMobile: Story = {
 			marks: [
 				{ column_id: 100, race_entry_id: 1, mark_value: "◎" },
 				{ column_id: 100, race_entry_id: 2, mark_value: "○" },
+			],
+		},
+	},
+};
+
+export const WithMarkMemos: Story = {
+	name: "印メモアイコンあり（他人列のみ・印あり/メモあり/印消したケース混在）",
+	args: {
+		race: {
+			...emptyMarksRace,
+			mark_columns: ownAndTwoOtherColumns,
+			marks: [
+				// 自分列(own)：印メモアイコンは出ない
+				{ column_id: 100, race_entry_id: 1, mark_value: "◎" },
+				{ column_id: 100, race_entry_id: 2, mark_value: "○" },
+				// 他人列1(予想家Aさん)
+				{ column_id: 101, race_entry_id: 1, mark_value: "◎" }, // 印あり・メモあり → 濃いアイコン
+				{ column_id: 101, race_entry_id: 2, mark_value: "○" }, // 印あり・メモなし → 薄いアイコン
+				{ column_id: 101, race_entry_id: 3, mark_value: "▲" }, // 印あり・メモなし → 薄いアイコン
+				// race_entry_id: 4 → 印なし・メモなし → アイコン非表示
+				// 他人列2(父親)
+				{ column_id: 102, race_entry_id: 2, mark_value: "◎" }, // 印あり・メモあり → 濃いアイコン
+				// race_entry_id: 1 → 印なし・メモあり（過去に印を消した）→ 濃いアイコン
+				// race_entry_id: 3 → 印なし・メモなし → 非表示
+				// race_entry_id: 4 → 印なし・メモなし → 非表示
+			],
+			mark_memos: [
+				{
+					column_id: 101,
+					race_entry_id: 1,
+					content: "内枠先行で展開ハマる想定。",
+				},
+				{
+					column_id: 102,
+					race_entry_id: 1,
+					content: "前走時点では本命視されていた。",
+				},
+				{
+					column_id: 102,
+					race_entry_id: 2,
+					content: "馬場が渋ればさらに有利。",
+				},
+				// 自分列(100)にはメモは付かない
+			],
+		},
+	},
+};
+
+export const WithMarkMemosMobile: Story = {
+	name: "印メモアイコンあり（モバイル）",
+	globals: {
+		viewport: { value: "mobile1", isRotated: false },
+	},
+	args: {
+		race: {
+			...emptyMarksRace,
+			mark_columns: ownAndTwoOtherColumns,
+			marks: [
+				{ column_id: 100, race_entry_id: 1, mark_value: "◎" },
+				{ column_id: 101, race_entry_id: 1, mark_value: "◎" },
+				{ column_id: 101, race_entry_id: 2, mark_value: "○" },
+				{ column_id: 102, race_entry_id: 2, mark_value: "◎" },
+			],
+			mark_memos: [
+				{
+					column_id: 101,
+					race_entry_id: 1,
+					content: "内枠先行で展開ハマる想定。",
+				},
+				{
+					column_id: 102,
+					race_entry_id: 1,
+					content: "前走時点では本命視されていた。",
+				},
+				{
+					column_id: 102,
+					race_entry_id: 2,
+					content: "馬場が渋ればさらに有利。",
+				},
 			],
 		},
 	},

@@ -4,6 +4,7 @@ namespace App\UseCases\Race;
 
 use App\Models\Race;
 use App\Models\RaceMarkColumn;
+use App\Models\RaceMarkMemo;
 use App\Models\User;
 use App\UseCases\HorseNote\LoadNotesByHorseId;
 use Carbon\CarbonInterface;
@@ -36,7 +37,8 @@ class ShowAction
      *         note: array{id: int, content: string, source: string}|null,
      *     }>,
      *     mark_columns: array<int, array{id: int, type: string, label: string|null, display_order: int}>,
-     *     marks: array<int, array{column_id: int, race_entry_id: int, mark_value: string}>
+     *     marks: array<int, array{column_id: int, race_entry_id: int, mark_value: string}>,
+     *     mark_memos: array<int, array{column_id: int, race_entry_id: int, content: string}>
      * }
      */
     public function execute(Race $race, User $user): array
@@ -67,6 +69,17 @@ class ShowAction
                 ];
             }
         }
+
+        $columnIds = $columns->pluck('id')->all();
+        $markMemos = RaceMarkMemo::query()
+            ->whereIn('race_mark_column_id', $columnIds)
+            ->get(['race_mark_column_id', 'race_entry_id', 'content'])
+            ->map(fn (RaceMarkMemo $memo): array => [
+                'column_id' => (int) $memo->race_mark_column_id,
+                'race_entry_id' => (int) $memo->race_entry_id,
+                'content' => (string) $memo->content,
+            ])
+            ->all();
 
         $horseIds = $race->raceEntries
             ->map(fn ($entry) => (int) $entry->horse->id)
@@ -102,6 +115,7 @@ class ShowAction
                 'display_order' => (int) $column->display_order,
             ])->all(),
             'marks' => $marks,
+            'mark_memos' => $markMemos,
         ];
     }
 
