@@ -17,7 +17,7 @@ describe("RaceMarkSelect", () => {
 			expect(screen.getByRole("option", { name: "―" })).toBeInTheDocument();
 		});
 
-		it("選択肢を開いたとき 6 種の印（◎ ○ ▲ △ × ✓）すべてが表示される", async () => {
+		it("選択肢を開いたとき 6 種の印（◎ ○ ▲ △ ☆ ✓）すべてが表示される", async () => {
 			// Arrange
 			const user = userEvent.setup();
 
@@ -30,7 +30,7 @@ describe("RaceMarkSelect", () => {
 			expect(screen.getByRole("option", { name: "○" })).toBeInTheDocument();
 			expect(screen.getByRole("option", { name: "▲" })).toBeInTheDocument();
 			expect(screen.getByRole("option", { name: "△" })).toBeInTheDocument();
-			expect(screen.getByRole("option", { name: "×" })).toBeInTheDocument();
+			expect(screen.getByRole("option", { name: "☆" })).toBeInTheDocument();
 			expect(screen.getByRole("option", { name: "✓" })).toBeInTheDocument();
 		});
 	});

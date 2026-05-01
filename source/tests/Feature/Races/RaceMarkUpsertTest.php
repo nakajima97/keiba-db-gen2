@@ -210,6 +210,50 @@ test('invalid mark_value returns 422', function () {
     $response->assertJsonValidationErrors(['mark_value']);
 });
 
+test('× mark_value is no longer accepted and returns 422', function () {
+    // Arrange
+    $user = User::factory()->create();
+    $race = createRaceForMarkUpsertTest();
+    $column = RaceMarkColumn::factory()
+        ->own()
+        ->create([
+            'race_id' => $race->id,
+            'user_id' => $user->id,
+        ]);
+    $raceEntryId = insertRaceEntryForUpsert($race->id);
+
+    // Act
+    $response = $this->actingAs($user)->putJson(markUpsertUrl($race->uid, $column->id, $raceEntryId), [
+        'mark_value' => '×',
+    ]);
+
+    // Assert
+    $response->assertUnprocessable();
+    $response->assertJsonValidationErrors(['mark_value']);
+});
+
+test('☆ mark_value can be set as dark horse mark', function () {
+    // Arrange
+    $user = User::factory()->create();
+    $race = createRaceForMarkUpsertTest();
+    $column = RaceMarkColumn::factory()
+        ->own()
+        ->create([
+            'race_id' => $race->id,
+            'user_id' => $user->id,
+        ]);
+    $raceEntryId = insertRaceEntryForUpsert($race->id);
+
+    // Act
+    $response = $this->actingAs($user)->putJson(markUpsertUrl($race->uid, $column->id, $raceEntryId), [
+        'mark_value' => '☆',
+    ]);
+
+    // Assert
+    $response->assertOk();
+    $response->assertJsonPath('data.mark_value', '☆');
+});
+
 test('null mark_value returns 422', function () {
     // Arrange
     $user = User::factory()->create();
