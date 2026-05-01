@@ -164,7 +164,7 @@ erDiagram
         bigint id PK
         bigint race_mark_column_id FK
         bigint race_entry_id FK
-        enum mark_value "◎/○/▲/△/×/✓"
+        enum mark_value "◎/○/▲/△/☆/✓"
         timestamp created_at
         timestamp updated_at
     }

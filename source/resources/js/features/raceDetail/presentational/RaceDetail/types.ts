@@ -1,11 +1,11 @@
-export type MarkValue = "◎" | "○" | "▲" | "△" | "×" | "✓";
+export type MarkValue = "◎" | "○" | "▲" | "△" | "☆" | "✓";
 
 export const MARK_VALUES: readonly MarkValue[] = [
 	"◎",
 	"○",
 	"▲",
 	"△",
-	"×",
+	"☆",
 	"✓",
 ] as const;
 
