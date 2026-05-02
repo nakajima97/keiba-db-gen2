@@ -40,7 +40,7 @@ erDiagram
         bigint id PK
         bigint race_id FK
         string ticket_type_name
-        int purchase_amount
+        int unit_stake
         int|null payout_amount
     }
 
