@@ -29,7 +29,7 @@ test('authenticated users can visit the dashboard', function () {
  * @param array{
  *   user_id: int,
  *   race_date: string,
- *   amount: int,
+ *   unit_stake: int,
  *   payout_amount: int|null,
  * } $params
  */
@@ -90,7 +90,7 @@ function createDashboardTicketPurchase(array $params): void
         'ticket_type_id' => $ticketTypeId,
         'buy_type_id' => $buyTypeId,
         'selections' => json_encode(['horses' => [1]]),
-        'amount' => $params['amount'],
+        'unit_stake' => $params['unit_stake'],
         'payout_amount' => $params['payout_amount'],
         'created_at' => $now,
         'updated_at' => $now,
@@ -120,7 +120,7 @@ test('購入記録がある場合 summary の各値が正しく計算されて�
     createDashboardTicketPurchase([
         'user_id' => $user->id,
         'race_date' => '2026-04-05',
-        'amount' => 1000,
+        'unit_stake' => 1000,
         'payout_amount' => 1500,
     ]);
 
@@ -181,7 +181,7 @@ test('日次データが日付ごとに正しく集計されて返る（同日�
             'ticket_type_id' => $ticketTypeId,
             'buy_type_id' => $buyTypeId,
             'selections' => json_encode(['horses' => [1]]),
-            'amount' => 500,
+            'unit_stake' => 500,
             'payout_amount' => 1000,
             'created_at' => $now,
             'updated_at' => $now,
@@ -192,7 +192,7 @@ test('日次データが日付ごとに正しく集計されて返る（同日�
             'ticket_type_id' => $ticketTypeId,
             'buy_type_id' => $buyTypeId,
             'selections' => json_encode(['horses' => [2]]),
-            'amount' => 300,
+            'unit_stake' => 300,
             'payout_amount' => 0,
             'created_at' => $now,
             'updated_at' => $now,
@@ -218,13 +218,13 @@ test('available_years に購入記録が存在する年がすべて含まれる'
     createDashboardTicketPurchase([
         'user_id' => $user->id,
         'race_date' => '2025-12-01',
-        'amount' => 100,
+        'unit_stake' => 100,
         'payout_amount' => 0,
     ]);
     createDashboardTicketPurchase([
         'user_id' => $user->id,
         'race_date' => '2026-04-05',
-        'amount' => 100,
+        'unit_stake' => 100,
         'payout_amount' => 0,
     ]);
 
@@ -245,13 +245,13 @@ test('year クエリパラメータを指定した場合、その年のデータ
     createDashboardTicketPurchase([
         'user_id' => $user->id,
         'race_date' => '2025-12-01',
-        'amount' => 500,
+        'unit_stake' => 500,
         'payout_amount' => 200,
     ]);
     createDashboardTicketPurchase([
         'user_id' => $user->id,
         'race_date' => '2026-04-05',
-        'amount' => 1000,
+        'unit_stake' => 1000,
         'payout_amount' => 1500,
     ]);
 
@@ -288,7 +288,7 @@ test('指定年以外の馬券データは daily_balances に含まれない', f
     createDashboardTicketPurchase([
         'user_id' => $user->id,
         'race_date' => '2025-12-01',
-        'amount' => 500,
+        'unit_stake' => 500,
         'payout_amount' => 200,
     ]);
 
@@ -308,7 +308,7 @@ test('payout_amount が null の馬券は 0 として集計される', function 
     createDashboardTicketPurchase([
         'user_id' => $user->id,
         'race_date' => '2026-04-05',
-        'amount' => 1000,
+        'unit_stake' => 1000,
         'payout_amount' => null,
     ]);
 
@@ -366,7 +366,7 @@ test('nagashi（流し）・2点の馬券: summary の total_purchase_amount が
         'ticket_type_id' => $ticketTypeId,
         'buy_type_id' => $buyTypeId,
         'selections' => json_encode(['axis' => [1], 'others' => [2, 3]]),
-        'amount' => 200,
+        'unit_stake' => 200,
         'payout_amount' => null,
         'created_at' => $now,
         'updated_at' => $now,
@@ -425,7 +425,7 @@ test('単複（tanpuku）の馬券: summary の total_purchase_amount が 単価
         'ticket_type_id' => $ticketTypeId,
         'buy_type_id' => $buyTypeId,
         'selections' => json_encode(['horses' => [1]]),
-        'amount' => 200,
+        'unit_stake' => 200,
         'payout_amount' => null,
         'created_at' => $now,
         'updated_at' => $now,
@@ -483,7 +483,7 @@ test('単複（tanpuku）の馬券: daily_balances の purchase_amount が 単�
         'ticket_type_id' => $ticketTypeId,
         'buy_type_id' => $buyTypeId,
         'selections' => json_encode(['horses' => [1]]),
-        'amount' => 200,
+        'unit_stake' => 200,
         'payout_amount' => null,
         'created_at' => $now,
         'updated_at' => $now,
@@ -505,19 +505,19 @@ test('daily_balances が日付降順で返される', function () {
     createDashboardTicketPurchase([
         'user_id' => $user->id,
         'race_date' => '2026-04-01',
-        'amount' => 100,
+        'unit_stake' => 100,
         'payout_amount' => 0,
     ]);
     createDashboardTicketPurchase([
         'user_id' => $user->id,
         'race_date' => '2026-04-03',
-        'amount' => 100,
+        'unit_stake' => 100,
         'payout_amount' => 0,
     ]);
     createDashboardTicketPurchase([
         'user_id' => $user->id,
         'race_date' => '2026-04-02',
-        'amount' => 100,
+        'unit_stake' => 100,
         'payout_amount' => 0,
     ]);
 
@@ -533,7 +533,7 @@ test('daily_balances が日付降順で返される', function () {
     );
 });
 
-test('amount が null の馬券は purchase_amount が 0 として集計される', function () {
+test('unit_stake が null の馬券は purchase_amount が 0 として集計される', function () {
     // Arrange
     $user = User::factory()->create();
     $now = now();
@@ -575,7 +575,7 @@ test('amount が null の馬券は purchase_amount が 0 として集計され�
         'ticket_type_id' => $ticketTypeId,
         'buy_type_id' => $buyTypeId,
         'selections' => json_encode(['horses' => [1]]),
-        'amount' => null,
+        'unit_stake' => null,
         'payout_amount' => null,
         'created_at' => $now,
         'updated_at' => $now,

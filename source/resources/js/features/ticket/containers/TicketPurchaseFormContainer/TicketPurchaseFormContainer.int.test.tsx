@@ -22,7 +22,7 @@ const defaultProps = {
 	initialAxisCount: 1 as const,
 	initialNagashiDirection: 1 as const,
 	initialHorses: { axis: [3], others: [1, 5, 7] },
-	initialAmount: 100,
+	initialUnitStake: 100,
 };
 
 describe("TicketPurchaseFormContainer", () => {

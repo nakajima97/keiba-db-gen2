@@ -15,7 +15,7 @@ export type TicketPurchaseFormProps = {
 	// 馬番選択
 	selectedHorses: Record<string, number[]>;
 	// 金額
-	amount: number;
+	unitStake: number;
 	// 送信中フラグ
 	processing: boolean;
 	// コールバック
@@ -27,5 +27,5 @@ export type TicketPurchaseFormProps = {
 	onAxisCountChange: (count: 1 | 2) => void;
 	onNagashiDirectionChange: (pos: 1 | 2 | 3) => void;
 	onHorsesChange: (groupKey: string, horses: number[]) => void;
-	onAmountChange: (amount: number) => void;
+	onUnitStakeChange: (unitStake: number) => void;
 };

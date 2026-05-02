@@ -13,7 +13,7 @@ class TicketPurchase extends Model
         'ticket_type_id',
         'buy_type_id',
         'selections',
-        'amount',
+        'unit_stake',
         'payout_amount',
     ];
 

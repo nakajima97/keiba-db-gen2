@@ -19,7 +19,7 @@ const baseArgs: TicketPurchaseFormProps = {
 	selectedAxisCount: 1,
 	selectedNagashiDirection: 1,
 	selectedHorses: { axis: [3], others: [1, 5, 7] },
-	amount: 100,
+	unitStake: 100,
 	onVenueChange: () => {},
 	onRaceDateChange: () => {},
 	onRaceNumberChange: () => {},
@@ -28,7 +28,7 @@ const baseArgs: TicketPurchaseFormProps = {
 	onAxisCountChange: () => {},
 	onNagashiDirectionChange: () => {},
 	onHorsesChange: () => {},
-	onAmountChange: () => {},
+	onUnitStakeChange: () => {},
 	processing: false,
 };
 

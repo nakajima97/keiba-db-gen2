@@ -9,8 +9,8 @@ use Illuminate\Database\Eloquent\Collection;
 /**
  * TicketPurchase の払い戻し金額を計算する。
  *
- * race_payouts が存在しない場合・amount が null の場合は null を返す。
- * 計算式: ヒット組み合わせの払戻合計（JRA公表・100円あたり）× (amount / (組み合わせ数 × 100))
+ * race_payouts が存在しない場合・unit_stake が null の場合は null を返す。
+ * 計算式: ヒット組み合わせの払戻合計（JRA公表・100円あたり）× (unit_stake / (組み合わせ数 × 100))
  */
 class CalculatePayoutAmountAction
 {
@@ -18,11 +18,11 @@ class CalculatePayoutAmountAction
 
     /**
      * 対象の TicketPurchase の払い戻し金額を計算して返す。
-     * race_payouts が存在しない場合・amount が null の場合は null を返す。
+     * race_payouts が存在しない場合・unit_stake が null の場合は null を返す。
      */
     public function execute(TicketPurchase $purchase): ?int
     {
-        if ($purchase->amount === null) {
+        if ($purchase->unit_stake === null) {
             return null;
         }
 
@@ -78,7 +78,7 @@ class CalculatePayoutAmountAction
 
         $numCombinations = count($combinations);
 
-        return (int) ($totalPayout * $purchase->amount / ($numCombinations * 100));
+        return (int) ($totalPayout * $purchase->unit_stake / ($numCombinations * 100));
     }
 
     /**

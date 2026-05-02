@@ -29,7 +29,7 @@ class IndexAction
      *     buy_type_name: string,
      *     selections: array<mixed>|null,
      *     num_combinations: int,
-     *     amount: int|null,
+     *     purchase_amount: int|null,
      *     payout_amount: int|null,
      *   }>,
      *   nextCursor: string|null,
@@ -46,7 +46,7 @@ class IndexAction
             ->select([
                 'ticket_purchases.id',
                 'ticket_purchases.selections',
-                'ticket_purchases.amount',
+                'ticket_purchases.unit_stake',
                 'ticket_purchases.payout_amount',
                 'races.uid as race_uid',
                 'races.race_date',
@@ -80,7 +80,7 @@ class IndexAction
                 'buy_type_name' => $purchase->buy_type_name,
                 'selections' => $purchase->selections,
                 'num_combinations' => $numCombinations,
-                'amount' => $purchase->amount !== null ? $purchase->amount * $numCombinations : null,
+                'purchase_amount' => $purchase->unit_stake !== null ? $purchase->unit_stake * $numCombinations : null,
                 'payout_amount' => $purchase->payout_amount !== null ? (int) $purchase->payout_amount : null,
             ];
         });

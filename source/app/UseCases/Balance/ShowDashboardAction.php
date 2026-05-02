@@ -59,7 +59,7 @@ class ShowDashboardAction
             ->whereRaw('YEAR(races.race_date) = ?', [$selectedYear])
             ->orderBy('races.race_date')
             ->selectRaw('DATE_FORMAT(races.race_date, "%Y-%m-%d") as date')
-            ->selectRaw('ticket_purchases.amount as amount')
+            ->selectRaw('ticket_purchases.unit_stake as unit_stake')
             ->selectRaw('COALESCE(ticket_purchases.payout_amount, 0) as payout_amount')
             ->selectRaw('ticket_purchases.selections as selections')
             ->selectRaw('ticket_types.name as ticket_type_name')
@@ -72,8 +72,8 @@ class ShowDashboardAction
             $date = (string) $row->date;
             $selections = json_decode((string) $row->selections, true);
 
-            $purchaseAmount = $row->amount !== null
-                ? (int) $row->amount * count($this->expandSelections->execute(
+            $purchaseAmount = $row->unit_stake !== null
+                ? (int) $row->unit_stake * count($this->expandSelections->execute(
                     (string) $row->ticket_type_name,
                     (string) $row->buy_type_name,
                     is_array($selections) ? $selections : null,

@@ -29,7 +29,7 @@ class StoreTicketPurchaseRequest extends FormRequest
             'ticket_type' => ['required', 'string', 'exists:ticket_types,name'],
             'buy_type' => ['required', 'string', 'exists:buy_types,name'],
             'selections' => ['required', 'array'],
-            'amount' => ['nullable', 'integer', 'min:100'],
+            'unit_stake' => ['nullable', 'integer', 'min:100'],
         ];
     }
 }

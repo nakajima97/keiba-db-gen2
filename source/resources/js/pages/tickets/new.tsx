@@ -23,7 +23,7 @@ const TicketsNew = () => {
 				initialAxisCount={1}
 				initialNagashiDirection={1}
 				initialHorses={{}}
-				initialAmount={100}
+				initialUnitStake={100}
 			/>
 		</>
 	);

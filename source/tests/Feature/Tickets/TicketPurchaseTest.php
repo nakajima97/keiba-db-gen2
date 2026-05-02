@@ -39,7 +39,7 @@ test('authenticated user can purchase a ticket', function () {
         'ticket_type' => 'umaren',
         'buy_type' => 'nagashi',
         'selections' => ['axis' => [3], 'others' => [1, 5, 7]],
-        'amount' => 100,
+        'unit_stake' => 100,
     ]);
 
     // Assert
@@ -53,7 +53,7 @@ test('authenticated user can purchase a ticket', function () {
         'race_id' => $race->id,
         'ticket_type_id' => $ticketType,
         'buy_type_id' => $buyType,
-        'amount' => 100,
+        'unit_stake' => 100,
     ]);
 });
 
@@ -93,7 +93,7 @@ test('単複で馬券購入を記録できる', function () {
         'ticket_type' => 'tanpuku',
         'buy_type' => 'single',
         'selections' => ['horses' => [5]],
-        'amount' => 200,
+        'unit_stake' => 200,
     ]);
 
     // Assert
@@ -107,7 +107,7 @@ test('単複で馬券購入を記録できる', function () {
         'race_id' => $race->id,
         'ticket_type_id' => $ticketType,
         'buy_type_id' => $buyType,
-        'amount' => 200,
+        'unit_stake' => 200,
     ]);
 });
 
@@ -174,7 +174,7 @@ test('レース結果登録済みの場合、馬券購入時に payout_amount �
         'ticket_type' => 'tansho',
         'buy_type' => 'single',
         'selections' => ['horses' => [3]],
-        'amount' => 100,
+        'unit_stake' => 100,
     ]);
 
     // Assert
