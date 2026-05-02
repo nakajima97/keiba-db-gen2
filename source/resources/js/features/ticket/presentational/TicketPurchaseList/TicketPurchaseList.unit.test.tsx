@@ -29,7 +29,7 @@ const samplePurchase: TicketPurchaseListItem = {
 	buy_type_name: "nagashi",
 	selections: { axis: [1], others: [2, 4, 6] },
 	num_combinations: 3,
-	amount: 100,
+	unit_stake: 100,
 	payout_amount: 500,
 };
 
@@ -110,11 +110,11 @@ describe("TicketPurchaseList", () => {
 			expect(screen.getByText("-")).toBeInTheDocument();
 		});
 
-		it("amount が null のとき「-」が表示される", () => {
+		it("unit_stake が null のとき「-」が表示される", () => {
 			// Arrange
 			const purchaseWithNullAmount: TicketPurchaseListItem = {
 				...samplePurchase,
-				amount: null,
+				unit_stake: null,
 				race_uid: "sample-uid",
 			};
 
