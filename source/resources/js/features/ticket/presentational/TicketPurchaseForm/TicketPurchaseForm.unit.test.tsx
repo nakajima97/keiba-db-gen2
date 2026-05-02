@@ -19,7 +19,7 @@ const baseProps: TicketPurchaseFormProps = {
 	selectedAxisCount: 1,
 	selectedNagashiDirection: 1,
 	selectedHorses: { axis: [3], others: [1, 5, 7] },
-	amount: 100,
+	unit_stake: 100,
 	onVenueChange: noop,
 	onRaceDateChange: noop,
 	onRaceNumberChange: noop,
@@ -28,7 +28,7 @@ const baseProps: TicketPurchaseFormProps = {
 	onAxisCountChange: noop,
 	onNagashiDirectionChange: noop,
 	onHorsesChange: noop,
-	onAmountChange: noop,
+	onUnitStakeChange: noop,
 	processing: false,
 };
 

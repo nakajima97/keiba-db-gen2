@@ -22,7 +22,7 @@ const TicketPurchaseForm = ({
 	selectedAxisCount,
 	selectedNagashiDirection,
 	selectedHorses,
-	amount,
+	unit_stake,
 	processing,
 	onVenueChange,
 	onRaceDateChange,
@@ -32,7 +32,7 @@ const TicketPurchaseForm = ({
 	onAxisCountChange,
 	onNagashiDirectionChange,
 	onHorsesChange,
-	onAmountChange,
+	onUnitStakeChange,
 }: TicketPurchaseFormProps) => {
 	return (
 		<div className="mx-auto max-w-2xl space-y-8 p-4">
@@ -75,7 +75,7 @@ const TicketPurchaseForm = ({
 						variant="outline"
 						size="icon"
 						aria-label="100円減らす"
-						onClick={() => onAmountChange(Math.max(100, amount - 100))}
+						onClick={() => onUnitStakeChange(Math.max(100, unit_stake - 100))}
 					>
 						−
 					</Button>
@@ -83,12 +83,12 @@ const TicketPurchaseForm = ({
 						type="number"
 						min={100}
 						step={100}
-						value={amount}
+						value={unit_stake}
 						className="w-28 text-center"
 						aria-label="購入金額（円）"
 						onChange={(e) => {
 							const n = Number.parseInt(e.target.value, 10);
-							if (n >= 100) onAmountChange(n);
+							if (n >= 100) onUnitStakeChange(n);
 						}}
 					/>
 					<span className="text-sm text-muted-foreground">円</span>
@@ -97,7 +97,7 @@ const TicketPurchaseForm = ({
 						variant="outline"
 						size="icon"
 						aria-label="100円増やす"
-						onClick={() => onAmountChange(amount + 100)}
+						onClick={() => onUnitStakeChange(unit_stake + 100)}
 					>
 						＋
 					</Button>
@@ -108,7 +108,7 @@ const TicketPurchaseForm = ({
 								type="button"
 								variant="secondary"
 								size="sm"
-								onClick={() => onAmountChange(preset)}
+								onClick={() => onUnitStakeChange(preset)}
 							>
 								{preset.toLocaleString()}円
 							</Button>

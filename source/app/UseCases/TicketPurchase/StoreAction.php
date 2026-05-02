@@ -42,7 +42,7 @@ class StoreAction
             'ticket_type_id' => $ticketTypeId,
             'buy_type_id' => $buyTypeId,
             'selections' => $data['selections'],
-            'amount' => $data['amount'] ?? null,
+            'unit_stake' => $data['unit_stake'] ?? null,
         ]);
 
         if ($raceId !== null && RacePayout::where('race_id', $raceId)->exists()) {

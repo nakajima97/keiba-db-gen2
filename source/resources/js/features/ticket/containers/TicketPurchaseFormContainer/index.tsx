@@ -16,7 +16,7 @@ export type TicketPurchaseFormContainerProps = {
 	initialAxisCount: 1 | 2;
 	initialNagashiDirection: 1 | 2 | 3;
 	initialHorses: Record<string, number[]>;
-	initialAmount: number;
+	initialUnitStake: number;
 };
 
 const TicketPurchaseFormContainer = ({
@@ -28,7 +28,7 @@ const TicketPurchaseFormContainer = ({
 	initialAxisCount,
 	initialNagashiDirection,
 	initialHorses,
-	initialAmount,
+	initialUnitStake,
 }: TicketPurchaseFormContainerProps) => {
 	const [selectedVenue, setSelectedVenue] = useState(initialVenue);
 	const [selectedRaceDate, setSelectedRaceDate] = useState(initialRaceDate);
@@ -45,7 +45,7 @@ const TicketPurchaseFormContainer = ({
 	>(initialNagashiDirection);
 	const [selectedHorses, setSelectedHorses] =
 		useState<Record<string, number[]>>(initialHorses);
-	const [amount, setAmount] = useState(initialAmount);
+	const [unitStake, setUnitStake] = useState(initialUnitStake);
 
 	const { isSubmitting, handleSubmit: submit } = useFormSubmit({
 		url: "/tickets",
@@ -82,7 +82,7 @@ const TicketPurchaseFormContainer = ({
 			ticket_type: selectedTicketTypeId,
 			buy_type: selectedBuyTypeId,
 			selections: selectedHorses,
-			amount,
+			unit_stake: unitStake,
 		});
 	};
 
@@ -97,7 +97,7 @@ const TicketPurchaseFormContainer = ({
 				selectedAxisCount={selectedAxisCount}
 				selectedNagashiDirection={selectedNagashiDirection}
 				selectedHorses={selectedHorses}
-				amount={amount}
+				unit_stake={unitStake}
 				processing={isSubmitting}
 				onVenueChange={setSelectedVenue}
 				onRaceDateChange={setSelectedRaceDate}
@@ -109,7 +109,7 @@ const TicketPurchaseFormContainer = ({
 				onHorsesChange={(groupKey, horses) =>
 					setSelectedHorses((prev) => ({ ...prev, [groupKey]: horses }))
 				}
-				onAmountChange={setAmount}
+				onUnitStakeChange={setUnitStake}
 			/>
 		</form>
 	);
