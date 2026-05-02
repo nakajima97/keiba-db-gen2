@@ -16,7 +16,7 @@ export type TicketPurchaseListItem = {
 	buy_type_name: "single" | "nagashi" | "box" | "formation";
 	selections: Selections;
 	num_combinations: number;
-	unit_stake: number | null;
+	purchase_amount: number | null;
 	payout_amount: number | null;
 };
 

@@ -15,7 +15,7 @@ vi.mock("@inertiajs/react", () => ({
 					ticket_type_label: "馬連",
 					buy_type_name: "nagashi",
 					selections: { axis: [1], others: [2, 4, 6] },
-					unit_stake: 100,
+					purchase_amount: 100,
 					payout_amount: null,
 				},
 			],

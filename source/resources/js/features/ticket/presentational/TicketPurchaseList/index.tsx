@@ -82,8 +82,8 @@ const TicketPurchaseList = ({
 										{purchase.num_combinations}
 									</td>
 									<td className="px-4 py-3 text-right">
-										{purchase.unit_stake != null
-											? `¥${purchase.unit_stake.toLocaleString()}`
+										{purchase.purchase_amount != null
+											? `¥${purchase.purchase_amount.toLocaleString()}`
 											: "-"}
 									</td>
 									<td className="px-4 py-3 text-right">

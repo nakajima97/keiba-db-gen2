@@ -29,7 +29,7 @@ class IndexAction
      *     buy_type_name: string,
      *     selections: array<mixed>|null,
      *     num_combinations: int,
-     *     unit_stake: int|null,
+     *     purchase_amount: int|null,
      *     payout_amount: int|null,
      *   }>,
      *   nextCursor: string|null,
@@ -80,7 +80,7 @@ class IndexAction
                 'buy_type_name' => $purchase->buy_type_name,
                 'selections' => $purchase->selections,
                 'num_combinations' => $numCombinations,
-                'unit_stake' => $purchase->unit_stake !== null ? $purchase->unit_stake * $numCombinations : null,
+                'purchase_amount' => $purchase->unit_stake !== null ? $purchase->unit_stake * $numCombinations : null,
                 'payout_amount' => $purchase->payout_amount !== null ? (int) $purchase->payout_amount : null,
             ];
         });

@@ -15,7 +15,7 @@ export type TicketPurchaseFormProps = {
 	// 馬番選択
 	selectedHorses: Record<string, number[]>;
 	// 金額
-	unit_stake: number;
+	unitStake: number;
 	// 送信中フラグ
 	processing: boolean;
 	// コールバック
