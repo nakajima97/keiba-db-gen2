@@ -4,10 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Race\StoreRaceRequest;
 use App\Models\Race;
-use App\Models\Venue;
+use App\UseCases\Race\CreateAction;
+use App\UseCases\Race\IndexAction;
 use App\UseCases\Race\ShowAction;
 use App\UseCases\Race\StoreAction;
-use Carbon\CarbonInterface;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -15,49 +15,28 @@ use Inertia\Response;
 
 class RaceController extends Controller
 {
-    public function index(Request $request): Response
+    public function index(Request $request, IndexAction $action): Response
     {
         $venueId = $request->query('venue_id');
         $raceDate = $request->query('race_date');
 
-        return Inertia::render('races/index', [
-            'races' => $raceDate ? Race::query()
-                ->with('venue')
-                ->where('race_date', $raceDate)
-                ->when($venueId, fn ($q, $id) => $q->where('venue_id', $id))
-                ->orderBy('venue_id')
-                ->orderBy('race_number')
-                ->get()
-                ->map(fn (Race $race) => [
-                    'uid' => $race->uid,
-                    'race_date' => $race->race_date instanceof CarbonInterface
-                        ? $race->race_date->format('Y-m-d')
-                        : (string) $race->race_date,
-                    'venue_name' => $race->venue->name,
-                    'race_number' => $race->race_number,
-                    'race_name' => $race->race_name,
-                ]) : [],
-            'venues' => $raceDate
-                ? Venue::query()
-                    ->whereHas('races', fn ($q) => $q->where('race_date', $raceDate))
-                    ->orderBy('id')
-                    ->get(['id', 'name'])
-                : collect(),
-            'filters' => [
-                'race_date' => $raceDate,
-                'venue_id' => $venueId !== null ? (int) $venueId : null,
-            ],
-        ]);
+        return Inertia::render('races/index', $action->execute(
+            $raceDate !== null ? (string) $raceDate : null,
+            $venueId !== null ? (int) $venueId : null,
+        ));
     }
 
-    public function create(Request $request): Response
+    public function create(Request $request, CreateAction $action): Response
     {
-        return Inertia::render('races/new', [
-            'venues' => Venue::query()->orderBy('id')->get(['id', 'name']),
-            'last_venue_id' => $request->session()->get('last_venue_id'),
-            'last_race_date' => $request->session()->get('last_race_date'),
-            'last_race_number' => $request->session()->get('last_race_number'),
-        ]);
+        $lastVenueId = $request->session()->get('last_venue_id');
+        $lastRaceDate = $request->session()->get('last_race_date');
+        $lastRaceNumber = $request->session()->get('last_race_number');
+
+        return Inertia::render('races/new', $action->execute(
+            $lastVenueId !== null ? (int) $lastVenueId : null,
+            $lastRaceDate !== null ? (string) $lastRaceDate : null,
+            $lastRaceNumber !== null ? (int) $lastRaceNumber : null,
+        ));
     }
 
     public function store(StoreRaceRequest $request, StoreAction $action): RedirectResponse
