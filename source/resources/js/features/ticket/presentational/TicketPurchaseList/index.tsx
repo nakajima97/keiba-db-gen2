@@ -48,6 +48,9 @@ const TicketPurchaseList = ({
 									買い方
 								</th>
 								<th className="px-4 py-3 text-right font-medium text-muted-foreground">
+									点数
+								</th>
+								<th className="px-4 py-3 text-right font-medium text-muted-foreground">
 									購入金額
 								</th>
 								<th className="px-4 py-3 text-right font-medium text-muted-foreground">
@@ -74,6 +77,9 @@ const TicketPurchaseList = ({
 									<td className="px-4 py-3">{purchase.ticket_type_label}</td>
 									<td className="px-4 py-3">
 										{formatSelections(purchase.selections)}
+									</td>
+									<td className="px-4 py-3 text-right">
+										{purchase.num_combinations}
 									</td>
 									<td className="px-4 py-3 text-right">
 										{purchase.amount != null

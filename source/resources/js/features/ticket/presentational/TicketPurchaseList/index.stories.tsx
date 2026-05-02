@@ -23,7 +23,7 @@ const baseArgs: Pick<
 // 馬連・流し（1→[2,4,6]）: 3点 × 100円 = 300円
 // 三連複・ボックス（[1,3,5]）: 1点 × 300円 = 300円
 // 三連単・フォーメーション（[1,2]×[1,3]×[4,5]）: 全組合せ8通りのうち馬番1が重複する2通りを除外 → 6点 × 600円 = 3,600円
-// 単勝（[5]）: 未入力
+// 単勝（[5]）: 未入力（点数は1）
 // 複勝（[3]）: 1点 × 200円 = 200円
 const samplePurchases: TicketPurchaseListProps["purchases"] = [
 	{
@@ -36,6 +36,7 @@ const samplePurchases: TicketPurchaseListProps["purchases"] = [
 		ticket_type_label: "馬連",
 		buy_type_name: "nagashi",
 		selections: { axis: [1], others: [2, 4, 6] },
+		num_combinations: 3,
 		amount: 300,
 		payout_amount: null,
 	},
@@ -49,6 +50,7 @@ const samplePurchases: TicketPurchaseListProps["purchases"] = [
 		ticket_type_label: "三連複",
 		buy_type_name: "box",
 		selections: { horses: [1, 3, 5] },
+		num_combinations: 1,
 		amount: 300,
 		payout_amount: null,
 	},
@@ -68,6 +70,7 @@ const samplePurchases: TicketPurchaseListProps["purchases"] = [
 				[4, 5],
 			],
 		},
+		num_combinations: 6,
 		amount: 3600,
 		payout_amount: null,
 	},
@@ -81,6 +84,7 @@ const samplePurchases: TicketPurchaseListProps["purchases"] = [
 		ticket_type_label: "単勝",
 		buy_type_name: "single",
 		selections: { horses: [5] },
+		num_combinations: 1,
 		amount: null,
 		payout_amount: null,
 	},
@@ -94,6 +98,7 @@ const samplePurchases: TicketPurchaseListProps["purchases"] = [
 		ticket_type_label: "複勝",
 		buy_type_name: "single",
 		selections: { horses: [3] },
+		num_combinations: 1,
 		amount: 200,
 		payout_amount: null,
 	},

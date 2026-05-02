@@ -28,6 +28,7 @@ const samplePurchase: TicketPurchaseListItem = {
 	ticket_type_label: "馬連",
 	buy_type_name: "nagashi",
 	selections: { axis: [1], others: [2, 4, 6] },
+	num_combinations: 3,
 	amount: 100,
 	payout_amount: 500,
 };
@@ -67,7 +68,7 @@ describe("TicketPurchaseList", () => {
 	});
 
 	describe("データあり", () => {
-		it("テーブルヘッダーが表示される（日付・レース場・レース番号・券種・買い方・購入金額）", () => {
+		it("テーブルヘッダーが表示される（日付・レース場・レース番号・券種・買い方・点数・購入金額）", () => {
 			// Act
 			render(<TicketPurchaseList {...baseProps} />);
 
@@ -77,6 +78,7 @@ describe("TicketPurchaseList", () => {
 			expect(screen.getByText("レース番号")).toBeInTheDocument();
 			expect(screen.getByText("券種")).toBeInTheDocument();
 			expect(screen.getByText("買い方")).toBeInTheDocument();
+			expect(screen.getByText("点数")).toBeInTheDocument();
 			expect(screen.getByText("購入金額")).toBeInTheDocument();
 		});
 
@@ -187,6 +189,14 @@ describe("TicketPurchaseList", () => {
 			// Assert
 			const dashes = screen.getAllByText("-");
 			expect(dashes.length).toBeGreaterThanOrEqual(1);
+		});
+
+		it("num_combinations の値が数字で表示される（例: 3）", () => {
+			// Act
+			render(<TicketPurchaseList {...baseProps} />);
+
+			// Assert
+			expect(screen.getByText("3")).toBeInTheDocument();
 		});
 	});
 
