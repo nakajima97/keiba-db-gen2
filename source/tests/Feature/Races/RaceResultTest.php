@@ -207,6 +207,32 @@ test('race result create page returns has_existing_result as true when race resu
     );
 });
 
+test('race result create page returns has_existing_result as true when only race_payouts exist', function () {
+    // Arrange
+    $user = User::factory()->create();
+    ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
+    ['raceId' => $raceId, 'raceUid' => $raceUid] = createRaceWithUid($venueId, $now);
+
+    $tanshoTicketTypeId = DB::table('ticket_types')->where('name', 'tansho')->value('id');
+    DB::table('race_payouts')->insert([
+        'race_id' => $raceId,
+        'ticket_type_id' => $tanshoTicketTypeId,
+        'payout_amount' => 610,
+        'popularity' => 2,
+        'created_at' => $now,
+        'updated_at' => $now,
+    ]);
+
+    // Act
+    $response = $this->actingAs($user)->get(route('races.result.create', ['uid' => $raceUid]));
+
+    // Assert
+    $response->assertInertia(fn (Assert $page) => $page
+        ->component('races/result/create')
+        ->where('race.has_existing_result', true)
+    );
+});
+
 // ===== POST /races/{uid}/result =====
 
 test('valid payout text is stored with 8 race_payouts records', function () use ($sampleText, $resultSampleText) {

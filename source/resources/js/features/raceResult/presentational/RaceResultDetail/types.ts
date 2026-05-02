@@ -36,4 +36,5 @@ export type RaceResultDetailProps = {
 		finishing_horses: FinishingHorse[];
 	};
 	onNoteClick?: (horseId: number) => void;
+	onDeleteClick?: () => void;
 };

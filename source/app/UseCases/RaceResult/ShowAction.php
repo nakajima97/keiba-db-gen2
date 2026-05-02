@@ -21,7 +21,7 @@ class ShowAction
             'venue_name' => $race->venue->name,
             'race_date' => $race->race_date,
             'race_number' => $race->race_number,
-            'has_existing_result' => $race->raceResultHorses()->exists(),
+            'has_existing_result' => $race->raceResultHorses()->exists() || $race->racePayouts()->exists(),
         ];
     }
 }

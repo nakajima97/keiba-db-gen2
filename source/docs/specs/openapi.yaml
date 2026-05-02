@@ -1,0 +1,178 @@
+openapi: 3.1.0
+info:
+  title: Keiba DB API
+  version: 0.1.0
+
+paths:
+  /races/{uid}/result:
+    post:
+      summary: レース結果登録
+      operationId: storeRaceResult
+      tags:
+        - RaceResult
+      parameters:
+        - $ref: '#/components/parameters/RaceUid'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StoreRaceResultRequest'
+      responses:
+        '200':
+          description: 登録成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RaceResultResponse'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      summary: レース結果削除
+      description: |
+        指定レースの着順（race_result_horses）・払戻（race_payouts / race_payout_horses）を削除する。
+        削除と同時に ticket_purchases.payout_amount を NULL にリセットする。
+      operationId: destroyRaceResult
+      tags:
+        - RaceResult
+      parameters:
+        - $ref: '#/components/parameters/RaceUid'
+      responses:
+        '200':
+          description: 削除成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: 削除対象のレース結果が存在しない
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  parameters:
+    RaceUid:
+      name: uid
+      in: path
+      required: true
+      description: レースUID
+      schema:
+        type: string
+        example: "abc001"
+
+  schemas:
+    StoreRaceResultRequest:
+      type: object
+      required:
+        - finishing_horses
+        - payouts
+      properties:
+        finishing_horses:
+          type: array
+          items:
+            type: object
+            required:
+              - finishing_order
+              - frame_number
+              - horse_number
+              - horse_name
+              - jockey_name
+              - race_time
+            properties:
+              finishing_order:
+                type: integer
+                example: 1
+              frame_number:
+                type: integer
+                example: 2
+              horse_number:
+                type: integer
+                example: 3
+              horse_name:
+                type: string
+                example: "ディープスター"
+              jockey_name:
+                type: string
+                example: "武豊"
+              race_time:
+                type: string
+                example: "1:33.5"
+        payouts:
+          type: array
+          items:
+            type: object
+            required:
+              - ticket_type_name
+              - payout_amount
+              - popularity
+              - horse_numbers
+            properties:
+              ticket_type_name:
+                type: string
+                example: "tansho"
+              payout_amount:
+                type: integer
+                example: 610
+              popularity:
+                type: integer
+                example: 2
+              horse_numbers:
+                type: array
+                items:
+                  type: integer
+                example: [3]
+
+    RaceResultResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "レース結果を登録しました"
+
+    MessageResponse:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          example: "レース結果を削除しました"
+
+    ErrorResponse:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          example: "削除対象のレース結果が存在しません"
+
+  responses:
+    ValidationError:
+      description: バリデーションエラー
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+              errors:
+                type: object
+                additionalProperties:
+                  type: array
+                  items:
+                    type: string
+    NotFound:
+      description: リソースが見つからない
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
