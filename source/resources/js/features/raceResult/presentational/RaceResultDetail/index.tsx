@@ -8,7 +8,7 @@ import { formatDateDisplay } from "@/utils/date";
 import type { RaceResultDetailProps } from "./types";
 import { formatHorseNumbers } from "./utils";
 
-const RaceResultDetail = ({ race, onNoteClick }: RaceResultDetailProps) => {
+const RaceResultDetail = ({ race, onNoteClick, onDeleteClick }: RaceResultDetailProps) => {
 	return (
 		<div className="flex flex-col gap-4 p-4">
 			<div>
@@ -22,13 +22,24 @@ const RaceResultDetail = ({ race, onNoteClick }: RaceResultDetailProps) => {
 						{race.race_number}R
 					</p>
 				</div>
-				{race.finishing_horses.length === 0 && (
-					<Button asChild variant="outline" size="sm">
-						<Link href={`/races/${race.uid}/result/new`}>
-							レース結果入力
-						</Link>
-					</Button>
-				)}
+				<div className="flex items-center gap-2">
+					{race.finishing_horses.length === 0 && (
+						<Button asChild variant="outline" size="sm">
+							<Link href={`/races/${race.uid}/result/new`}>
+								レース結果入力
+							</Link>
+						</Button>
+					)}
+					{race.finishing_horses.length > 0 && onDeleteClick !== undefined && (
+						<Button
+							variant="destructive"
+							size="sm"
+							onClick={onDeleteClick}
+						>
+							レース結果を削除
+						</Button>
+					)}
+				</div>
 			</div>
 
 			<div className="flex flex-col gap-2">

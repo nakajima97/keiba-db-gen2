@@ -7,6 +7,7 @@ const meta: Meta<typeof RaceResultDetail> = {
 	component: RaceResultDetail,
 	args: {
 		onNoteClick: () => {},
+		onDeleteClick: () => {},
 	},
 };
 
