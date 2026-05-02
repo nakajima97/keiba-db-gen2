@@ -192,19 +192,8 @@ describe("TicketPurchaseList", () => {
 		});
 
 		it("num_combinations の値が数字で表示される（例: 3）", () => {
-			// Arrange
-			const purchaseWithCombinations: TicketPurchaseListItem = {
-				...samplePurchase,
-				num_combinations: 3,
-			};
-
 			// Act
-			render(
-				<TicketPurchaseList
-					{...baseProps}
-					purchases={[purchaseWithCombinations]}
-				/>,
-			);
+			render(<TicketPurchaseList {...baseProps} />);
 
 			// Assert
 			expect(screen.getByText("3")).toBeInTheDocument();
