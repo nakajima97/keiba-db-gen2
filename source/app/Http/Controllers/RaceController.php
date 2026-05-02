@@ -64,12 +64,14 @@ class RaceController extends Controller
     {
         $action->execute($request->validated());
 
+        $raceNumber = (int) $request->validated('race_number');
+
         return redirect()
             ->route('races.create')
             ->with([
                 'last_venue_id' => (int) $request->validated('venue_id'),
                 'last_race_date' => (string) $request->validated('race_date'),
-                'last_race_number' => (int) $request->validated('race_number'),
+                'last_race_number' => min($raceNumber + 1, 12),
             ]);
     }
 
