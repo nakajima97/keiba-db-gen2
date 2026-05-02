@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exceptions\RaceResult\NoResultToDestroyException;
 use App\Exceptions\RaceResult\ParseException;
+use App\Http\Requests\RaceResult\DestroyRaceResultRequest;
 use App\Http\Requests\RaceResult\StoreRaceResultRequest;
 use App\UseCases\RaceResult\DestroyAction;
 use App\UseCases\RaceResult\ShowAction;
@@ -42,7 +43,7 @@ class RaceResultController extends Controller
         ]);
     }
 
-    public function destroy(string $uid, DestroyAction $action): JsonResponse
+    public function destroy(string $uid, DestroyRaceResultRequest $request, DestroyAction $action): JsonResponse
     {
         try {
             $action->execute($uid);

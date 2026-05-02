@@ -9,6 +9,7 @@ import type {
 	RaceResultDetailProps,
 } from "@/features/raceResult/presentational/RaceResultDetail/types";
 import { deleteRaceResult } from "@/features/raceResult/requests/raceResults";
+import { create as raceResultCreate } from "@/routes/races/result";
 import { formatDateDisplay } from "@/utils/date";
 
 type RaceProps = RaceResultDetailProps["race"] & {
@@ -95,7 +96,7 @@ const RaceResultDetailContainer = ({ race }: Props) => {
 		}));
 		try {
 			await deleteRaceResult(race.uid);
-			router.visit(`/races/${race.uid}/result/new`);
+			router.visit(raceResultCreate.url(race.uid));
 		} catch (error) {
 			const message =
 				error instanceof Error

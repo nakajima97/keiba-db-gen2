@@ -41,7 +41,7 @@ const DeleteResultModal = ({
 
 				<DialogFooter>
 					<DialogClose asChild>
-						<Button variant="outline" disabled={isLoading} onClick={onCancel}>
+						<Button variant="outline" disabled={isLoading}>
 							キャンセル
 						</Button>
 					</DialogClose>

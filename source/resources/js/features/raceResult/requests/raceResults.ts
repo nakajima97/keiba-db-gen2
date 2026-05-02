@@ -1,4 +1,5 @@
 import { buildJsonHeaders } from "@/features/raceDetail/requests/csrf";
+import { destroy as raceResultDestroy } from "@/routes/races/result";
 
 type ErrorBody = {
 	message?: string;
@@ -25,7 +26,7 @@ const extractErrorMessage = async (response: Response): Promise<string> => {
  * 指定レースの結果（着順・払戻）を削除する。成功時は 200。
  */
 export const deleteRaceResult = async (raceUid: string): Promise<void> => {
-	const response = await fetch(`/races/${raceUid}/result`, {
+	const response = await fetch(raceResultDestroy.url(raceUid), {
 		method: "DELETE",
 		headers: buildJsonHeaders(),
 		credentials: "same-origin",
