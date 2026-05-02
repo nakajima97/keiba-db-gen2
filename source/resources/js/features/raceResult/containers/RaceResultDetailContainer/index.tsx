@@ -1,12 +1,15 @@
+import { router } from "@inertiajs/react";
+import { useState } from "react";
 import HorseNoteModalContainer from "@/features/horseNote/containers/HorseNoteModalContainer";
 import type { HorseNote } from "@/features/horseNote/types/horseNote";
+import DeleteResultModal from "@/features/raceResult/components/DeleteResultModal";
 import RaceResultDetail from "@/features/raceResult/presentational/RaceResultDetail";
 import type {
 	FinishingHorse,
 	RaceResultDetailProps,
 } from "@/features/raceResult/presentational/RaceResultDetail/types";
+import { deleteRaceResult } from "@/features/raceResult/requests/raceResults";
 import { formatDateDisplay } from "@/utils/date";
-import { useState } from "react";
 
 type RaceProps = RaceResultDetailProps["race"] & {
 	id?: number;
@@ -25,6 +28,7 @@ const buildRaceLabel = (race: RaceProps): string => {
 /**
  * レース結果画面のコンテナ。
  * メモセルのクリックでモーダルを開き、API 成功時に finishing_horses の note を更新する。
+ * 「レース結果を削除」ボタンで削除確認モーダルを表示し、確定時に DELETE API を呼んで結果入力画面に遷移する。
  */
 const RaceResultDetailContainer = ({ race }: Props) => {
 	const [finishingHorses, setFinishingHorses] = useState<FinishingHorse[]>(
@@ -35,6 +39,11 @@ const RaceResultDetailContainer = ({ race }: Props) => {
 		horseId: number | null;
 		horseName: string;
 	}>({ open: false, horseId: null, horseName: "" });
+	const [deleteModal, setDeleteModal] = useState<{
+		open: boolean;
+		isLoading: boolean;
+		errorMessage: string | null;
+	}>({ open: false, isLoading: false, errorMessage: null });
 
 	const handleNoteClick = (horseId: number) => {
 		const target = finishingHorses.find((h) => h.horse_id === horseId);
@@ -70,6 +79,36 @@ const RaceResultDetailContainer = ({ race }: Props) => {
 		);
 	};
 
+	const handleDeleteClick = () => {
+		setDeleteModal({ open: true, isLoading: false, errorMessage: null });
+	};
+
+	const handleDeleteCancel = () => {
+		setDeleteModal({ open: false, isLoading: false, errorMessage: null });
+	};
+
+	const handleDeleteConfirm = async () => {
+		setDeleteModal((current) => ({
+			...current,
+			isLoading: true,
+			errorMessage: null,
+		}));
+		try {
+			await deleteRaceResult(race.uid);
+			router.visit(`/races/${race.uid}/result/new`);
+		} catch (error) {
+			const message =
+				error instanceof Error
+					? error.message
+					: "レース結果の削除に失敗しました。時間をおいて再度お試しください。";
+			setDeleteModal({
+				open: true,
+				isLoading: false,
+				errorMessage: message,
+			});
+		}
+	};
+
 	const localRace = { ...race, finishing_horses: finishingHorses };
 	const selectedHorse =
 		noteModal.horseId != null
@@ -79,7 +118,11 @@ const RaceResultDetailContainer = ({ race }: Props) => {
 
 	return (
 		<>
-			<RaceResultDetail race={localRace} onNoteClick={handleNoteClick} />
+			<RaceResultDetail
+				race={localRace}
+				onNoteClick={handleNoteClick}
+				onDeleteClick={handleDeleteClick}
+			/>
 			{noteModal.horseId != null && (
 				<HorseNoteModalContainer
 					open={noteModal.open}
@@ -98,6 +141,13 @@ const RaceResultDetailContainer = ({ race }: Props) => {
 					onSuccess={handleNoteSuccess}
 				/>
 			)}
+			<DeleteResultModal
+				open={deleteModal.open}
+				isLoading={deleteModal.isLoading}
+				errorMessage={deleteModal.errorMessage}
+				onConfirm={handleDeleteConfirm}
+				onCancel={handleDeleteCancel}
+			/>
 		</>
 	);
 };

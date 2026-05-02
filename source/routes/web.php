@@ -34,6 +34,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/races/{uid}/result/new', [RaceResultController::class, 'create'])->name('races.result.create');
     Route::post('/races/{uid}/result', [RaceResultController::class, 'store'])->name('races.result.store');
     Route::get('/races/{uid}/result/edit', [RaceResultController::class, 'edit'])->name('races.result.edit');
+    Route::delete('/races/{uid}/result', [RaceResultController::class, 'destroy'])->name('races.result.destroy');
 
     Route::get('/horses/{horse}', [HorseController::class, 'show'])->name('horses.show');
 
