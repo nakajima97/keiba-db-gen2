@@ -28,6 +28,7 @@ class IndexAction
      *     ticket_type_label: string,
      *     buy_type_name: string,
      *     selections: array<mixed>|null,
+     *     num_combinations: int,
      *     amount: int|null,
      *     payout_amount: int|null,
      *   }>,
@@ -61,25 +62,28 @@ class IndexAction
             ->orderByDesc('race_number')
             ->cursorPaginate(30);
 
-        $purchases = $paginator->map(fn (TicketPurchase $purchase) => [
-            'id' => $purchase->id,
-            'race_uid' => $purchase->race_uid,
-            'has_race_result' => (bool) $purchase->has_race_result,
-            'race_date' => $purchase->race_date,
-            'venue_name' => $purchase->venue_name,
-            'race_number' => $purchase->race_number,
-            'ticket_type_label' => $purchase->ticket_type_label,
-            'buy_type_name' => $purchase->buy_type_name,
-            'selections' => $purchase->selections,
-            'amount' => $purchase->amount !== null
-                ? $purchase->amount * count($this->expandSelections->execute(
-                    $purchase->ticket_type_name,
-                    $purchase->buy_type_name,
-                    $purchase->selections,
-                ))
-                : null,
-            'payout_amount' => $purchase->payout_amount !== null ? (int) $purchase->payout_amount : null,
-        ]);
+        $purchases = $paginator->map(function (TicketPurchase $purchase): array {
+            $numCombinations = count($this->expandSelections->execute(
+                $purchase->ticket_type_name,
+                $purchase->buy_type_name,
+                $purchase->selections,
+            ));
+
+            return [
+                'id' => $purchase->id,
+                'race_uid' => $purchase->race_uid,
+                'has_race_result' => (bool) $purchase->has_race_result,
+                'race_date' => $purchase->race_date,
+                'venue_name' => $purchase->venue_name,
+                'race_number' => $purchase->race_number,
+                'ticket_type_label' => $purchase->ticket_type_label,
+                'buy_type_name' => $purchase->buy_type_name,
+                'selections' => $purchase->selections,
+                'num_combinations' => $numCombinations,
+                'amount' => $purchase->amount !== null ? $purchase->amount * $numCombinations : null,
+                'payout_amount' => $purchase->payout_amount !== null ? (int) $purchase->payout_amount : null,
+            ];
+        });
 
         return [
             'purchases' => $purchases->all(),

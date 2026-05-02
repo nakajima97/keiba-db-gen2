@@ -573,3 +573,60 @@ test('purchases on same date are sorted by venue_name descending', function () {
         })
     );
 });
+
+// ===== num_combinations =====
+
+test('num_combinations: nagashi・2点 の馬券で num_combinations が 2 で返される', function () {
+    // Arrange
+    $user = User::factory()->create();
+
+    ['venueId' => $venueId, 'ticketTypeId' => $ticketTypeId, 'buyTypeId' => $buyTypeId, 'now' => $now] = createMasterData();
+    $raceId = createRace($venueId, '2026-04-05', 1, $now);
+
+    createTicketPurchase($user->id, $raceId, $ticketTypeId, $buyTypeId, $now, 100);
+
+    // Act
+    $response = $this->actingAs($user)->get(route('tickets.index'));
+
+    // Assert
+    $response->assertInertia(fn (Assert $page) => $page
+        ->component('tickets/index')
+        ->where('purchases', function ($purchases) {
+            expect($purchases[0]['num_combinations'])->toBe(2);
+
+            return true;
+        })
+    );
+});
+
+test('num_combinations: amount が null でも num_combinations が返される', function () {
+    // Arrange
+    $user = User::factory()->create();
+
+    ['venueId' => $venueId, 'ticketTypeId' => $ticketTypeId, 'buyTypeId' => $buyTypeId, 'now' => $now] = createMasterData();
+    $raceId = createRace($venueId, '2026-04-05', 1, $now);
+
+    DB::table('ticket_purchases')->insert([
+        'user_id' => $user->id,
+        'race_id' => $raceId,
+        'ticket_type_id' => $ticketTypeId,
+        'buy_type_id' => $buyTypeId,
+        'selections' => json_encode(['axis' => [1], 'others' => [2, 3]]),
+        'amount' => null,
+        'created_at' => $now,
+        'updated_at' => $now,
+    ]);
+
+    // Act
+    $response = $this->actingAs($user)->get(route('tickets.index'));
+
+    // Assert
+    $response->assertInertia(fn (Assert $page) => $page
+        ->component('tickets/index')
+        ->where('purchases', function ($purchases) {
+            expect($purchases[0]['num_combinations'])->toBe(2);
+
+            return true;
+        })
+    );
+});
