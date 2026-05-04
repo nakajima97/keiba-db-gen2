@@ -54,3 +54,5 @@ Laravel Fortify を使用。認証状態は Inertia の shared data を通じて
 ## フロントエンド↔バックエンドのAPI連携方針
 
 Inertia.js を通じてデータを受け渡す。REST API は原則設けず、フォーム送信・ページ遷移はすべて Inertia の `router` を使用する。
+
+ただし、クライアントサイドの自動保存など細かい更新では JSON API（`/api` プレフィックス）を許容する（例: `routes/web.php` の `/api/races/{race:uid}/mark-columns` 系ルート）。
