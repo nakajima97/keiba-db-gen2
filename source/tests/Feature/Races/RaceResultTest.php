@@ -65,6 +65,29 @@ $jraSampleText = implode("\n", [
     "3-6-11\t8,820円\t16番人気",
 ]);
 
+// 枠連のみヘッダー行があってデータ行が無いJRAフォーマット（枠連が非発売だったレースを想定）
+$jraSampleTextWithoutWakuren = implode("\n", [
+    "単勝\t",
+    "3\t610円\t2番人気",
+    "複勝\t",
+    "3\t170円\t2番人気",
+    "6\t110円\t1番人気",
+    "11\t170円\t3番人気",
+    "枠連\t",
+    "ワイド\t",
+    "3-6\t330円\t1番人気",
+    "3-11\t710円\t8番人気",
+    "6-11\t340円\t2番人気",
+    "馬連\t",
+    "3-6\t700円\t1番人気",
+    "馬単\t",
+    "3-6\t1,730円\t4番人気",
+    "3連複\t",
+    "3-6-11\t1,550円\t2番人気",
+    "3連単\t",
+    "3-6-11\t8,820円\t16番人気",
+]);
+
 /**
  * @return array{venueId: int, now: CarbonInterface}
  */
@@ -414,8 +437,10 @@ test('invalid format text returns error and nothing is stored', function () {
     expect(DB::table('race_payouts')->where('race_id', $raceId)->count())->toBe(0);
 });
 
-test('missing ticket types in text returns error and nothing is stored', function () {
+test('missing required ticket types in text returns error and nothing is stored', function () {
     // Arrange
+    // 単勝・複勝のみで、必須券種（枠連を除く6券種のうち wakuren 以外の5券種: wide, umaren, umatan, sanrenpuku, sanrentan）が欠落している。
+    // 枠連は任意券種なので欠落してもエラーにならないが、それ以外の必須券種が欠落するとエラーになることを保証する。
     $user = User::factory()->create();
     ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
     ['raceId' => $raceId, 'raceUid' => $raceUid] = createRaceWithUid($venueId, $now);
@@ -451,6 +476,27 @@ test('JRA format payout text (ticket type on separate header line) is stored cor
     // Assert
     $response->assertRedirect(route('tickets.index'));
     expect(DB::table('race_payouts')->where('race_id', $raceId)->count())->toBe(12);
+});
+
+test('JRA format payout text without wakuren data (only header) is stored correctly', function () use ($jraSampleTextWithoutWakuren, $resultSampleText) {
+    // Arrange
+    $user = User::factory()->create();
+    ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
+    ['raceId' => $raceId, 'raceUid' => $raceUid] = createRaceWithUid($venueId, $now);
+
+    // Act
+    $response = $this->actingAs($user)->post(route('races.result.store', ['uid' => $raceUid]), [
+        'result_text' => $resultSampleText, 'text' => $jraSampleTextWithoutWakuren,
+    ]);
+
+    // Assert
+    $response->assertRedirect(route('tickets.index'));
+    expect(DB::table('race_payouts')->where('race_id', $raceId)->count())->toBe(11);
+    $wakurenTicketTypeId = DB::table('ticket_types')->where('name', 'wakuren')->value('id');
+    expect(DB::table('race_payouts')
+        ->where('race_id', $raceId)
+        ->where('ticket_type_id', $wakurenTicketTypeId)
+        ->count())->toBe(0);
 });
 
 test('unauthenticated user is redirected to login page when posting race result', function () {
