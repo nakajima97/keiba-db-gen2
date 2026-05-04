@@ -42,7 +42,6 @@ const sortColumns = (columns: RaceMarkColumn[]): RaceMarkColumn[] => {
 
 const RaceDetail = ({
 	race,
-	hasResult,
 	onMarkChange,
 	onAddOtherColumn,
 	onRemoveOtherColumn,
@@ -100,7 +99,7 @@ const RaceDetail = ({
 					<Button asChild variant="outline" size="sm">
 						<Link href={`/races/${race.uid}/entries/new`}>出走馬登録</Link>
 					</Button>
-					{hasResult ? (
+					{race.has_result ? (
 						<Button asChild variant="outline" size="sm">
 							<Link href={`/races/${race.uid}/result/edit`}>
 								レース結果を確認・編集
