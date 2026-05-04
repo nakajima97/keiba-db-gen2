@@ -179,6 +179,15 @@ describe("RaceList", () => {
 			);
 		});
 
+		it("selectedDate が空のときは「レース情報入力」リンクの遷移先が /races/new になる", () => {
+			// Act
+			render(<RaceList {...baseProps} selectedDate="" />);
+
+			// Assert
+			const link = screen.getByText("レース情報入力");
+			expect(link).toHaveAttribute("href", "/races/new");
+		});
+
 		it("race_name が表示される", () => {
 			// Act
 			render(<RaceList {...baseProps} />);

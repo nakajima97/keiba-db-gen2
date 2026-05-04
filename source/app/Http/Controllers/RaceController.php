@@ -29,7 +29,11 @@ class RaceController extends Controller
     public function create(Request $request, CreateAction $action): Response
     {
         $lastVenueId = $request->session()->get('last_venue_id');
-        $lastRaceDate = $request->query('race_date') ?? $request->session()->get('last_race_date');
+        $queryRaceDate = $request->query('race_date');
+        if ($queryRaceDate !== null && preg_match('/^\d{4}-\d{2}-\d{2}$/', (string) $queryRaceDate) !== 1) {
+            $queryRaceDate = null;
+        }
+        $lastRaceDate = $queryRaceDate ?? $request->session()->get('last_race_date');
         $lastRaceNumber = $request->session()->get('last_race_number');
 
         return Inertia::render('races/new', $action->execute(

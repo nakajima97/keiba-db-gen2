@@ -65,3 +65,19 @@ test('session last_race_date is used when race_date query parameter is absent', 
         ->where('last_race_date', '2026-01-01')
     );
 });
+
+test('invalid race_date query parameter is ignored and falls back to session last_race_date', function () {
+    // Arrange
+    $user = User::factory()->create();
+
+    // Act
+    $response = $this->actingAs($user)
+        ->withSession(['last_race_date' => '2026-01-01'])
+        ->get(route('races.create', ['race_date' => 'invalid-date']));
+
+    // Assert
+    $response->assertOk();
+    $response->assertInertia(fn (Assert $page) => $page
+        ->where('last_race_date', '2026-01-01')
+    );
+});
