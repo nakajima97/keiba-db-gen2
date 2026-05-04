@@ -16,6 +16,7 @@
 │   │       └── FeatureName/    # 例: Post/, User/
 │   ├── Models/                 # Eloquent モデル（DBテーブルの操作を定義）
 │   ├── Providers/              # サービスプロバイダ
+│   ├── Services/               # 複数 UseCase で再利用するロジック（パーサ・外部入力解析等）
 │   └── UseCases/               # ビジネスロジック（1アクション1クラス）
 │       └── FeatureName/        # 例: Post/, User/
 │           ├── StoreAction.php
@@ -40,6 +41,7 @@
 | `Http/Controllers` | HTTPリクエストの受け取りと `Inertia::render()` の呼び出しのみ。ビジネスロジックは持たない |
 | `Http/Requests` | バリデーションと認可（`authorize()`）を一本化 |
 | `UseCases` | ビジネスロジックとドメイン検証をカプセル化。1アクション1クラス |
+| `Services` | 複数 UseCase で再利用するロジック（パーサ・外部入力解析等） |
 | `Models` | Eloquent によるDBアクセス。Repository パターンは導入しない |
 | `Exceptions` | HTTP非依存のドメイン例外。コントローラ側で HTTP レスポンスに変換する |
 
@@ -79,6 +81,20 @@ class PostController extends Controller
             'posts' => Post::all(),
         ]);
     }
+}
+```
+
+### UseCase の合成（UseCase間DI）
+
+UseCase は他の UseCase をコンストラクタ DI で受け取って合成してよい。
+
+```php
+// app/UseCases/TicketPurchase/StoreAction.php
+class StoreAction
+{
+    public function __construct(
+        private readonly CalculatePayoutAmountAction $calculatePayoutAmountAction,
+    ) {}
 }
 ```
 
