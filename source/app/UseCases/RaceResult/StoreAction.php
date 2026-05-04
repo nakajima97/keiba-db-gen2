@@ -43,9 +43,13 @@ class StoreAction
     /** 順序を保持する券種（着順どおり保存） */
     private const ORDERED_TYPES = ['umatan', 'sanrentan'];
 
-    /** 全8券種 */
+    /**
+     * 必須券種（枠連は任意のため含めない）。
+     * 枠連は8頭以下で同一枠に2頭以上いない場合に非発売となるため、
+     * JRA券種のうち頭数起因で非発売となり得る唯一の券種である。
+     */
     private const REQUIRED_TYPES = [
-        'tansho', 'fukusho', 'wakuren', 'wide',
+        'tansho', 'fukusho', 'wide',
         'umaren', 'umatan', 'sanrenpuku', 'sanrentan',
     ];
 
@@ -75,7 +79,7 @@ class StoreAction
             throw new ParseException($e->getMessage(), 'text');
         }
 
-        $ticketTypeIds = TicketType::whereIn('name', self::REQUIRED_TYPES)
+        $ticketTypeIds = TicketType::whereIn('name', array_values(self::TICKET_TYPE_MAP))
             ->pluck('id', 'name')
             ->all();
 
@@ -283,7 +287,7 @@ class StoreAction
     }
 
     /**
-     * パース結果に全8券種が揃っていることを検証する。
+     * パース結果に必須券種（枠連を除く7券種）が揃っていることを検証する。
      *
      * @param  array<int, array{ticket_type: string, horse_numbers: array<int, int>, amount: int, popularity: int}>  $entries
      *
