@@ -439,7 +439,7 @@ test('invalid format text returns error and nothing is stored', function () {
 
 test('missing required ticket types in text returns error and nothing is stored', function () {
     // Arrange
-    // 単勝・複勝のみで、必須券種（枠連を除く6券種のうち wakuren 以外の5券種: wide, umaren, umatan, sanrenpuku, sanrentan）が欠落している。
+    // tansho・fukusho のみ含み、必須7券種のうち wide, umaren, umatan, sanrenpuku, sanrentan が欠落している。
     // 枠連は任意券種なので欠落してもエラーにならないが、それ以外の必須券種が欠落するとエラーになることを保証する。
     $user = User::factory()->create();
     ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
