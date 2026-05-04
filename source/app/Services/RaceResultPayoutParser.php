@@ -16,7 +16,7 @@ use App\Enums\TicketTypeName;
 class RaceResultPayoutParser
 {
     /** 券種ラベル → ticket_types.name の対応（tanpuku は本アプリ独自で JRA テキストには現れない） */
-    public const TICKET_TYPE_MAP = [
+    private const TICKET_TYPE_MAP = [
         '単勝' => TicketTypeName::Tansho->value,
         '複勝' => TicketTypeName::Fukusho->value,
         '枠連' => TicketTypeName::Wakuren->value,
@@ -172,7 +172,7 @@ class RaceResultPayoutParser
         $numbers = [];
         foreach ($parts as $part) {
             $part = trim($part);
-            if (! ctype_digit($part) || $part === '') {
+            if (! ctype_digit($part)) {
                 throw new \InvalidArgumentException(
                     sprintf('%d行目: 馬番「%s」が不正です。', $lineNumber, $col)
                 );
@@ -190,7 +190,7 @@ class RaceResultPayoutParser
     {
         $col = trim($col);
         $cleaned = str_replace([',', '円'], '', $col);
-        if (! ctype_digit($cleaned) || $cleaned === '') {
+        if (! ctype_digit($cleaned)) {
             throw new \InvalidArgumentException(
                 sprintf('%d行目: 金額「%s」が不正です。', $lineNumber, $col)
             );
@@ -206,7 +206,7 @@ class RaceResultPayoutParser
     {
         $col = trim($col);
         $cleaned = str_replace('番人気', '', $col);
-        if (! ctype_digit($cleaned) || $cleaned === '') {
+        if (! ctype_digit($cleaned)) {
             throw new \InvalidArgumentException(
                 sprintf('%d行目: 人気「%s」が不正です。', $lineNumber, $col)
             );

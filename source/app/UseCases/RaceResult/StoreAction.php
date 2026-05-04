@@ -56,7 +56,8 @@ class StoreAction
             throw new ParseException($e->getMessage(), 'text');
         }
 
-        $ticketTypeIds = TicketType::whereIn('name', array_values(RaceResultPayoutParser::TICKET_TYPE_MAP))
+        $ticketTypeNames = array_unique(array_column($entries, 'ticket_type'));
+        $ticketTypeIds = TicketType::whereIn('name', $ticketTypeNames)
             ->pluck('id', 'name')
             ->all();
 

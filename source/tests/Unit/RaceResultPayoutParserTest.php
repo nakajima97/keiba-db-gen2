@@ -237,7 +237,8 @@ test('throws when text is empty', function () {
     $parser = new RaceResultPayoutParser;
 
     // Act & Assert
-    expect(fn () => $parser->parse(''))->toThrow(\InvalidArgumentException::class);
+    expect(fn () => $parser->parse(''))
+        ->toThrow(\InvalidArgumentException::class, 'テキストが空です。');
 });
 
 test('throws when ticket-type-only line is unknown', function () {
@@ -282,53 +283,19 @@ test('throws when data line appears before any ticket type is established', func
     expect(fn () => $parser->parse($text))->toThrow(\InvalidArgumentException::class);
 });
 
-test('throws when horse number is empty', function () {
+test('throws when data column is invalid', function (string $dataLine) {
     // Arrange
     $parser = new RaceResultPayoutParser;
-    $text = implode("\n", [
-        '単勝',
-        "\t610円\t2番人気",
-    ]);
+    $text = "単勝\n".$dataLine;
 
     // Act & Assert
     expect(fn () => $parser->parse($text))->toThrow(\InvalidArgumentException::class);
-});
-
-test('throws when horse number is not numeric', function () {
-    // Arrange
-    $parser = new RaceResultPayoutParser;
-    $text = implode("\n", [
-        '単勝',
-        "A-B\t610円\t2番人気",
-    ]);
-
-    // Act & Assert
-    expect(fn () => $parser->parse($text))->toThrow(\InvalidArgumentException::class);
-});
-
-test('throws when amount is invalid', function () {
-    // Arrange
-    $parser = new RaceResultPayoutParser;
-    $text = implode("\n", [
-        '単勝',
-        "3\tabc円\t2番人気",
-    ]);
-
-    // Act & Assert
-    expect(fn () => $parser->parse($text))->toThrow(\InvalidArgumentException::class);
-});
-
-test('throws when popularity is invalid', function () {
-    // Arrange
-    $parser = new RaceResultPayoutParser;
-    $text = implode("\n", [
-        '単勝',
-        "3\t610円\tabc番人気",
-    ]);
-
-    // Act & Assert
-    expect(fn () => $parser->parse($text))->toThrow(\InvalidArgumentException::class);
-});
+})->with([
+    'empty horse number' => "\t610円\t2番人気",
+    'non-numeric horse number' => "A-B\t610円\t2番人気",
+    'invalid amount' => "3\tabc円\t2番人気",
+    'invalid popularity' => "3\t610円\tabc番人気",
+]);
 
 // ===== RaceResultPayoutParser::validateAllTypesPresent() =====
 
@@ -348,6 +315,14 @@ test('does not throw when all seven required ticket types are present', function
     // Act & Assert
     $parser->validateAllTypesPresent($entries);
     expect(true)->toBe(true);
+});
+
+test('throws when entries is empty', function () {
+    // Arrange
+    $parser = new RaceResultPayoutParser;
+
+    // Act & Assert
+    expect(fn () => $parser->validateAllTypesPresent([]))->toThrow(\InvalidArgumentException::class);
 });
 
 test('throws when only wakuren is present and required types are missing', function () {
