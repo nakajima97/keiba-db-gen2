@@ -1,6 +1,7 @@
 import BackButton from "@/components/presentational/BackButton";
 import { Button } from "@/components/shadcn/ui/button";
 import { Input } from "@/components/shadcn/ui/input";
+import { JRA_PAYOUT_BASE_STAKE } from "@/constants/money";
 import { HorseSelectionSection } from "./HorseSelectionSection";
 import { RaceInfoSection } from "./RaceInfoSection";
 import { Section } from "./Section";
@@ -75,20 +76,27 @@ const TicketPurchaseForm = ({
 						variant="outline"
 						size="icon"
 						aria-label="100円減らす"
-						onClick={() => onUnitStakeChange(Math.max(100, unitStake - 100))}
+						onClick={() =>
+							onUnitStakeChange(
+								Math.max(
+									JRA_PAYOUT_BASE_STAKE,
+									unitStake - JRA_PAYOUT_BASE_STAKE,
+								),
+							)
+						}
 					>
 						−
 					</Button>
 					<Input
 						type="number"
-						min={100}
-						step={100}
+						min={JRA_PAYOUT_BASE_STAKE}
+						step={JRA_PAYOUT_BASE_STAKE}
 						value={unitStake}
 						className="w-28 text-center"
 						aria-label="購入金額（円）"
 						onChange={(e) => {
 							const n = Number.parseInt(e.target.value, 10);
-							if (n >= 100) onUnitStakeChange(n);
+							if (n >= JRA_PAYOUT_BASE_STAKE) onUnitStakeChange(n);
 						}}
 					/>
 					<span className="text-sm text-muted-foreground">円</span>
@@ -97,12 +105,12 @@ const TicketPurchaseForm = ({
 						variant="outline"
 						size="icon"
 						aria-label="100円増やす"
-						onClick={() => onUnitStakeChange(unitStake + 100)}
+						onClick={() => onUnitStakeChange(unitStake + JRA_PAYOUT_BASE_STAKE)}
 					>
 						＋
 					</Button>
 					<div className="ml-4 flex gap-1.5">
-						{[100, 500, 1000].map((preset) => (
+						{[JRA_PAYOUT_BASE_STAKE, 500, 1000].map((preset) => (
 							<Button
 								key={preset}
 								type="button"

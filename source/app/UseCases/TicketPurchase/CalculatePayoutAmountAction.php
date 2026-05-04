@@ -2,6 +2,8 @@
 
 namespace App\UseCases\TicketPurchase;
 
+use App\Constants\Money;
+use App\Enums\TicketTypeName;
 use App\Models\RacePayout;
 use App\Models\TicketPurchase;
 use Illuminate\Database\Eloquent\Collection;
@@ -14,11 +16,6 @@ use Illuminate\Database\Eloquent\Collection;
  */
 class CalculatePayoutAmountAction
 {
-    /**
-     * JRAが公表する払戻金額の基準購入額（100円券あたり）。
-     */
-    private const JRA_PAYOUT_BASE_STAKE = 100;
-
     public function __construct(private readonly ExpandSelectionsAction $expandSelections) {}
 
     /**
@@ -36,7 +33,7 @@ class CalculatePayoutAmountAction
         $ticketTypeName = $purchase->ticketType->name;
         $buyTypeName = $purchase->buyType->name;
         $selections = $purchase->selections;
-        $isOrdered = in_array($ticketTypeName, ['umatan', 'sanrentan'], true);
+        $isOrdered = TicketTypeName::from($ticketTypeName)->isOrdered();
 
         $combinations = $this->expandSelections->execute($ticketTypeName, $buyTypeName, $selections);
 
@@ -81,7 +78,7 @@ class CalculatePayoutAmountAction
             return null;
         }
 
-        return (int) ($totalPayout * $purchase->unit_stake / self::JRA_PAYOUT_BASE_STAKE);
+        return (int) ($totalPayout * $purchase->unit_stake / Money::JRA_PAYOUT_BASE_STAKE);
     }
 
     /**

@@ -1,5 +1,6 @@
-import { Head, usePage } from "@inertiajs/react";
+import { JRA_PAYOUT_BASE_STAKE } from "@/constants/money";
 import TicketPurchaseFormContainer from "@/features/ticket/containers/TicketPurchaseFormContainer";
+import { Head, usePage } from "@inertiajs/react";
 
 type TicketsNewProps = {
 	lastVenue: string;
@@ -23,7 +24,7 @@ const TicketsNew = () => {
 				initialAxisCount={1}
 				initialNagashiDirection={1}
 				initialHorses={{}}
-				initialUnitStake={100}
+				initialUnitStake={JRA_PAYOUT_BASE_STAKE}
 			/>
 		</>
 	);
