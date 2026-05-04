@@ -61,6 +61,7 @@ export type RaceDetailItem = {
 
 export type RaceDetailProps = {
 	race: RaceDetailItem;
+	hasResult: boolean;
 	onMarkChange: (params: {
 		columnId: number;
 		raceEntryId: number;

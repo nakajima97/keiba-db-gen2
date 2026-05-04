@@ -7,15 +7,16 @@ type RacesShowProps = {
 		id?: number;
 		race_name?: string | null;
 	};
+	hasResult: boolean;
 };
 
 const RacesShow = () => {
-	const { race } = usePage<RacesShowProps>().props;
+	const { race, hasResult } = usePage<RacesShowProps>().props;
 
 	return (
 		<>
 			<Head title="レース詳細" />
-			<RaceDetailContainer race={race} />
+			<RaceDetailContainer race={race} hasResult={hasResult} />
 		</>
 	);
 };

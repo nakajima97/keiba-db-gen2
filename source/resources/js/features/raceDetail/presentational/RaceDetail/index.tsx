@@ -42,6 +42,7 @@ const sortColumns = (columns: RaceMarkColumn[]): RaceMarkColumn[] => {
 
 const RaceDetail = ({
 	race,
+	hasResult,
 	onMarkChange,
 	onAddOtherColumn,
 	onRemoveOtherColumn,
@@ -84,9 +85,9 @@ const RaceDetail = ({
 				</tbody>
 			</ScrollableTable>
 
-			<div className="flex items-center justify-between">
+			<div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
 				<h2 className="text-lg font-semibold">出馬表</h2>
-				<div className="flex items-center gap-2">
+				<div className="flex flex-wrap items-center gap-2">
 					<Button
 						type="button"
 						variant="outline"
@@ -99,6 +100,19 @@ const RaceDetail = ({
 					<Button asChild variant="outline" size="sm">
 						<Link href={`/races/${race.uid}/entries/new`}>出走馬登録</Link>
 					</Button>
+					{hasResult ? (
+						<Button asChild variant="outline" size="sm">
+							<Link href={`/races/${race.uid}/result/edit`}>
+								レース結果を確認・編集
+							</Link>
+						</Button>
+					) : (
+						<Button asChild variant="outline" size="sm">
+							<Link href={`/races/${race.uid}/result/new`}>
+								レース結果を入力
+							</Link>
+						</Button>
+					)}
 				</div>
 			</div>
 
