@@ -7,30 +7,35 @@ import type {
 	RaceInfo,
 } from "@/features/raceEntry/presentational/RaceEntryEditForm/types";
 import { useFormSubmit } from "@/hooks/useFormSubmit";
-import { update as raceEntryUpdate } from "@/routes/races/entries";
+import { store as raceEntryAddStore } from "@/routes/races/entries/add";
 
-export type RaceEntryEditFormContainerProps = {
+export type RaceEntryAddFormContainerProps = {
 	raceUid: string;
-	entryId: number;
 	raceInfo: RaceInfo;
-	initialValues: RaceEntryEditFormValues;
 };
 
-const RaceEntryEditFormContainer = ({
+const initialValues: RaceEntryEditFormValues = {
+	horse_name: "",
+	jockey_name: "",
+	frame_number: "",
+	horse_number: "",
+	weight: "",
+	horse_weight: "",
+};
+
+const RaceEntryAddFormContainer = ({
 	raceUid,
-	entryId,
 	raceInfo,
-	initialValues,
-}: RaceEntryEditFormContainerProps) => {
+}: RaceEntryAddFormContainerProps) => {
 	const [values, setValues] = useState<RaceEntryEditFormValues>(initialValues);
 	const [errors, setErrors] = useState<RaceEntryEditFormErrors>({});
 
 	const { isSubmitting, handleSubmit: submit } =
 		useFormSubmit<RaceEntryEditFormValues>({
-			url: raceEntryUpdate.url({ race: raceUid, entry: entryId }),
-			method: "put",
+			url: raceEntryAddStore.url({ race: raceUid }),
+			method: "post",
 			onSuccess: () => {
-				toast.success("出走馬を更新しました");
+				toast.success("出走馬を追加しました");
 				setErrors({});
 			},
 			onError: (validationErrors) => {
@@ -51,7 +56,11 @@ const RaceEntryEditFormContainer = ({
 	};
 
 	const handleSubmit = () => {
-		submit(values);
+		const weight =
+			values.weight === "" || values.weight.includes(".")
+				? values.weight
+				: `${values.weight}.0`;
+		submit({ ...values, weight });
 	};
 
 	return (
@@ -63,8 +72,10 @@ const RaceEntryEditFormContainer = ({
 			isSubmitting={isSubmitting}
 			onChange={handleChange}
 			onSubmit={handleSubmit}
+			headingLabel="出走馬個別追加"
+			submitLabel="追加"
 		/>
 	);
 };
 
-export default RaceEntryEditFormContainer;
+export default RaceEntryAddFormContainer;

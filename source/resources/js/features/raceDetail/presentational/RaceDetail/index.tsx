@@ -100,6 +100,9 @@ const RaceDetail = ({
 					<Button asChild variant="outline" size="sm">
 						<Link href={`/races/${race.uid}/entries/new`}>出走馬登録</Link>
 					</Button>
+					<Button asChild variant="outline" size="sm">
+						<Link href={`/races/${race.uid}/entries/add`}>出走馬を1頭追加</Link>
+					</Button>
 					{race.has_result ? (
 						<Button asChild variant="outline" size="sm">
 							<Link href={`/races/${race.uid}/result/edit`}>
