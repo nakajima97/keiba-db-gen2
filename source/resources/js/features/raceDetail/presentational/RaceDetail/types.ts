@@ -57,6 +57,7 @@ export type RaceDetailItem = {
 	mark_columns: RaceMarkColumn[];
 	marks: RaceMarkValue[];
 	mark_memos?: RaceMarkMemo[];
+	has_result: boolean;
 };
 
 export type RaceDetailProps = {

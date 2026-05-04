@@ -38,7 +38,8 @@ class ShowAction
      *     }>,
      *     mark_columns: array<int, array{id: int, type: string, label: string|null, display_order: int}>,
      *     marks: array<int, array{column_id: int, race_entry_id: int, mark_value: string}>,
-     *     mark_memos: array<int, array{column_id: int, race_entry_id: int, content: string}>
+     *     mark_memos: array<int, array{column_id: int, race_entry_id: int, content: string}>,
+     *     has_result: bool
      * }
      */
     public function execute(Race $race, User $user): array
@@ -116,6 +117,7 @@ class ShowAction
             ])->all(),
             'marks' => $marks,
             'mark_memos' => $markMemos,
+            'has_result' => $race->raceResultHorses()->exists() || $race->racePayouts()->exists(),
         ];
     }
 

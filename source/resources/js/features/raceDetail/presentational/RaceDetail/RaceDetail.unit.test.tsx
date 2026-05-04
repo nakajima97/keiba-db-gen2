@@ -33,6 +33,7 @@ const baseRace: RaceDetailItem = {
 	],
 	mark_columns: [{ id: 100, type: "own", label: null, display_order: 0 }],
 	marks: [],
+	has_result: false,
 };
 
 const noopHandlers = {

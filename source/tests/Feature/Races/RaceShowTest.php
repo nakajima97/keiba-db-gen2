@@ -1,6 +1,8 @@
 <?php
 
 use App\Models\Race;
+use App\Models\RacePayout;
+use App\Models\RaceResultHorse;
 use App\Models\User;
 use App\Models\Venue;
 use Illuminate\Support\Facades\DB;
@@ -195,5 +197,61 @@ test('race show returns marks as inertia props', function () {
         ->component('races/show')
         ->has('race.marks')
         ->where('race.marks', fn ($marks) => is_iterable($marks))
+    );
+});
+
+test('race_result_horses も race_payouts も存在しない場合、has_result が false として返される', function () {
+    // Arrange
+    $user = User::factory()->create();
+    $race = Race::factory()->create();
+
+    // Act
+    $response = $this->actingAs($user)->get(route('races.show', ['race' => $race->uid]));
+
+    // Assert
+    $response->assertInertia(fn (Assert $page) => $page
+        ->component('races/show')
+        ->has('race', fn (Assert $race) => $race
+            ->where('has_result', false)
+            ->etc()
+        )
+    );
+});
+
+test('race_result_horses が存在する場合、has_result が true として返される', function () {
+    // Arrange
+    $user = User::factory()->create();
+    $race = Race::factory()->create();
+    RaceResultHorse::factory()->for($race)->create();
+
+    // Act
+    $response = $this->actingAs($user)->get(route('races.show', ['race' => $race->uid]));
+
+    // Assert
+    $response->assertInertia(fn (Assert $page) => $page
+        ->component('races/show')
+        ->has('race', fn (Assert $race) => $race
+            ->where('has_result', true)
+            ->etc()
+        )
+    );
+});
+
+test('race_payouts が存在する場合、has_result が true として返される', function () {
+    // Arrange
+    $user = User::factory()->create();
+    $race = Race::factory()->create();
+    RacePayout::factory()->for($race)->create();
+
+    // Act
+    $response = $this->actingAs($user)->get(route('races.show', ['race' => $race->uid]));
+
+    // Assert
+    $response->assertInertia(fn (Assert $page) => $page
+        ->component('races/show')
+        ->has('race', fn (Assert $race) => $race
+            ->where('has_result', true)
+            ->etc()
+        )
     );
 });
