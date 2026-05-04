@@ -12,6 +12,11 @@ use Illuminate\Support\Facades\DB;
  *
  * 馬名・騎手名は名前で firstOrCreate して race_entries の horse_id / jockey_id を差し替える。
  * 馬体重は任意項目で、null の場合は DB にも null で保存する。
+ *
+ * 注意: 馬の照合は name のみで行う（StoreAction は name + birth_year で照合）。
+ * 編集フォームには生年入力欄がないため、同名馬が複数存在する場合は最初に見つかった馬に
+ * 紐付く。新規作成時は birth_year=null となる。これは編集用フォームの仕様上の制約であり、
+ * 同名・別生年の取り違えリスクを許容する設計上の選択。
  */
 class UpdateAction
 {

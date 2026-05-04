@@ -300,6 +300,38 @@ test('empty weight returns 422', function () {
     $response->assertJsonValidationErrors(['weight']);
 });
 
+test('horse_number colliding with another entry in the same race returns 422', function () {
+    // Arrange
+    $user = User::factory()->create();
+    $entry = createRaceEntryForUpdateTest();
+    $anotherHorse = Horse::create([
+        'name' => '別の馬'.uniqid(),
+        'birth_year' => 2022,
+    ]);
+    $anotherJockey = Jockey::create([
+        'name' => '別の騎手'.uniqid(),
+    ]);
+    RaceEntry::create([
+        'race_id' => $entry->race_id,
+        'horse_id' => $anotherHorse->id,
+        'jockey_id' => $anotherJockey->id,
+        'frame_number' => 4,
+        'horse_number' => 7,
+        'weight' => 56.0,
+        'horse_weight' => 480,
+    ]);
+
+    // Act
+    $response = $this->actingAs($user)->putJson(
+        route('races.entries.update', ['race' => $entry->race->uid, 'entry' => $entry->id]),
+        validRaceEntryUpdatePayload(['horse_number' => 7]),
+    );
+
+    // Assert
+    $response->assertUnprocessable();
+    $response->assertJsonValidationErrors(['horse_number']);
+});
+
 test('non-existent entry id returns 404', function () {
     // Arrange
     $user = User::factory()->create();

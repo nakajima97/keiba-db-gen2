@@ -7,6 +7,7 @@ import type {
 	RaceInfo,
 } from "@/features/raceEntry/presentational/RaceEntryEditForm/types";
 import { useFormSubmit } from "@/hooks/useFormSubmit";
+import { update as raceEntryUpdate } from "@/routes/races/entries";
 
 export type RaceEntryEditFormContainerProps = {
 	raceUid: string;
@@ -26,7 +27,7 @@ const RaceEntryEditFormContainer = ({
 
 	const { isSubmitting, handleSubmit: submit } =
 		useFormSubmit<RaceEntryEditFormValues>({
-			url: `/races/${raceUid}/entries/${entryId}`,
+			url: raceEntryUpdate.url({ race: raceUid, entry: entryId }),
 			method: "put",
 			onSuccess: () => {
 				toast.success("出走馬を更新しました");
