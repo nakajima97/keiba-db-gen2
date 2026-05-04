@@ -197,3 +197,104 @@ test('race show returns marks as inertia props', function () {
         ->where('race.marks', fn ($marks) => is_iterable($marks))
     );
 });
+
+test('race_result_horses も race_payouts も存在しない場合、has_result が false として返される', function () {
+    // Arrange
+    $user = User::factory()->create();
+    $venue = Venue::firstOrCreate(['name' => '東京']);
+    $race = Race::create([
+        'venue_id' => $venue->id,
+        'race_date' => '2026-04-05',
+        'race_number' => 1,
+    ]);
+
+    // Act
+    $response = $this->actingAs($user)->get(route('races.show', ['race' => $race->uid]));
+
+    // Assert
+    $response->assertInertia(fn (Assert $page) => $page
+        ->component('races/show')
+        ->has('race', fn (Assert $race) => $race
+            ->where('has_result', false)
+            ->etc()
+        )
+    );
+});
+
+test('race_result_horses が存在する場合、has_result が true として返される', function () {
+    // Arrange
+    $user = User::factory()->create();
+    $venue = Venue::firstOrCreate(['name' => '東京']);
+    $race = Race::create([
+        'venue_id' => $venue->id,
+        'race_date' => '2026-04-05',
+        'race_number' => 1,
+    ]);
+    $now = now();
+    DB::table('race_result_horses')->insert([
+        'race_id' => $race->id,
+        'finishing_order' => 1,
+        'frame_number' => 2,
+        'horse_number' => 3,
+        'horse_name' => 'テスト馬A',
+        'sex_age' => '牡3',
+        'weight' => '57.0',
+        'jockey_name' => '騎手A',
+        'race_time' => '1:34.5',
+        'trainer_name' => '調教師A',
+        'popularity' => 1,
+        'created_at' => $now,
+        'updated_at' => $now,
+    ]);
+
+    // Act
+    $response = $this->actingAs($user)->get(route('races.show', ['race' => $race->uid]));
+
+    // Assert
+    $response->assertInertia(fn (Assert $page) => $page
+        ->component('races/show')
+        ->has('race', fn (Assert $race) => $race
+            ->where('has_result', true)
+            ->etc()
+        )
+    );
+});
+
+test('race_payouts が存在する場合、has_result が true として返される', function () {
+    // Arrange
+    $user = User::factory()->create();
+    $venue = Venue::firstOrCreate(['name' => '東京']);
+    $race = Race::create([
+        'venue_id' => $venue->id,
+        'race_date' => '2026-04-05',
+        'race_number' => 1,
+    ]);
+    $now = now();
+    $tanshoTicketTypeId = DB::table('ticket_types')->insertGetId([
+        'name' => 'tansho',
+        'label' => '単勝',
+        'sort_order' => 1,
+        'created_at' => $now,
+        'updated_at' => $now,
+    ]);
+    DB::table('race_payouts')->insert([
+        'race_id' => $race->id,
+        'ticket_type_id' => $tanshoTicketTypeId,
+        'payout_amount' => 610,
+        'popularity' => 2,
+        'created_at' => $now,
+        'updated_at' => $now,
+    ]);
+
+    // Act
+    $response = $this->actingAs($user)->get(route('races.show', ['race' => $race->uid]));
+
+    // Assert
+    $response->assertInertia(fn (Assert $page) => $page
+        ->component('races/show')
+        ->has('race', fn (Assert $race) => $race
+            ->where('has_result', true)
+            ->etc()
+        )
+    );
+});
