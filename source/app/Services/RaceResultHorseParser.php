@@ -24,8 +24,8 @@ namespace App\Services;
  */
 class RaceResultHorseParser
 {
-    /** 馬体重と増減（例: "500(+2)", "490(初出走)", "510(0)", "480(-4)") */
-    private const HORSE_WEIGHT_PATTERN = '/^(\d+)\(([^)]*)\)$/u';
+    /** 馬体重と増減（例: "500", "500(+2)", "490(初出走)", "510(0)", "480(-4)") */
+    private const HORSE_WEIGHT_PATTERN = '/^(\d+)(?:\(([^)]*)\))?$/u';
 
     /**
      * 着順テキストをパースし、各馬のデータを配列で返す。
@@ -367,7 +367,7 @@ class RaceResultHorseParser
     }
 
     /**
-     * 馬体重文字列（例: "500(+2)", "490(初出走)", "510(0)"）をパースする。
+     * 馬体重文字列（例: "500", "500(+2)", "490(初出走)", "510(0)"）をパースする。
      *
      * @return array{0: int|null, 1: int|null}
      *
@@ -386,6 +386,11 @@ class RaceResultHorseParser
         }
 
         $horseWeight = (int) $matches[1];
+
+        if (! isset($matches[2])) {
+            return [$horseWeight, null];
+        }
+
         $changeStr = $matches[2];
 
         if ($changeStr === '初出走') {
