@@ -10,10 +10,15 @@ use Illuminate\Database\Eloquent\Collection;
  * TicketPurchase の払い戻し金額を計算する。
  *
  * race_payouts が存在しない場合・unit_stake が null の場合は null を返す。
- * 計算式: ヒット組み合わせの払戻合計（JRA公表・100円あたり）× (unit_stake / (組み合わせ数 × 100))
+ * 計算式: ヒット組み合わせの払戻合計（JRA公表・100円あたり）× unit_stake / JRA_PAYOUT_BASE_STAKE
  */
 class CalculatePayoutAmountAction
 {
+    /**
+     * JRAが公表する払戻金額の基準購入額（100円券あたり）。
+     */
+    private const JRA_PAYOUT_BASE_STAKE = 100;
+
     public function __construct(private readonly ExpandSelectionsAction $expandSelections) {}
 
     /**
@@ -76,9 +81,7 @@ class CalculatePayoutAmountAction
             return null;
         }
 
-        $numCombinations = count($combinations);
-
-        return (int) ($totalPayout * $purchase->unit_stake / ($numCombinations * 100));
+        return (int) ($totalPayout * $purchase->unit_stake / self::JRA_PAYOUT_BASE_STAKE);
     }
 
     /**

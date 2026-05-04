@@ -838,7 +838,7 @@ test('wide で複数組み合わせがヒットした場合、payout_amount は�
         'ticket_type_id' => $wideTicketTypeId,
         'buy_type_id' => $boxBuyTypeId,
         'selections' => json_encode(['horses' => [3, 6, 11]]),
-        'unit_stake' => 300,
+        'unit_stake' => 100,
         'created_at' => $now,
         'updated_at' => $now,
     ]);
