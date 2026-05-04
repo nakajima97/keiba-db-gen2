@@ -15,7 +15,10 @@ vi.mock("@inertiajs/react", () => ({
 
 vi.mock("@/routes/races", () => ({
 	create: {
-		url: () => "/races/new",
+		url: (options?: { query?: { race_date?: string } }) =>
+			options?.query?.race_date
+				? `/races/new?race_date=${options.query.race_date}`
+				: "/races/new",
 	},
 	show: {
 		url: ({ race }: { race: string }) => `/races/${race}`,
@@ -82,6 +85,27 @@ describe("RaceList", () => {
 			).toBeGreaterThanOrEqual(1);
 		});
 
+		it("空状態の「レース情報入力」リンクも race_date クエリ付きになる", () => {
+			// Act
+			render(
+				<RaceList
+					{...baseProps}
+					races={[]}
+					selectedDate="2026-04-05"
+				/>,
+			);
+
+			// Assert（ヘッダーと空状態の両方のリンクが race_date クエリ付きであることを確認）
+			const links = screen.getAllByText("レース情報入力");
+			expect(links.length).toBeGreaterThanOrEqual(2);
+			for (const link of links) {
+				expect(link).toHaveAttribute(
+					"href",
+					"/races/new?race_date=2026-04-05",
+				);
+			}
+		});
+
 		it("テーブルが表示されない", () => {
 			// Act
 			render(<RaceList {...baseProps} races={[]} />);
@@ -143,9 +167,21 @@ describe("RaceList", () => {
 			expect(screen.getByText("レース情報入力")).toBeInTheDocument();
 		});
 
-		it("「レース情報入力」リンクの遷移先が /races/new である", () => {
+		it("「レース情報入力」リンクが selectedDate を race_date クエリパラメータに含む URL になる", () => {
 			// Act
-			render(<RaceList {...baseProps} />);
+			render(<RaceList {...baseProps} selectedDate="2026-04-05" />);
+
+			// Assert
+			const link = screen.getByText("レース情報入力");
+			expect(link).toHaveAttribute(
+				"href",
+				"/races/new?race_date=2026-04-05",
+			);
+		});
+
+		it("selectedDate が空のときは「レース情報入力」リンクの遷移先が /races/new になる", () => {
+			// Act
+			render(<RaceList {...baseProps} selectedDate="" />);
 
 			// Assert
 			const link = screen.getByText("レース情報入力");

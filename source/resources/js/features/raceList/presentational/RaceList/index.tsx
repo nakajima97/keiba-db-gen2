@@ -15,11 +15,15 @@ const RaceList = ({
 	onDateChange,
 	onVenueChange,
 }: RaceListProps) => {
+	const createRaceUrl = create.url({
+		query: { race_date: selectedDate || undefined },
+	});
+
 	return (
 		<div className="flex flex-col gap-4 p-4">
 			<div className="flex items-center justify-between">
 				<h1 className="text-xl font-semibold">レース一覧</h1>
-				<Link href={create.url()}>レース情報入力</Link>
+				<Link href={createRaceUrl}>レース情報入力</Link>
 			</div>
 
 			<div className="flex flex-wrap gap-4">
@@ -62,7 +66,7 @@ const RaceList = ({
 			{races.length === 0 ? (
 				<div className="flex flex-col items-center justify-center gap-4 py-16 text-muted-foreground">
 					<p>レースが見つかりません</p>
-					<Link href={create.url()}>レース情報入力</Link>
+					<Link href={createRaceUrl}>レース情報入力</Link>
 				</div>
 			) : (
 				<ScrollableTable>
