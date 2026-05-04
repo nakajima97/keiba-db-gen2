@@ -2,6 +2,8 @@
 
 namespace App\UseCases\TicketPurchase;
 
+use App\Enums\TicketTypeName;
+
 /**
  * TicketPurchase の selections を、券種・買い方に応じた有効な組み合わせ配列に展開する。
  *
@@ -10,22 +12,6 @@ namespace App\UseCases\TicketPurchase;
  */
 class ExpandSelectionsAction
 {
-    /** 着順を保持する券種 */
-    private const ORDERED_TYPES = ['umatan', 'sanrentan'];
-
-    /** 券種ごとの照合対象馬番数 */
-    private const TICKET_TYPE_HORSE_COUNT = [
-        'tansho' => 1,
-        'fukusho' => 1,
-        'wakuren' => 2,
-        'umaren' => 2,
-        'umatan' => 2,
-        'wide' => 2,
-        'sanrenpuku' => 3,
-        'sanrentan' => 3,
-        'tanpuku' => 2,
-    ];
-
     /**
      * 券種名・買い方名・selections から有効な組み合わせの配列を返す。
      * 未対応の券種・組み合わせが成立しない場合は空配列を返す。
@@ -35,20 +21,21 @@ class ExpandSelectionsAction
      */
     public function execute(string $ticketTypeName, string $buyTypeName, ?array $selections): array
     {
-        $horseCount = self::TICKET_TYPE_HORSE_COUNT[$ticketTypeName] ?? null;
-        if ($horseCount === null) {
+        $ticketType = TicketTypeName::tryFrom($ticketTypeName);
+        if ($ticketType === null) {
             return [];
         }
+        $horseCount = $ticketType->horseCount();
 
         // tanpuku は1馬選択で単勝+複勝の2点同時購入として扱う（normalize による重複排除を避けるため、展開ロジックを分岐させる）
-        if ($ticketTypeName === 'tanpuku') {
+        if ($ticketType === TicketTypeName::Tanpuku) {
             $horses = $this->extractIntList(($selections ?? [])['horses'] ?? []);
             $singles = array_map(static fn (int $h): array => [$h], $horses);
 
             return array_merge($singles, $singles);
         }
 
-        $isOrdered = in_array($ticketTypeName, self::ORDERED_TYPES, true);
+        $isOrdered = $ticketType->isOrdered();
         $selections = $selections ?? [];
 
         $combinations = match ($buyTypeName) {

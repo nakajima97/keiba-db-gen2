@@ -2,6 +2,7 @@
 
 namespace App\UseCases\RaceResult;
 
+use App\Enums\TicketTypeName;
 use App\Exceptions\RaceResult\ParseException;
 use App\Models\Horse;
 use App\Models\Jockey;
@@ -28,20 +29,17 @@ use Illuminate\Support\Facades\DB;
  */
 class StoreAction
 {
-    /** 券種ラベル → ticket_types.name の対応 */
+    /** 券種ラベル → ticket_types.name の対応（tanpuku は本アプリ独自で JRA テキストには現れない） */
     private const TICKET_TYPE_MAP = [
-        '単勝' => 'tansho',
-        '複勝' => 'fukusho',
-        '枠連' => 'wakuren',
-        'ワイド' => 'wide',
-        '馬連' => 'umaren',
-        '馬単' => 'umatan',
-        '3連複' => 'sanrenpuku',
-        '3連単' => 'sanrentan',
+        '単勝' => TicketTypeName::Tansho->value,
+        '複勝' => TicketTypeName::Fukusho->value,
+        '枠連' => TicketTypeName::Wakuren->value,
+        'ワイド' => TicketTypeName::Wide->value,
+        '馬連' => TicketTypeName::Umaren->value,
+        '馬単' => TicketTypeName::Umatan->value,
+        '3連複' => TicketTypeName::Sanrenpuku->value,
+        '3連単' => TicketTypeName::Sanrentan->value,
     ];
-
-    /** 順序を保持する券種（着順どおり保存） */
-    private const ORDERED_TYPES = ['umatan', 'sanrentan'];
 
     /**
      * 必須券種（枠連は任意のため含めない）。
@@ -49,8 +47,13 @@ class StoreAction
      * JRA券種のうち頭数起因で非発売となり得る唯一の券種である。
      */
     private const REQUIRED_TYPES = [
-        'tansho', 'fukusho', 'wide',
-        'umaren', 'umatan', 'sanrenpuku', 'sanrentan',
+        TicketTypeName::Tansho->value,
+        TicketTypeName::Fukusho->value,
+        TicketTypeName::Wide->value,
+        TicketTypeName::Umaren->value,
+        TicketTypeName::Umatan->value,
+        TicketTypeName::Sanrenpuku->value,
+        TicketTypeName::Sanrentan->value,
     ];
 
     public function __construct(
@@ -103,7 +106,7 @@ class StoreAction
                     'popularity' => $entry['popularity'],
                 ]);
 
-                $isOrdered = in_array($entry['ticket_type'], self::ORDERED_TYPES, true);
+                $isOrdered = TicketTypeName::from($entry['ticket_type'])->isOrdered();
                 $horseNumbers = $entry['horse_numbers'];
 
                 if (! $isOrdered) {

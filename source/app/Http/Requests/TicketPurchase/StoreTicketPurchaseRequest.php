@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\TicketPurchase;
 
+use App\Constants\Money;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -29,7 +30,7 @@ class StoreTicketPurchaseRequest extends FormRequest
             'ticket_type' => ['required', 'string', 'exists:ticket_types,name'],
             'buy_type' => ['required', 'string', 'exists:buy_types,name'],
             'selections' => ['required', 'array'],
-            'unit_stake' => ['nullable', 'integer', 'min:100'],
+            'unit_stake' => ['nullable', 'integer', 'min:'.Money::JRA_PAYOUT_BASE_STAKE],
         ];
     }
 }
