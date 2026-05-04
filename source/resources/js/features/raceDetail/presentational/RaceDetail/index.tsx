@@ -147,6 +147,9 @@ const RaceDetail = ({
 								/>
 							</th>
 						))}
+						<th className="px-4 py-3 text-left font-medium text-muted-foreground">
+							操作
+						</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -220,6 +223,14 @@ const RaceDetail = ({
 									</td>
 								);
 							})}
+							<td className="px-4 py-3">
+								<Link
+									href={`/races/${race.uid}/entries/${entry.id}/edit`}
+									className="text-primary hover:underline"
+								>
+									編集
+								</Link>
+							</td>
 						</tr>
 					))}
 				</tbody>
