@@ -40,7 +40,7 @@ const RaceEntryEditForm = ({
 		};
 
 	return (
-		<div className="mx-auto max-w-2xl space-y-8 p-4 lg:max-w-4xl lg:p-6">
+		<div className="space-y-8 p-4">
 			<div>
 				<BackButton
 					label="レース詳細へ戻る"
