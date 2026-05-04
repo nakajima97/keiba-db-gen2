@@ -35,9 +35,6 @@ const RaceEntryEditFormContainer = ({
 			},
 			onError: (validationErrors) => {
 				setErrors(validationErrors as RaceEntryEditFormErrors);
-				for (const message of Object.values(validationErrors)) {
-					toast.error(message);
-				}
 			},
 		});
 
@@ -47,7 +44,7 @@ const RaceEntryEditFormContainer = ({
 	) => {
 		setValues((prev) => {
 			if (field === "frame_number" || field === "horse_number") {
-				return { ...prev, [field]: value === "" ? 0 : Number(value) };
+				return { ...prev, [field]: value === "" ? "" : Number(value) };
 			}
 			return { ...prev, [field]: value };
 		});

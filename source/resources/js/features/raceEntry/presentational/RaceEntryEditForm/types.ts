@@ -7,8 +7,8 @@ export type RaceInfo = {
 export type RaceEntryEditFormValues = {
 	horse_name: string;
 	jockey_name: string;
-	frame_number: number;
-	horse_number: number;
+	frame_number: number | "";
+	horse_number: number | "";
 	weight: string;
 	horse_weight: string;
 };

@@ -7,6 +7,7 @@ import type {
 	RaceInfo,
 } from "@/features/raceEntry/presentational/RaceEntryEditForm/types";
 import { useFormSubmit } from "@/hooks/useFormSubmit";
+import { store as raceEntryAddStore } from "@/routes/races/entries/add";
 
 export type RaceEntryAddFormContainerProps = {
 	raceUid: string;
@@ -16,8 +17,8 @@ export type RaceEntryAddFormContainerProps = {
 const initialValues: RaceEntryEditFormValues = {
 	horse_name: "",
 	jockey_name: "",
-	frame_number: 0,
-	horse_number: 0,
+	frame_number: "",
+	horse_number: "",
 	weight: "",
 	horse_weight: "",
 };
@@ -31,7 +32,7 @@ const RaceEntryAddFormContainer = ({
 
 	const { isSubmitting, handleSubmit: submit } =
 		useFormSubmit<RaceEntryEditFormValues>({
-			url: `/races/${raceUid}/entries/add`,
+			url: raceEntryAddStore.url({ race: raceUid }),
 			method: "post",
 			onSuccess: () => {
 				toast.success("出走馬を追加しました");
@@ -39,9 +40,6 @@ const RaceEntryAddFormContainer = ({
 			},
 			onError: (validationErrors) => {
 				setErrors(validationErrors as RaceEntryEditFormErrors);
-				for (const message of Object.values(validationErrors)) {
-					toast.error(message);
-				}
 			},
 		});
 
@@ -51,7 +49,7 @@ const RaceEntryAddFormContainer = ({
 	) => {
 		setValues((prev) => {
 			if (field === "frame_number" || field === "horse_number") {
-				return { ...prev, [field]: value === "" ? 0 : Number(value) };
+				return { ...prev, [field]: value === "" ? "" : Number(value) };
 			}
 			return { ...prev, [field]: value };
 		});
