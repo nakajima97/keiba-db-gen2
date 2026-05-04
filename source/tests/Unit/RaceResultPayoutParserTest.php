@@ -2,6 +2,7 @@
 
 use App\Enums\TicketTypeName;
 use App\Services\RaceResultPayoutParser;
+use InvalidArgumentException;
 
 /**
  * 7券種すべてを含む完全なJRAコピペ形式の払戻テキスト（枠連なし）
@@ -238,7 +239,7 @@ test('throws when text is empty', function () {
 
     // Act & Assert
     expect(fn () => $parser->parse(''))
-        ->toThrow(\InvalidArgumentException::class, 'テキストが空です。');
+        ->toThrow(InvalidArgumentException::class, 'テキストが空です。');
 });
 
 test('throws when ticket-type-only line is unknown', function () {
@@ -250,7 +251,7 @@ test('throws when ticket-type-only line is unknown', function () {
     ]);
 
     // Act & Assert
-    expect(fn () => $parser->parse($text))->toThrow(\InvalidArgumentException::class);
+    expect(fn () => $parser->parse($text))->toThrow(InvalidArgumentException::class);
 });
 
 test('throws when inline format ticket type is unknown', function () {
@@ -259,7 +260,7 @@ test('throws when inline format ticket type is unknown', function () {
     $text = "謎券種\t3\t610円\t2番人気";
 
     // Act & Assert
-    expect(fn () => $parser->parse($text))->toThrow(\InvalidArgumentException::class);
+    expect(fn () => $parser->parse($text))->toThrow(InvalidArgumentException::class);
 });
 
 test('throws when line has invalid column count', function () {
@@ -271,7 +272,7 @@ test('throws when line has invalid column count', function () {
     ]);
 
     // Act & Assert
-    expect(fn () => $parser->parse($text))->toThrow(\InvalidArgumentException::class);
+    expect(fn () => $parser->parse($text))->toThrow(InvalidArgumentException::class);
 });
 
 test('throws when data line appears before any ticket type is established', function () {
@@ -280,7 +281,7 @@ test('throws when data line appears before any ticket type is established', func
     $text = "3\t610円\t2番人気";
 
     // Act & Assert
-    expect(fn () => $parser->parse($text))->toThrow(\InvalidArgumentException::class);
+    expect(fn () => $parser->parse($text))->toThrow(InvalidArgumentException::class);
 });
 
 test('throws when data column is invalid', function (string $dataLine) {
@@ -289,7 +290,7 @@ test('throws when data column is invalid', function (string $dataLine) {
     $text = "単勝\n".$dataLine;
 
     // Act & Assert
-    expect(fn () => $parser->parse($text))->toThrow(\InvalidArgumentException::class);
+    expect(fn () => $parser->parse($text))->toThrow(InvalidArgumentException::class);
 })->with([
     'empty horse number' => "\t610円\t2番人気",
     'non-numeric horse number' => "A-B\t610円\t2番人気",
@@ -322,7 +323,7 @@ test('throws when entries is empty', function () {
     $parser = new RaceResultPayoutParser;
 
     // Act & Assert
-    expect(fn () => $parser->validateAllTypesPresent([]))->toThrow(\InvalidArgumentException::class);
+    expect(fn () => $parser->validateAllTypesPresent([]))->toThrow(InvalidArgumentException::class);
 });
 
 test('throws when only wakuren is present and required types are missing', function () {
@@ -333,7 +334,7 @@ test('throws when only wakuren is present and required types are missing', funct
     ];
 
     // Act & Assert
-    expect(fn () => $parser->validateAllTypesPresent($entries))->toThrow(\InvalidArgumentException::class);
+    expect(fn () => $parser->validateAllTypesPresent($entries))->toThrow(InvalidArgumentException::class);
 });
 
 test('throws and includes missing ticket label in Japanese when one type is missing', function () {
@@ -350,7 +351,7 @@ test('throws and includes missing ticket label in Japanese when one type is miss
 
     // Act & Assert
     expect(fn () => $parser->validateAllTypesPresent($entries))
-        ->toThrow(\InvalidArgumentException::class, '単勝');
+        ->toThrow(InvalidArgumentException::class, '単勝');
 });
 
 test('throws when multiple required types are missing', function () {
@@ -365,5 +366,5 @@ test('throws when multiple required types are missing', function () {
     ];
 
     // Act & Assert
-    expect(fn () => $parser->validateAllTypesPresent($entries))->toThrow(\InvalidArgumentException::class);
+    expect(fn () => $parser->validateAllTypesPresent($entries))->toThrow(InvalidArgumentException::class);
 });
