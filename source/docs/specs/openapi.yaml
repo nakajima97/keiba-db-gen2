@@ -4,6 +4,37 @@ info:
   version: 0.1.0
 
 paths:
+  /races/{uid}/entries/{entry}:
+    put:
+      summary: 出走馬編集
+      description: |
+        Inertia ルート。成功時は 303 でレース詳細画面へリダイレクトする（JSON ボディなし）。
+        Inertia クライアントが Location ヘッダーを解釈して画面遷移する。
+      operationId: updateRaceEntry
+      tags:
+        - RaceEntry
+      parameters:
+        - $ref: '#/components/parameters/RaceUid'
+        - $ref: '#/components/parameters/EntryId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateRaceEntryRequest'
+      responses:
+        '303':
+          description: 更新成功（レース詳細画面へリダイレクト）
+          headers:
+            Location:
+              description: リダイレクト先 URL（`/races/{uid}`）
+              schema:
+                type: string
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
   /races/{uid}/result:
     post:
       summary: レース結果登録
@@ -75,8 +106,50 @@ components:
       schema:
         type: string
         example: "abc001"
+    EntryId:
+      name: entry
+      in: path
+      required: true
+      description: race_entry.id
+      schema:
+        type: integer
+        example: 12
 
   schemas:
+    UpdateRaceEntryRequest:
+      type: object
+      required:
+        - horse_name
+        - jockey_name
+        - frame_number
+        - horse_number
+        - weight
+      properties:
+        horse_name:
+          type: string
+          example: "コントレイル"
+        jockey_name:
+          type: string
+          example: "福永祐一"
+        frame_number:
+          type: integer
+          minimum: 1
+          maximum: 8
+          example: 2
+        horse_number:
+          type: integer
+          minimum: 1
+          maximum: 18
+          example: 3
+        weight:
+          type: number
+          format: float
+          example: 57.0
+        horse_weight:
+          type: integer
+          nullable: true
+          example: 486
+
     StoreRaceResultRequest:
       type: object
       required:

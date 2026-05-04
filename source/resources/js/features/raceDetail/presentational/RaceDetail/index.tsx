@@ -3,6 +3,7 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/shadcn/ui/button";
 import ScrollableTable from "@/components/presentational/ScrollableTable";
 import HorseNoteIconButton from "@/features/horseNote/presentational/HorseNoteIconButton";
+import { edit as raceEntryEdit } from "@/routes/races/entries";
 import { formatDateDisplay } from "@/utils/date";
 import RaceMarkSelect from "./RaceMarkSelect";
 import RaceMarkColumnHeader from "./RaceMarkColumnHeader";
@@ -147,6 +148,9 @@ const RaceDetail = ({
 								/>
 							</th>
 						))}
+						<th className="px-4 py-3 text-left font-medium text-muted-foreground">
+							操作
+						</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -220,6 +224,14 @@ const RaceDetail = ({
 									</td>
 								);
 							})}
+							<td className="px-4 py-3">
+								<Link
+									href={raceEntryEdit.url({ race: race.uid, entry: entry.id })}
+									className="text-primary hover:underline"
+								>
+									編集
+								</Link>
+							</td>
 						</tr>
 					))}
 				</tbody>
