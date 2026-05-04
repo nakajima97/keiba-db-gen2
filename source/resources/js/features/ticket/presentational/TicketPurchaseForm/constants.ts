@@ -1,3 +1,5 @@
+import { TICKET_TYPE_LABELS, TICKET_TYPE_NAMES } from "@/constants/ticketType";
+
 export const VENUES = [
 	"東京",
 	"中山",
@@ -11,18 +13,19 @@ export const VENUES = [
 	"中京",
 ] as const;
 
-export const TICKET_TYPES = [
-	{ id: "tansho", label: "単勝" },
-	{ id: "fukusho", label: "複勝" },
-	{ id: "wakuren", label: "枠連" },
-	{ id: "umaren", label: "馬連" },
-	{ id: "umatan", label: "馬単" },
-	{ id: "wide", label: "ワイド" },
-	{ id: "sanrenpuku", label: "三連複" },
-	{ id: "sanrentan", label: "三連単" },
-] as const;
+/** UI 表示対象の券種 (tanpuku は本アプリ独自概念のため UI からは選択させない) */
+export type TicketTypeId = Exclude<
+	(typeof TICKET_TYPE_NAMES)[number],
+	"tanpuku"
+>;
 
-export type TicketTypeId = (typeof TICKET_TYPES)[number]["id"];
+export const TICKET_TYPES: ReadonlyArray<{ id: TicketTypeId; label: string }> =
+	TICKET_TYPE_NAMES.filter((id): id is TicketTypeId => id !== "tanpuku").map(
+		(id) => ({
+			id,
+			label: TICKET_TYPE_LABELS[id],
+		}),
+	);
 
 export const BUY_TYPE_MAP: Record<
 	TicketTypeId,
