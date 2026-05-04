@@ -15,8 +15,10 @@ vi.mock("@inertiajs/react", () => ({
 
 vi.mock("@/routes/races", () => ({
 	create: {
-		url: ({ race_date }: { race_date?: string } = {}) =>
-			race_date ? `/races/new?race_date=${race_date}` : "/races/new",
+		url: (options?: { query?: { race_date?: string } }) =>
+			options?.query?.race_date
+				? `/races/new?race_date=${options.query.race_date}`
+				: "/races/new",
 	},
 	show: {
 		url: ({ race }: { race: string }) => `/races/${race}`,
