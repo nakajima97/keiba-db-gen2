@@ -25,6 +25,8 @@ const RaceEntryEditForm = ({
 	isSubmitting,
 	onChange,
 	onSubmit,
+	headingLabel = "出走馬編集",
+	submitLabel = "更新",
 }: RaceEntryEditFormProps) => {
 	const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
@@ -46,7 +48,7 @@ const RaceEntryEditForm = ({
 				/>
 			</div>
 
-			<h1 className="text-xl font-semibold">出走馬編集</h1>
+			<h1 className="text-xl font-semibold">{headingLabel}</h1>
 
 			<ScrollableTable>
 				<tbody>
@@ -203,7 +205,7 @@ const RaceEntryEditForm = ({
 
 				<div className="flex gap-3 pt-2">
 					<Button type="submit" className="flex-1" disabled={isSubmitting}>
-						{isSubmitting ? "更新中..." : "更新"}
+						{isSubmitting ? `${submitLabel}中...` : submitLabel}
 					</Button>
 				</div>
 			</form>

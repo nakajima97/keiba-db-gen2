@@ -25,4 +25,6 @@ export type RaceEntryEditFormProps = {
 	isSubmitting: boolean;
 	onChange: (field: keyof RaceEntryEditFormValues, value: string) => void;
 	onSubmit: () => void;
+	headingLabel?: string;
+	submitLabel?: string;
 };

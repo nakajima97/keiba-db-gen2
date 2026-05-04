@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\RaceEntry\AddSingleRaceEntryRequest;
 use App\Http\Requests\RaceEntry\StoreRaceEntryRequest;
 use App\Http\Requests\RaceEntry\UpdateRaceEntryRequest;
 use App\Models\Race;
 use App\Models\RaceEntry;
+use App\UseCases\RaceEntry\AddSingleAction;
 use App\UseCases\RaceEntry\StoreAction;
 use App\UseCases\RaceEntry\UpdateAction;
 use Carbon\CarbonInterface;
@@ -35,6 +37,40 @@ class RaceEntryController extends Controller
     public function store(Race $race, StoreRaceEntryRequest $request, StoreAction $action): RedirectResponse
     {
         $action->execute($race, (string) $request->validated('paste_text'));
+
+        return redirect()->route('races.show', ['race' => $race->uid]);
+    }
+
+    public function addCreate(Race $race): Response
+    {
+        $race->load('venue');
+
+        return Inertia::render('races/entries/add', [
+            'race_uid' => $race->uid,
+            'race_info' => [
+                'race_date' => $race->race_date instanceof CarbonInterface
+                    ? $race->race_date->format('Y-m-d')
+                    : (string) $race->race_date,
+                'venue_name' => $race->venue->name,
+                'race_number' => (int) $race->race_number,
+            ],
+        ]);
+    }
+
+    public function addStore(Race $race, AddSingleRaceEntryRequest $request, AddSingleAction $action): RedirectResponse
+    {
+        /** @var array{
+         *     horse_name: string,
+         *     jockey_name: string,
+         *     frame_number: int,
+         *     horse_number: int,
+         *     weight: float|string,
+         *     horse_weight: int|string|null,
+         * } $data
+         */
+        $data = $request->validated();
+
+        $action->execute($race, $data);
 
         return redirect()->route('races.show', ['race' => $race->uid]);
     }
