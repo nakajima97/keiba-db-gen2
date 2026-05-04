@@ -7,6 +7,15 @@ paths:
   /races/{uid}/result:
     post:
       summary: レース結果登録
+      description: |
+        払戻データ（payouts）には以下の券種を含める必要がある:
+        - 必須: tansho（単勝）, fukusho（複勝）, wide（ワイド）, umaren（馬連）, umatan（馬単）, sanrenpuku（3連複）, sanrentan（3連単）
+        - 任意: wakuren（枠連） — 出走頭数が少ないレースなど、JRAで枠連が発売されない場合は省略してよい
+
+        補足: フロントエンドからは JRA 公式サイトの払戻情報を貼り付けたテキストを送信する。
+        枠連が非発売のレースでは、貼り付けテキストに「枠連」セクションヘッダ行は存在するが、その下に
+        データ行が一切なく、次のセクション（ワイド）ヘッダが続く形になる。この場合 wakuren を含まない
+        payouts を生成する。
       operationId: storeRaceResult
       tags:
         - RaceResult
