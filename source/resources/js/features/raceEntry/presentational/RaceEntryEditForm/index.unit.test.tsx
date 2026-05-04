@@ -89,9 +89,9 @@ describe("RaceEntryEditForm", () => {
 		).toBeInTheDocument();
 	});
 
-	it("isSubmitting=true のとき全フィールドが disabled、ボタンに「更新中...」が表示される", () => {
+	it("submitLabel='更新' かつ isSubmitting=true のとき全フィールドが disabled、ボタンに「更新中...」が表示される", () => {
 		// Act
-		renderForm({ isSubmitting: true });
+		renderForm({ submitLabel: "更新", isSubmitting: true });
 
 		// Assert
 		expect(screen.getByLabelText("馬名")).toBeDisabled();
@@ -104,16 +104,33 @@ describe("RaceEntryEditForm", () => {
 		expect(submitButton).toBeDisabled();
 	});
 
-	it("フォームを submit すると onSubmit が呼ばれる", async () => {
+	it("submitLabel='更新' を渡すとフォームを submit すると onSubmit が呼ばれる", async () => {
 		// Arrange
 		const onSubmit = vi.fn();
 		const user = userEvent.setup();
-		renderForm({ onSubmit });
+		renderForm({ submitLabel: "更新", onSubmit });
 
 		// Act
 		await user.click(screen.getByRole("button", { name: "更新" }));
 
 		// Assert
 		expect(onSubmit).toHaveBeenCalledTimes(1);
+	});
+
+	it("submitLabel='追加' を渡すとボタンに「追加」が表示される", () => {
+		// Act
+		renderForm({ submitLabel: "追加" });
+
+		// Assert
+		expect(screen.getByRole("button", { name: "追加" })).toBeInTheDocument();
+	});
+
+	it("submitLabel='追加' かつ isSubmitting=true のときボタンに「追加中...」が表示される", () => {
+		// Act
+		renderForm({ submitLabel: "追加", isSubmitting: true });
+
+		// Assert
+		const submitButton = screen.getByRole("button", { name: "追加中..." });
+		expect(submitButton).toBeDisabled();
 	});
 });
