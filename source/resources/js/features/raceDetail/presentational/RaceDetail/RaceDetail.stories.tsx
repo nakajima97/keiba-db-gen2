@@ -77,6 +77,7 @@ const emptyMarksRace: RaceDetailProps["race"] = {
 	entries: baseEntries,
 	mark_columns: ownColumnOnly,
 	marks: [],
+	has_result: false,
 };
 
 export const NoMarks: Story = {
