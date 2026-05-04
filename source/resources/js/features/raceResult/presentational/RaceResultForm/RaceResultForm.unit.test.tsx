@@ -3,18 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi } from "vitest";
 import RaceResultForm from "./index";
 
-vi.mock("@inertiajs/react", () => ({
-	Link: ({
-		href,
-		children,
-	}: {
-		href: string;
-		children: React.ReactNode;
-	}) => <a href={href}>{children}</a>,
-}));
-
 const baseProps = {
-	raceUid: "test-race-uid",
 	venueName: "東京",
 	raceDate: "2026-04-05",
 	raceNumber: 1,
@@ -215,26 +204,28 @@ describe("RaceResultForm", () => {
 	});
 
 	describe("戻るボタン", () => {
-		it("「レース結果へ戻る」テキストのリンクが表示される", () => {
+		it("「戻る」テキストのボタンが表示される", () => {
 			// Act
 			render(<RaceResultForm {...baseProps} />);
 
 			// Assert
 			expect(
-				screen.getByRole("link", { name: "レース結果へ戻る" }),
+				screen.getByRole("button", { name: "戻る" }),
 			).toBeInTheDocument();
 		});
 
-		it("「レース結果へ戻る」リンクの href が `/races/{raceUid}/result/edit` になっている", () => {
+		it("「戻る」ボタンをクリックすると window.history.back() が呼ばれる", async () => {
+			// Arrange
+			const backSpy = vi.spyOn(window.history, "back").mockImplementation(() => {});
+			const user = userEvent.setup();
+
 			// Act
 			render(<RaceResultForm {...baseProps} />);
+			await user.click(screen.getByRole("button", { name: "戻る" }));
 
 			// Assert
-			const link = screen.getByRole("link", { name: "レース結果へ戻る" });
-			expect(link).toHaveAttribute(
-				"href",
-				"/races/test-race-uid/result/edit",
-			);
+			expect(backSpy).toHaveBeenCalledTimes(1);
+			backSpy.mockRestore();
 		});
 	});
 });
