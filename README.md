@@ -101,8 +101,11 @@ cd ../keiba-db-gen2-wt/issue-130/source
 # マイグレーション
 ./vendor/bin/sail artisan migrate
 
-# テスト（worktree 独立の DB を使用）
-DB_DATABASE=testing_wt1 ./vendor/bin/sail artisan test
+# プロジェクトルート（CLAUDE.md がある階層）に戻る
+cd ../
+
+# テスト（worktree 独立の DB を使用、source/ で実行）
+cd source && DB_DATABASE=testing_wt1 ./vendor/bin/sail artisan test
 ```
 
 ### worktree 削除
