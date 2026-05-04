@@ -30,6 +30,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/races/{race:uid}/entries/new', [RaceEntryController::class, 'create'])->name('races.entries.create');
     Route::post('/races/{race:uid}/entries', [RaceEntryController::class, 'store'])->name('races.entries.store');
+    Route::get('/races/{race:uid}/entries/{entry}/edit', [RaceEntryController::class, 'edit'])->name('races.entries.edit');
+    Route::put('/races/{race:uid}/entries/{entry}', [RaceEntryController::class, 'update'])->name('races.entries.update');
 
     Route::get('/races/{uid}/result/new', [RaceResultController::class, 'create'])->name('races.result.create');
     Route::post('/races/{uid}/result', [RaceResultController::class, 'store'])->name('races.result.store');

@@ -85,7 +85,7 @@ test('unauthenticated user is redirected when updating race entry', function () 
     $entry = createRaceEntryForUpdateTest();
 
     // Act
-    $response = $this->putJson(
+    $response = $this->put(
         route('races.entries.update', ['race' => $entry->race->uid, 'entry' => $entry->id]),
         validRaceEntryUpdatePayload(),
     );
