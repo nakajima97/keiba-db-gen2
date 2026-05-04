@@ -329,7 +329,9 @@ test('horse_number colliding with another entry in the same race returns 422', f
 
     // Assert
     $response->assertUnprocessable();
-    $response->assertJsonValidationErrors(['horse_number']);
+    $response->assertJsonValidationErrors([
+        'horse_number' => '同じレース内でこの馬番は既に使われています。',
+    ]);
 });
 
 test('non-existent entry id returns 404', function () {

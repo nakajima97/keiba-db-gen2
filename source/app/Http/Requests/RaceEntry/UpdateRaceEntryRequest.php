@@ -41,4 +41,14 @@ class UpdateRaceEntryRequest extends FormRequest
             'horse_weight' => ['nullable', 'integer'],
         ];
     }
+
+    /**
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'horse_number.unique' => '同じレース内でこの馬番は既に使われています。',
+        ];
+    }
 }
