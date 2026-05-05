@@ -82,8 +82,7 @@ test('period を省略した場合は 1m がデフォルトとして返る', fun
  * Insights テスト用の馬券購入データを作成するヘルパー。
  *
  * @param  array<string, mixed>  $selections
- * @param  list<array{horse_number: int, finishing_order: int, popularity: int}>  $resultHorses
- *                                                                                              `[]` のときレース結果未登録扱い（race_result_horses を作らない）。
+ * @param  list<array{horse_number: int, finishing_order: int, popularity: int}>  $resultHorses  `[]` のときレース結果未登録扱い（race_result_horses を作らない）。
  */
 function createInsightsTicket(
     User $user,
