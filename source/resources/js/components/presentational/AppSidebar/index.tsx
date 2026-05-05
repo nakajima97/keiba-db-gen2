@@ -1,5 +1,11 @@
 import { Link } from "@inertiajs/react";
-import { BookOpen, Flag, FolderGit2, LayoutGrid } from "lucide-react";
+import {
+	BarChart3,
+	BookOpen,
+	Flag,
+	FolderGit2,
+	LayoutGrid,
+} from "lucide-react";
 import AppLogo from "@/components/presentational/AppLogo";
 import { NavFooter } from "@/components/presentational/NavFooter";
 import { NavMain } from "@/components/presentational/NavMain";
@@ -33,6 +39,12 @@ const mainNavItems: NavItem[] = [
 		title: "Races",
 		href: racesIndex(),
 		icon: Flag,
+	},
+	{
+		title: "Insights",
+		// Wayfinder ルートは実装フェーズで定義する。それまでは文字列パスで暫定対応する。
+		href: "/insights",
+		icon: BarChart3,
 	},
 ];
 

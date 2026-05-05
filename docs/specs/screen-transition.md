@@ -22,4 +22,6 @@ flowchart TD
     RaceDetail -->|レース結果を確認・編集ボタン（入力済み）| RaceResultEdit
     RaceDetail -->|馬名リンク| HorseDetail[競走馬詳細画面\n/horses/horse]
     RaceResultEdit -->|馬名リンク| HorseDetail
+    Nav -->|Insights| Insights[振り返り画面\n/insights]
+    Insights -->|直近サンプル一覧の行クリック| RaceDetail
 ```
