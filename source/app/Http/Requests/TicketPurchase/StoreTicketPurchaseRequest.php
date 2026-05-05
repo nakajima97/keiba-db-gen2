@@ -3,6 +3,7 @@
 namespace App\Http\Requests\TicketPurchase;
 
 use App\Constants\Money;
+use App\Constants\Race;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -26,7 +27,7 @@ class StoreTicketPurchaseRequest extends FormRequest
         return [
             'venue' => ['required', 'string', 'exists:venues,name'],
             'race_date' => ['nullable', 'date'],
-            'race_number' => ['nullable', 'integer', 'min:1', 'max:12'],
+            'race_number' => ['nullable', 'integer', 'min:1', 'max:'.Race::MAX_RACE_NUMBER],
             'ticket_type' => ['required', 'string', 'exists:ticket_types,name'],
             'buy_type' => ['required', 'string', 'exists:buy_types,name'],
             'selections' => ['required', 'array'],
