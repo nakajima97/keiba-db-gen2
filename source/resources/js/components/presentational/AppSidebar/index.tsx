@@ -19,7 +19,7 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 } from "@/components/shadcn/ui/sidebar";
-import { dashboard } from "@/routes";
+import { dashboard, insights } from "@/routes";
 import { index as racesIndex } from "@/routes/races";
 import { index } from "@/routes/tickets";
 import type { NavItem } from "@/types";
@@ -42,8 +42,7 @@ const mainNavItems: NavItem[] = [
 	},
 	{
 		title: "Insights",
-		// Wayfinder ルートは実装フェーズで定義する。それまでは文字列パスで暫定対応する。
-		href: "/insights",
+		href: insights(),
 		icon: BarChart3,
 	},
 ];

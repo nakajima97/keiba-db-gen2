@@ -231,14 +231,14 @@ describe("InsightsView", () => {
 			// Arrange
 			const props: InsightsViewProps = {
 				...baseProps,
-				summary: { ...dummySummary, return_rate: 110.0 },
+				summary: { ...dummySummary, return_rate: 125.5 },
 			};
 
 			// Act
 			render(<InsightsView {...props} />);
 
 			// Assert
-			const returnRateCell = screen.getByText("110.0%");
+			const returnRateCell = screen.getByText("125.5%");
 			expect(returnRateCell).toHaveClass("text-green-600");
 		});
 
