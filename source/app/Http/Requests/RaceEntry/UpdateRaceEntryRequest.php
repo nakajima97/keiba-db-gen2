@@ -2,14 +2,16 @@
 
 namespace App\Http\Requests\RaceEntry;
 
+use App\Concerns\RaceEntryValidationRules;
 use App\Models\Race;
 use App\Models\RaceEntry;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class UpdateRaceEntryRequest extends FormRequest
 {
+    use RaceEntryValidationRules;
+
     public function authorize(): bool
     {
         return $this->user() !== null;
@@ -25,21 +27,7 @@ class UpdateRaceEntryRequest extends FormRequest
         /** @var RaceEntry $entry */
         $entry = $this->route('entry');
 
-        return [
-            'horse_name' => ['required', 'string'],
-            'jockey_name' => ['required', 'string'],
-            'frame_number' => ['required', 'integer', 'between:1,8'],
-            'horse_number' => [
-                'required',
-                'integer',
-                'between:1,18',
-                Rule::unique('race_entries', 'horse_number')
-                    ->where(fn ($query) => $query->where('race_id', $race->id))
-                    ->ignore($entry->id),
-            ],
-            'weight' => ['required', 'numeric'],
-            'horse_weight' => ['nullable', 'integer'],
-        ];
+        return $this->raceEntryRules($race, $entry->id);
     }
 
     /**

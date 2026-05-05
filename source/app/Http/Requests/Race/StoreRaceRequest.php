@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Race;
 
+use App\Constants\Race;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -20,7 +21,7 @@ class StoreRaceRequest extends FormRequest
         return [
             'venue_id' => ['required', 'integer', 'exists:venues,id'],
             'race_date' => ['required', 'date'],
-            'race_number' => ['required', 'integer', 'between:1,12'],
+            'race_number' => ['required', 'integer', 'between:1,'.Race::MAX_RACE_NUMBER],
             'race_name' => ['nullable', 'string'],
             'paste_text' => ['required', 'string'],
         ];
