@@ -1,5 +1,11 @@
 import { Link } from "@inertiajs/react";
-import { BookOpen, Flag, FolderGit2, LayoutGrid } from "lucide-react";
+import {
+	BarChart3,
+	BookOpen,
+	Flag,
+	FolderGit2,
+	LayoutGrid,
+} from "lucide-react";
 import AppLogo from "@/components/presentational/AppLogo";
 import { NavFooter } from "@/components/presentational/NavFooter";
 import { NavMain } from "@/components/presentational/NavMain";
@@ -13,7 +19,7 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 } from "@/components/shadcn/ui/sidebar";
-import { dashboard } from "@/routes";
+import { dashboard, insights } from "@/routes";
 import { index as racesIndex } from "@/routes/races";
 import { index } from "@/routes/tickets";
 import type { NavItem } from "@/types";
@@ -33,6 +39,11 @@ const mainNavItems: NavItem[] = [
 		title: "Races",
 		href: racesIndex(),
 		icon: Flag,
+	},
+	{
+		title: "Insights",
+		href: insights(),
+		icon: BarChart3,
 	},
 ];
 

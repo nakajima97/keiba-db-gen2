@@ -3,6 +3,7 @@
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HorseController;
 use App\Http\Controllers\HorseNoteController;
+use App\Http\Controllers\InsightsController;
 use App\Http\Controllers\RaceController;
 use App\Http\Controllers\RaceEntryController;
 use App\Http\Controllers\RaceMarkColumnController;
@@ -19,6 +20,7 @@ Route::inertia('/', 'welcome', [
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'show'])->name('dashboard');
+    Route::get('/insights', [InsightsController::class, 'index'])->name('insights');
     Route::get('/tickets', [TicketPurchaseController::class, 'index'])->name('tickets.index');
     Route::get('/tickets/new', [TicketPurchaseController::class, 'create'])->name('tickets.new');
     Route::post('/tickets', [TicketPurchaseController::class, 'store'])->name('tickets.store');
