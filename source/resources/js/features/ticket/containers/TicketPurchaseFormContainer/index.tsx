@@ -58,14 +58,20 @@ const TicketPurchaseFormContainer = ({
 	>(initialNagashiDirection);
 
 	const handleTicketTypeChange = (id: TicketTypeId) => {
-		form.setData("ticket_type", id);
-		form.setData("buy_type", BUY_TYPE_MAP[id][0].id);
-		form.setData("selections", {});
+		form.setData((prev) => ({
+			...prev,
+			ticket_type: id,
+			buy_type: BUY_TYPE_MAP[id][0].id,
+			selections: {},
+		}));
 	};
 
 	const handleBuyTypeChange = (id: string) => {
-		form.setData("buy_type", id);
-		form.setData("selections", {});
+		form.setData((prev) => ({
+			...prev,
+			buy_type: id,
+			selections: {},
+		}));
 	};
 
 	const handleSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
@@ -105,10 +111,10 @@ const TicketPurchaseFormContainer = ({
 				onAxisCountChange={setSelectedAxisCount}
 				onNagashiDirectionChange={setSelectedNagashiDirection}
 				onHorsesChange={(groupKey, horses) =>
-					form.setData("selections", {
-						...form.data.selections,
-						[groupKey]: horses,
-					})
+					form.setData((prev) => ({
+						...prev,
+						selections: { ...prev.selections, [groupKey]: horses },
+					}))
 				}
 				onUnitStakeChange={(value) => form.setData("unit_stake", value)}
 			/>

@@ -49,7 +49,6 @@ const RaceEntryAddFormContainer = ({
 		form.post(raceEntryAddStore.url({ race: raceUid }), {
 			onSuccess: () => {
 				toast.success("出走馬を追加しました");
-				form.clearErrors();
 				form.reset();
 			},
 		});

@@ -37,7 +37,6 @@ const RaceEntryEditFormContainer = ({
 		form.put(raceEntryUpdate.url({ race: raceUid, entry: entryId }), {
 			onSuccess: () => {
 				toast.success("出走馬を更新しました");
-				form.clearErrors();
 			},
 		});
 	};
