@@ -1,12 +1,10 @@
-import { useState } from "react";
+import { useForm } from "@inertiajs/react";
 import { toast } from "sonner";
 import RaceEntryEditForm from "@/features/raceEntry/presentational/RaceEntryEditForm";
 import type {
-	RaceEntryEditFormErrors,
 	RaceEntryEditFormValues,
 	RaceInfo,
 } from "@/features/raceEntry/presentational/RaceEntryEditForm/types";
-import { useFormSubmit } from "@/hooks/useFormSubmit";
 import { update as raceEntryUpdate } from "@/routes/races/entries";
 
 export type RaceEntryEditFormContainerProps = {
@@ -22,45 +20,34 @@ const RaceEntryEditFormContainer = ({
 	raceInfo,
 	initialValues,
 }: RaceEntryEditFormContainerProps) => {
-	const [values, setValues] = useState<RaceEntryEditFormValues>(initialValues);
-	const [errors, setErrors] = useState<RaceEntryEditFormErrors>({});
-
-	const { isSubmitting, handleSubmit: submit } =
-		useFormSubmit<RaceEntryEditFormValues>({
-			url: raceEntryUpdate.url({ race: raceUid, entry: entryId }),
-			method: "put",
-			onSuccess: () => {
-				toast.success("出走馬を更新しました");
-				setErrors({});
-			},
-			onError: (validationErrors) => {
-				setErrors(validationErrors as RaceEntryEditFormErrors);
-			},
-		});
+	const form = useForm<RaceEntryEditFormValues>(initialValues);
 
 	const handleChange = (
 		field: keyof RaceEntryEditFormValues,
 		value: string,
 	) => {
-		setValues((prev) => {
-			if (field === "frame_number" || field === "horse_number") {
-				return { ...prev, [field]: value === "" ? "" : Number(value) };
-			}
-			return { ...prev, [field]: value };
-		});
+		if (field === "frame_number" || field === "horse_number") {
+			form.setData(field, value === "" ? "" : Number(value));
+		} else {
+			form.setData(field, value);
+		}
 	};
 
 	const handleSubmit = () => {
-		submit(values);
+		form.put(raceEntryUpdate.url({ race: raceUid, entry: entryId }), {
+			onSuccess: () => {
+				toast.success("出走馬を更新しました");
+			},
+		});
 	};
 
 	return (
 		<RaceEntryEditForm
 			raceUid={raceUid}
 			raceInfo={raceInfo}
-			values={values}
-			errors={errors}
-			isSubmitting={isSubmitting}
+			values={form.data}
+			errors={form.errors}
+			isSubmitting={form.processing}
 			onChange={handleChange}
 			onSubmit={handleSubmit}
 		/>

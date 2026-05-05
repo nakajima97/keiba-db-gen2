@@ -3,15 +3,23 @@ import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import TicketPurchaseFormContainer from "./index";
 
-vi.mock("@inertiajs/react", () => ({
-	router: {
-		post: vi.fn(),
-		visit: vi.fn(),
-		reload: vi.fn(),
-	},
-}));
+vi.mock("@inertiajs/core", async () => {
+	const actual =
+		await vi.importActual<typeof import("@inertiajs/core")>("@inertiajs/core");
+	return {
+		...actual,
+		router: {
+			post: vi.fn(),
+			put: vi.fn(),
+			patch: vi.fn(),
+			delete: vi.fn(),
+			visit: vi.fn(),
+			reload: vi.fn(),
+		},
+	};
+});
 
-import { router } from "@inertiajs/react";
+import { router } from "@inertiajs/core";
 
 const defaultProps = {
 	initialVenue: "東京",

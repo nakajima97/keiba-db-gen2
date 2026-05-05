@@ -25,7 +25,12 @@ export default defineConfig({
       test: {
         environment: 'jsdom',
         globals: true,
-        setupFiles: ['./vitest.setup.ts']
+        setupFiles: ['./vitest.setup.ts'],
+        server: {
+          deps: {
+            inline: ['@inertiajs/react', '@inertiajs/core'],
+          },
+        },
       }
     }, {
       extends: true,
