@@ -5,7 +5,6 @@ namespace App\UseCases\RaceMarkColumn;
 use App\Models\Race;
 use App\Models\RaceMarkColumn;
 use App\Models\User;
-use Illuminate\Database\UniqueConstraintViolationException;
 
 /**
  * 認証ユーザー所有の印列を display_order 昇順で返す。
@@ -13,12 +12,14 @@ use Illuminate\Database\UniqueConstraintViolationException;
  */
 class IndexAction
 {
+    public function __construct(private EnsureOwnColumnExistsAction $ensureOwnColumnExistsAction) {}
+
     /**
      * @return array<int, array{id: int, type: string, label: string|null, display_order: int}>
      */
     public function execute(Race $race, User $user): array
     {
-        $this->ensureOwnColumnExists($race, $user);
+        $this->ensureOwnColumnExistsAction->execute($race, $user);
 
         return RaceMarkColumn::query()
             ->where('race_id', $race->id)
@@ -32,24 +33,5 @@ class IndexAction
                 'display_order' => (int) $column->display_order,
             ])
             ->all();
-    }
-
-    private function ensureOwnColumnExists(Race $race, User $user): void
-    {
-        try {
-            RaceMarkColumn::firstOrCreate(
-                [
-                    'race_id' => $race->id,
-                    'user_id' => $user->id,
-                    'column_type' => 'own',
-                ],
-                [
-                    'label' => null,
-                    'display_order' => 0,
-                ],
-            );
-        } catch (UniqueConstraintViolationException) {
-            // 別リクエストが先に作成済み。次のクエリで読めるので無視。
-        }
     }
 }

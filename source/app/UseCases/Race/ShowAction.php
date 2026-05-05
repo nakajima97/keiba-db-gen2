@@ -7,8 +7,8 @@ use App\Models\RaceMarkColumn;
 use App\Models\RaceMarkMemo;
 use App\Models\User;
 use App\UseCases\HorseNote\LoadNotesByHorseId;
+use App\UseCases\RaceMarkColumn\EnsureOwnColumnExistsAction;
 use Carbon\CarbonInterface;
-use Illuminate\Database\UniqueConstraintViolationException;
 
 /**
  * レースと出馬表（馬・騎手含む）に加え、認証ユーザーの印列・印データ・競走馬メモを取得し、
@@ -16,7 +16,10 @@ use Illuminate\Database\UniqueConstraintViolationException;
  */
 class ShowAction
 {
-    public function __construct(private LoadNotesByHorseId $loadNotesByHorseId) {}
+    public function __construct(
+        private LoadNotesByHorseId $loadNotesByHorseId,
+        private EnsureOwnColumnExistsAction $ensureOwnColumnExistsAction,
+    ) {}
 
     /**
      * @return array{
@@ -51,7 +54,7 @@ class ShowAction
             'raceEntries.jockey',
         ]);
 
-        $this->ensureOwnColumnExists($race, $user);
+        $this->ensureOwnColumnExistsAction->execute($race, $user);
 
         $columns = RaceMarkColumn::query()
             ->where('race_id', $race->id)
@@ -119,24 +122,5 @@ class ShowAction
             'mark_memos' => $markMemos,
             'has_result' => $race->raceResultHorses()->exists() || $race->racePayouts()->exists(),
         ];
-    }
-
-    private function ensureOwnColumnExists(Race $race, User $user): void
-    {
-        try {
-            RaceMarkColumn::firstOrCreate(
-                [
-                    'race_id' => $race->id,
-                    'user_id' => $user->id,
-                    'column_type' => 'own',
-                ],
-                [
-                    'label' => null,
-                    'display_order' => 0,
-                ],
-            );
-        } catch (UniqueConstraintViolationException) {
-            // 別リクエストが先に作成済み。次のクエリで読めるので無視。
-        }
     }
 }
