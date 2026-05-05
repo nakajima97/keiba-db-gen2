@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\TicketPurchase\StoreTicketPurchaseRequest;
+use App\Models\TicketPurchase;
+use App\UseCases\TicketPurchase\DestroyAction;
 use App\UseCases\TicketPurchase\IndexAction;
 use App\UseCases\TicketPurchase\StoreAction;
 use Illuminate\Http\RedirectResponse;
@@ -42,5 +44,12 @@ class TicketPurchaseController extends Controller
         session()->flash('last_race_number', $validated['race_number']);
 
         return redirect()->route('tickets.new');
+    }
+
+    public function destroy(TicketPurchase $ticketPurchase, Request $request, DestroyAction $action): RedirectResponse
+    {
+        $action->execute($ticketPurchase, $request->user());
+
+        return redirect()->route('tickets.index');
     }
 }

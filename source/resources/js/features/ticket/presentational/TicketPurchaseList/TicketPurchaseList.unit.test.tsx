@@ -38,6 +38,7 @@ const baseProps: TicketPurchaseListProps = {
 	hasMore: false,
 	isLoading: false,
 	onLoadMore: noop,
+	onDelete: noop,
 };
 
 describe("TicketPurchaseList", () => {
@@ -197,6 +198,27 @@ describe("TicketPurchaseList", () => {
 
 			// Assert
 			expect(screen.getByText("3")).toBeInTheDocument();
+		});
+
+		it("テーブルヘッダーに「操作」列が表示される", () => {
+			// Act
+			render(<TicketPurchaseList {...baseProps} />);
+
+			// Assert
+			expect(screen.getByText("操作")).toBeInTheDocument();
+		});
+
+		it("削除ボタンをクリックすると onDelete(id) が呼ばれる", async () => {
+			// Arrange
+			const onDelete = vi.fn();
+			const user = userEvent.setup();
+
+			// Act
+			render(<TicketPurchaseList {...baseProps} onDelete={onDelete} />);
+			await user.click(screen.getByRole("button", { name: "削除" }));
+
+			// Assert
+			expect(onDelete).toHaveBeenCalledWith(1);
 		});
 	});
 
