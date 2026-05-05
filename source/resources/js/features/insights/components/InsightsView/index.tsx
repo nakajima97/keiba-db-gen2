@@ -367,7 +367,9 @@ const InsightsView = ({
 											key={row.month}
 											className="border-b last:border-0 hover:bg-muted/30"
 										>
-											<td className="px-4 py-3">{row.month}</td>
+											<td className="px-4 py-3">
+												{row.month.replace("-", "/")}
+											</td>
 											<td className="px-4 py-3 text-right tabular-nums">
 												{row.count.toLocaleString()}
 											</td>

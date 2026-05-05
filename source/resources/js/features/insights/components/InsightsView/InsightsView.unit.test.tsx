@@ -284,12 +284,12 @@ describe("InsightsView", () => {
 			expect(screen.getByText("月別の記録がありません")).toBeInTheDocument();
 		});
 
-		it("データがあるとき月の値（2026-04）が表示される", () => {
+		it("データがあるとき月の値が `YYYY/MM` 形式で表示される", () => {
 			// Act
 			render(<InsightsView {...baseProps} />);
 
 			// Assert
-			expect(screen.getByText("2026-04")).toBeInTheDocument();
+			expect(screen.getByText("2026/04")).toBeInTheDocument();
 		});
 
 		it("行の回収率 >= 100 に text-green-600 が適用される", () => {
