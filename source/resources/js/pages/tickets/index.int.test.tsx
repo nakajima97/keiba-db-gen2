@@ -40,6 +40,9 @@ vi.mock("@/routes/tickets", () => ({
 	newMethod: {
 		url: () => "/tickets/new",
 	},
+	destroy: {
+		url: (id: number) => `/tickets/${id}`,
+	},
 }));
 
 describe("TicketsIndex ページ", () => {

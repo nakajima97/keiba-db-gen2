@@ -1,6 +1,7 @@
 import TicketPurchaseDeleteConfirmDialog from "@/features/ticket/presentational/TicketPurchaseDeleteConfirmDialog";
 import TicketPurchaseList from "@/features/ticket/presentational/TicketPurchaseList";
 import type { TicketPurchaseListItem } from "@/features/ticket/presentational/TicketPurchaseList";
+import { destroy as destroyTicket } from "@/routes/tickets";
 import { Head, router, usePage } from "@inertiajs/react";
 import { useState } from "react";
 
@@ -48,7 +49,7 @@ const TicketsIndex = () => {
 		setIsSubmitting(true);
 		setErrorMessage(null);
 
-		router.delete(`/tickets/${selectedPurchase.id}`, {
+		router.delete(destroyTicket.url(selectedPurchase.id), {
 			onSuccess: () => {
 				setSelectedPurchase(null);
 			},
