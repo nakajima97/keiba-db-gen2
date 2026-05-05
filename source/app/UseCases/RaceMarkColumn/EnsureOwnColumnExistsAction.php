@@ -12,6 +12,11 @@ use Illuminate\Database\UniqueConstraintViolationException;
  */
 class EnsureOwnColumnExistsAction
 {
+    /**
+     * 指定レース・ユーザーの "own" 列を冪等に生成する。
+     * 並行リクエストでの競合作成時に発生する UniqueConstraintViolationException は握り潰す
+     * （後続のクエリで作成済みレコードを読めるため）。
+     */
     public function execute(Race $race, User $user): void
     {
         try {
