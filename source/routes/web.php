@@ -24,6 +24,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/tickets', [TicketPurchaseController::class, 'index'])->name('tickets.index');
     Route::get('/tickets/new', [TicketPurchaseController::class, 'create'])->name('tickets.new');
     Route::post('/tickets', [TicketPurchaseController::class, 'store'])->name('tickets.store');
+    Route::delete('/tickets/{ticket_purchase}', [TicketPurchaseController::class, 'destroy'])->name('tickets.destroy');
 
     Route::get('/races', [RaceController::class, 'index'])->name('races.index');
     Route::get('/races/new', [RaceController::class, 'create'])->name('races.create');

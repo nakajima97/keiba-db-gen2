@@ -86,4 +86,36 @@ describe("TicketsIndex ページ", () => {
 		// Assert
 		expect(vi.mocked(router.delete)).toHaveBeenCalled();
 	});
+
+	it("確認モーダルには削除対象馬券のサマリー（日付・レース場・レース番号・券種）が表示される", async () => {
+		// Arrange
+		const user = userEvent.setup();
+
+		// Act
+		render(<TicketsIndex />);
+		await user.click(screen.getByRole("button", { name: "削除" }));
+
+		// Assert
+		const dialog = screen.getByRole("dialog");
+		expect(dialog).toHaveTextContent("2026/04/05");
+		expect(dialog).toHaveTextContent("東京");
+		expect(dialog).toHaveTextContent("1R");
+		expect(dialog).toHaveTextContent("馬連");
+	});
+
+	it("「キャンセル」を押すとモーダルが閉じ、router.delete は呼ばれない", async () => {
+		// Arrange
+		const user = userEvent.setup();
+
+		// Act
+		render(<TicketsIndex />);
+		await user.click(screen.getByRole("button", { name: "削除" }));
+		await user.click(screen.getByRole("button", { name: "キャンセル" }));
+
+		// Assert
+		expect(
+			screen.queryByRole("button", { name: "削除する" }),
+		).not.toBeInTheDocument();
+		expect(vi.mocked(router.delete)).not.toHaveBeenCalled();
+	});
 });
