@@ -3,11 +3,9 @@ import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import RaceResultFormContainer from "./index";
 
-vi.mock("@inertiajs/react", async () => {
+vi.mock("@inertiajs/core", async () => {
 	const actual =
-		await vi.importActual<typeof import("@inertiajs/react")>(
-			"@inertiajs/react",
-		);
+		await vi.importActual<typeof import("@inertiajs/core")>("@inertiajs/core");
 	return {
 		...actual,
 		router: {
@@ -18,17 +16,10 @@ vi.mock("@inertiajs/react", async () => {
 			visit: vi.fn(),
 			reload: vi.fn(),
 		},
-		Link: ({
-			href,
-			children,
-		}: {
-			href: string;
-			children: React.ReactNode;
-		}) => <a href={href}>{children}</a>,
 	};
 });
 
-import { router } from "@inertiajs/react";
+import { router } from "@inertiajs/core";
 
 const defaultProps = {
 	raceUid: "test-uid-123",

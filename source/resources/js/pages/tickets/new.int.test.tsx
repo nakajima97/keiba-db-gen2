@@ -2,21 +2,23 @@ import { render, screen } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import TicketsNew from "./new";
 
-vi.mock("@inertiajs/react", () => ({
-	Head: ({ title }: { title: string }) => <title>{title}</title>,
-	usePage: () => ({
-		props: {
-			lastVenue: "東京",
-			lastRaceDate: "2026-04-05",
-			lastRaceNumber: 1,
-		},
-	}),
-	router: {
-		post: vi.fn(),
-		visit: vi.fn(),
-		reload: vi.fn(),
-	},
-}));
+vi.mock("@inertiajs/react", async () => {
+	const actual =
+		await vi.importActual<typeof import("@inertiajs/react")>(
+			"@inertiajs/react",
+		);
+	return {
+		...actual,
+		Head: ({ title }: { title: string }) => <title>{title}</title>,
+		usePage: () => ({
+			props: {
+				lastVenue: "東京",
+				lastRaceDate: "2026-04-05",
+				lastRaceNumber: 1,
+			},
+		}),
+	};
+});
 
 describe("TicketsNew ページ", () => {
 	it("ハッピーパス: ページが正常にレンダリングされ、TicketPurchaseForm が表示される", () => {
