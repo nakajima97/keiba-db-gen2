@@ -1,48 +1,40 @@
-import { useState } from "react";
+import { useForm } from "@inertiajs/react";
 import { toast } from "sonner";
 import RaceEntryRegistrationForm from "@/features/raceEntry/presentational/RaceEntryRegistrationForm";
 import type { RaceInfo } from "@/features/raceEntry/presentational/RaceEntryRegistrationForm/types";
-import { useFormSubmit } from "@/hooks/useFormSubmit";
 
 export type RaceEntryRegistrationFormContainerProps = {
 	raceUid: string;
 	raceInfo: RaceInfo;
 };
 
-type RaceEntryFormData = {
-	paste_text: string;
-};
-
 const RaceEntryRegistrationFormContainer = ({
 	raceUid,
 	raceInfo,
 }: RaceEntryRegistrationFormContainerProps) => {
-	const [pastedText, setPastedText] = useState("");
-
-	const { isSubmitting, handleSubmit: submit } = useFormSubmit<RaceEntryFormData>({
-		url: `/races/${raceUid}/entries`,
-		onSuccess: () => {
-			toast.success("出走馬を登録しました");
-			setPastedText("");
-		},
-		onError: (errors) => {
-			for (const message of Object.values(errors)) {
-				toast.error(message);
-			}
-		},
-	});
+	const form = useForm({ paste_text: "" });
 
 	const handleSubmit = () => {
-		submit({ paste_text: pastedText });
+		form.post(`/races/${raceUid}/entries`, {
+			onSuccess: () => {
+				toast.success("出走馬を登録しました");
+				form.reset("paste_text");
+			},
+			onError: (errors) => {
+				for (const message of Object.values(errors)) {
+					toast.error(message);
+				}
+			},
+		});
 	};
 
 	return (
 		<RaceEntryRegistrationForm
 			raceUid={raceUid}
 			raceInfo={raceInfo}
-			pastedText={pastedText}
-			isSubmitting={isSubmitting}
-			onPastedTextChange={setPastedText}
+			pastedText={form.data.paste_text}
+			isSubmitting={form.processing}
+			onPastedTextChange={(value) => form.setData("paste_text", value)}
 			onSubmit={handleSubmit}
 		/>
 	);

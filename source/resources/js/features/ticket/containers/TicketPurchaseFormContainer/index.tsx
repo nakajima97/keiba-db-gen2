@@ -3,7 +3,7 @@ import {
 	BUY_TYPE_MAP,
 	type TicketTypeId,
 } from "@/features/ticket/presentational/TicketPurchaseForm";
-import { useFormSubmit } from "@/hooks/useFormSubmit";
+import { useForm } from "@inertiajs/react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -19,6 +19,16 @@ export type TicketPurchaseFormContainerProps = {
 	initialUnitStake: number;
 };
 
+type TicketPurchaseFormData = {
+	venue: string;
+	race_date: string;
+	race_number: number;
+	ticket_type: TicketTypeId;
+	buy_type: string;
+	selections: Record<string, number[]>;
+	unit_stake: number;
+};
+
 const TicketPurchaseFormContainer = ({
 	initialVenue,
 	initialRaceDate,
@@ -30,86 +40,77 @@ const TicketPurchaseFormContainer = ({
 	initialHorses,
 	initialUnitStake,
 }: TicketPurchaseFormContainerProps) => {
-	const [selectedVenue, setSelectedVenue] = useState(initialVenue);
-	const [selectedRaceDate, setSelectedRaceDate] = useState(initialRaceDate);
-	const [selectedRaceNumber, setSelectedRaceNumber] =
-		useState(initialRaceNumber);
-	const [selectedTicketTypeId, setSelectedTicketTypeId] =
-		useState<TicketTypeId>(initialTicketTypeId);
-	const [selectedBuyTypeId, setSelectedBuyTypeId] = useState(initialBuyTypeId);
+	const form = useForm<TicketPurchaseFormData>({
+		venue: initialVenue,
+		race_date: initialRaceDate,
+		race_number: initialRaceNumber,
+		ticket_type: initialTicketTypeId,
+		buy_type: initialBuyTypeId,
+		selections: initialHorses,
+		unit_stake: initialUnitStake,
+	});
+
 	const [selectedAxisCount, setSelectedAxisCount] = useState<1 | 2>(
 		initialAxisCount,
 	);
 	const [selectedNagashiDirection, setSelectedNagashiDirection] = useState<
 		1 | 2 | 3
 	>(initialNagashiDirection);
-	const [selectedHorses, setSelectedHorses] =
-		useState<Record<string, number[]>>(initialHorses);
-	const [unitStake, setUnitStake] = useState(initialUnitStake);
-
-	const { isSubmitting, handleSubmit: submit } = useFormSubmit({
-		url: "/tickets",
-		onSuccess: () => {
-			toast.success("馬券を登録しました");
-			setSelectedHorses({});
-		},
-		onError: (errors) => {
-			for (const message of Object.values(errors)) {
-				toast.error(message);
-			}
-		},
-	});
 
 	const handleTicketTypeChange = (id: TicketTypeId) => {
-		setSelectedTicketTypeId(id);
-		// 券種変更時は買い方を先頭にリセット、馬番もリセット
-		setSelectedBuyTypeId(BUY_TYPE_MAP[id][0].id);
-		setSelectedHorses({});
+		form.setData("ticket_type", id);
+		form.setData("buy_type", BUY_TYPE_MAP[id][0].id);
+		form.setData("selections", {});
 	};
 
 	const handleBuyTypeChange = (id: string) => {
-		setSelectedBuyTypeId(id);
-		setSelectedHorses({});
+		form.setData("buy_type", id);
+		form.setData("selections", {});
 	};
 
 	const handleSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
-		submit({
-			venue: selectedVenue,
-			race_date: selectedRaceDate,
-			race_number: selectedRaceNumber,
-			ticket_type: selectedTicketTypeId,
-			buy_type: selectedBuyTypeId,
-			selections: selectedHorses,
-			unit_stake: unitStake,
+		form.post("/tickets", {
+			onSuccess: () => {
+				toast.success("馬券を登録しました");
+				form.setData("selections", {});
+			},
+			onError: (errors) => {
+				for (const message of Object.values(errors)) {
+					toast.error(message);
+				}
+			},
 		});
 	};
 
 	return (
 		<form onSubmit={handleSubmit}>
 			<TicketPurchaseForm
-				selectedVenue={selectedVenue}
-				selectedRaceDate={selectedRaceDate}
-				selectedRaceNumber={selectedRaceNumber}
-				selectedTicketTypeId={selectedTicketTypeId}
-				selectedBuyTypeId={selectedBuyTypeId}
+				selectedVenue={form.data.venue}
+				selectedRaceDate={form.data.race_date}
+				selectedRaceNumber={form.data.race_number}
+				selectedTicketTypeId={form.data.ticket_type}
+				selectedBuyTypeId={form.data.buy_type}
 				selectedAxisCount={selectedAxisCount}
 				selectedNagashiDirection={selectedNagashiDirection}
-				selectedHorses={selectedHorses}
-				unitStake={unitStake}
-				processing={isSubmitting}
-				onVenueChange={setSelectedVenue}
-				onRaceDateChange={setSelectedRaceDate}
-				onRaceNumberChange={setSelectedRaceNumber}
+				selectedHorses={form.data.selections}
+				unitStake={form.data.unit_stake}
+				processing={form.processing}
+				onVenueChange={(value) => form.setData("venue", value)}
+				onRaceDateChange={(value) => form.setData("race_date", value)}
+				onRaceNumberChange={(value) => form.setData("race_number", value)}
 				onTicketTypeChange={handleTicketTypeChange}
 				onBuyTypeChange={handleBuyTypeChange}
 				onAxisCountChange={setSelectedAxisCount}
 				onNagashiDirectionChange={setSelectedNagashiDirection}
 				onHorsesChange={(groupKey, horses) =>
-					setSelectedHorses((prev) => ({ ...prev, [groupKey]: horses }))
+					form.setData("selections", {
+						...form.data.selections,
+						[groupKey]: horses,
+					})
 				}
-				onUnitStakeChange={setUnitStake}
+				onUnitStakeChange={(value) => form.setData("unit_stake", value)}
 			/>
 		</form>
 	);

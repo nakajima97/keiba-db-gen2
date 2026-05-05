@@ -1,12 +1,10 @@
-import { useState } from "react";
+import { useForm } from "@inertiajs/react";
 import { toast } from "sonner";
 import RaceEntryEditForm from "@/features/raceEntry/presentational/RaceEntryEditForm";
 import type {
-	RaceEntryEditFormErrors,
 	RaceEntryEditFormValues,
 	RaceInfo,
 } from "@/features/raceEntry/presentational/RaceEntryEditForm/types";
-import { useFormSubmit } from "@/hooks/useFormSubmit";
 import { store as raceEntryAddStore } from "@/routes/races/entries/add";
 
 export type RaceEntryAddFormContainerProps = {
@@ -27,49 +25,43 @@ const RaceEntryAddFormContainer = ({
 	raceUid,
 	raceInfo,
 }: RaceEntryAddFormContainerProps) => {
-	const [values, setValues] = useState<RaceEntryEditFormValues>(initialValues);
-	const [errors, setErrors] = useState<RaceEntryEditFormErrors>({});
-
-	const { isSubmitting, handleSubmit: submit } =
-		useFormSubmit<RaceEntryEditFormValues>({
-			url: raceEntryAddStore.url({ race: raceUid }),
-			method: "post",
-			onSuccess: () => {
-				toast.success("出走馬を追加しました");
-				setErrors({});
-			},
-			onError: (validationErrors) => {
-				setErrors(validationErrors as RaceEntryEditFormErrors);
-			},
-		});
+	const form = useForm<RaceEntryEditFormValues>(initialValues);
 
 	const handleChange = (
 		field: keyof RaceEntryEditFormValues,
 		value: string,
 	) => {
-		setValues((prev) => {
-			if (field === "frame_number" || field === "horse_number") {
-				return { ...prev, [field]: value === "" ? "" : Number(value) };
-			}
-			return { ...prev, [field]: value };
-		});
+		if (field === "frame_number" || field === "horse_number") {
+			form.setData(field, value === "" ? "" : Number(value));
+		} else {
+			form.setData(field, value);
+		}
 	};
 
 	const handleSubmit = () => {
-		const weight =
-			values.weight === "" || values.weight.includes(".")
-				? values.weight
-				: `${values.weight}.0`;
-		submit({ ...values, weight });
+		form.transform((data) => ({
+			...data,
+			weight:
+				data.weight === "" || data.weight.includes(".")
+					? data.weight
+					: `${data.weight}.0`,
+		}));
+		form.post(raceEntryAddStore.url({ race: raceUid }), {
+			onSuccess: () => {
+				toast.success("出走馬を追加しました");
+				form.clearErrors();
+				form.reset();
+			},
+		});
 	};
 
 	return (
 		<RaceEntryEditForm
 			raceUid={raceUid}
 			raceInfo={raceInfo}
-			values={values}
-			errors={errors}
-			isSubmitting={isSubmitting}
+			values={form.data}
+			errors={form.errors}
+			isSubmitting={form.processing}
 			onChange={handleChange}
 			onSubmit={handleSubmit}
 			headingLabel="出走馬個別追加"

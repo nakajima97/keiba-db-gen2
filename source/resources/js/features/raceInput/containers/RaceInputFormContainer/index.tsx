@@ -1,7 +1,6 @@
-import RaceInputForm from "@/features/raceInput/presentational/RaceInputForm";
-import { useFormSubmit } from "@/hooks/useFormSubmit";
-import { useRef } from "react";
+import { useForm } from "@inertiajs/react";
 import { toast } from "sonner";
+import RaceInputForm from "@/features/raceInput/presentational/RaceInputForm";
 
 export type RaceInputFormContainerProps = {
 	venues: { id: number; name: string }[];
@@ -26,26 +25,27 @@ const RaceInputFormContainer = ({
 	initialRaceNumber,
 	initialRaceName,
 }: RaceInputFormContainerProps) => {
-	// フォームから受け取る送信成功時のリセット関数を保持する。
-	// useFormSubmit の onSuccess は最新のクロージャを参照する必要があるため ref で受け渡す。
-	const formOnSuccessRef = useRef<(() => void) | undefined>(undefined);
-
-	const { handleSubmit: submit } = useFormSubmit<RaceInputFormData>({
-		url: "/races",
-		onSuccess: () => {
-			toast.success("レース情報を登録しました");
-			formOnSuccessRef.current?.();
-		},
-		onError: (errors) => {
-			for (const message of Object.values(errors)) {
-				toast.error(message);
-			}
-		},
+	const form = useForm<RaceInputFormData>({
+		venue_id: 0,
+		race_date: "",
+		race_number: 0,
+		race_name: undefined,
+		paste_text: "",
 	});
 
 	const handleSubmit = (data: RaceInputFormData, onSuccess: () => void) => {
-		formOnSuccessRef.current = onSuccess;
-		submit(data);
+		form.transform(() => data);
+		form.post("/races", {
+			onSuccess: () => {
+				toast.success("レース情報を登録しました");
+				onSuccess();
+			},
+			onError: (errors) => {
+				for (const message of Object.values(errors)) {
+					toast.error(message);
+				}
+			},
+		});
 	};
 
 	return (

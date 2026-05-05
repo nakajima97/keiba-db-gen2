@@ -1,6 +1,5 @@
+import { useForm } from "@inertiajs/react";
 import RaceResultForm from "@/features/raceResult/presentational/RaceResultForm";
-import { useFormSubmit } from "@/hooks/useFormSubmit";
-import { useState } from "react";
 
 type RaceResultFormContainerProps = {
 	raceUid: string;
@@ -10,11 +9,6 @@ type RaceResultFormContainerProps = {
 	disabled?: boolean;
 };
 
-type RaceResultFormData = {
-	result_text: string;
-	text: string;
-};
-
 const RaceResultFormContainer = ({
 	raceUid,
 	venueName,
@@ -22,31 +16,17 @@ const RaceResultFormContainer = ({
 	raceNumber,
 	disabled,
 }: RaceResultFormContainerProps) => {
-	const [resultPasteValue, setResultPasteValue] = useState("");
-	const [payoutPasteValue, setPayoutPasteValue] = useState("");
-	const [resultParseError, setResultParseError] = useState<string | null>(null);
-	const [payoutParseError, setPayoutParseError] = useState<string | null>(null);
+	const form = useForm({ result_text: "", text: "" });
 
-	const { isSubmitting, handleSubmit: submit } =
-		useFormSubmit<RaceResultFormData>({
-			url: `/races/${raceUid}/result`,
+	const handleSubmit = () => {
+		form.clearErrors();
+		form.post(`/races/${raceUid}/result`, {
 			onError: (errors) => {
-				if (errors.result_text) {
-					setResultParseError(errors.result_text);
-				}
-				if (errors.text) {
-					setPayoutParseError(errors.text);
-				}
 				if (!errors.result_text && !errors.text) {
-					setPayoutParseError("保存に失敗しました。");
+					form.setError("text", "保存に失敗しました。");
 				}
 			},
 		});
-
-	const handleSubmit = () => {
-		setResultParseError(null);
-		setPayoutParseError(null);
-		submit({ result_text: resultPasteValue, text: payoutPasteValue });
 	};
 
 	return (
@@ -54,14 +34,14 @@ const RaceResultFormContainer = ({
 			venueName={venueName}
 			raceDate={raceDate}
 			raceNumber={raceNumber}
-			resultPasteValue={resultPasteValue}
-			onResultPasteChange={setResultPasteValue}
-			resultParseError={resultParseError}
-			payoutPasteValue={payoutPasteValue}
-			onPayoutPasteChange={setPayoutPasteValue}
-			payoutParseError={payoutParseError}
+			resultPasteValue={form.data.result_text}
+			onResultPasteChange={(value) => form.setData("result_text", value)}
+			resultParseError={form.errors.result_text ?? null}
+			payoutPasteValue={form.data.text}
+			onPayoutPasteChange={(value) => form.setData("text", value)}
+			payoutParseError={form.errors.text ?? null}
 			onSubmit={handleSubmit}
-			isSubmitting={isSubmitting}
+			isSubmitting={form.processing}
 			disabled={disabled}
 		/>
 	);
