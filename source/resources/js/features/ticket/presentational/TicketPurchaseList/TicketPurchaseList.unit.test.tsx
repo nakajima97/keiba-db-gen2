@@ -38,6 +38,7 @@ const baseProps: TicketPurchaseListProps = {
 	hasMore: false,
 	isLoading: false,
 	onLoadMore: noop,
+	onDelete: noop,
 };
 
 describe("TicketPurchaseList", () => {

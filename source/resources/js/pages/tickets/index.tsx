@@ -30,6 +30,7 @@ const TicketsIndex = () => {
 				hasMore={nextCursor !== null}
 				isLoading={isLoading}
 				onLoadMore={handleLoadMore}
+				onDelete={() => {}}
 			/>
 		</>
 	);

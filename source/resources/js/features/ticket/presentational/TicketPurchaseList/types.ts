@@ -25,4 +25,5 @@ export type TicketPurchaseListProps = {
 	hasMore: boolean;
 	isLoading: boolean;
 	onLoadMore: () => void;
+	onDelete: (id: number) => void;
 };

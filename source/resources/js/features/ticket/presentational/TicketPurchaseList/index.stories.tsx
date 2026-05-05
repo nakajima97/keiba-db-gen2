@@ -12,11 +12,12 @@ type Story = StoryObj<typeof TicketPurchaseList>;
 
 const baseArgs: Pick<
 	TicketPurchaseListProps,
-	"hasMore" | "isLoading" | "onLoadMore"
+	"hasMore" | "isLoading" | "onLoadMore" | "onDelete"
 > = {
 	hasMore: false,
 	isLoading: false,
 	onLoadMore: () => {},
+	onDelete: () => {},
 };
 
 // purchase_amountは合計購入金額（単価 × 有効点数）

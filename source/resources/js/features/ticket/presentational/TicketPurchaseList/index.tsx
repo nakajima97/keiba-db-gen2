@@ -12,6 +12,7 @@ const TicketPurchaseList = ({
 	hasMore,
 	isLoading,
 	onLoadMore,
+	onDelete,
 }: TicketPurchaseListProps) => {
 	return (
 		<div className="flex flex-col gap-4 p-4">
@@ -58,6 +59,9 @@ const TicketPurchaseList = ({
 								</th>
 								<th className="px-4 py-3 text-left font-medium text-muted-foreground">
 									レース結果
+								</th>
+								<th className="px-4 py-3 text-right font-medium text-muted-foreground">
+									操作
 								</th>
 							</tr>
 						</thead>
@@ -111,6 +115,15 @@ const TicketPurchaseList = ({
 										) : (
 											"-"
 										)}
+									</td>
+									<td className="px-4 py-3 text-right">
+										<Button
+											variant="destructive"
+											size="sm"
+											onClick={() => onDelete(purchase.id)}
+										>
+											削除
+										</Button>
 									</td>
 								</tr>
 							))}
