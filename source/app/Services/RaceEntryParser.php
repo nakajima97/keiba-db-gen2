@@ -127,7 +127,7 @@ class RaceEntryParser
                 if ($line === 'ブリンカー着用') {
                     continue;
                 }
-                $horseName = $line;
+                $horseName = HorseNameNormalizer::stripJraAnnotationPrefix($line);
 
                 continue;
             }

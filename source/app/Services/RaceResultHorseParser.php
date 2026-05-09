@@ -159,7 +159,7 @@ class RaceResultHorseParser
             );
         }
 
-        $horseName = trim($cols1[3]);
+        $horseName = HorseNameNormalizer::stripJraAnnotationPrefix(trim($cols1[3]));
         if ($horseName === '') {
             throw new \InvalidArgumentException(sprintf('%d頭目: 馬名が空です。', $horseIndex));
         }
@@ -209,7 +209,7 @@ class RaceResultHorseParser
             );
         }
 
-        $horseName = trim($cols1[3]);
+        $horseName = HorseNameNormalizer::stripJraAnnotationPrefix(trim($cols1[3]));
         if ($horseName === '') {
             throw new \InvalidArgumentException(sprintf('%d頭目: 馬名が空です。', $horseIndex));
         }
@@ -266,7 +266,7 @@ class RaceResultHorseParser
             );
         }
 
-        $horseName = trim($block[1]);
+        $horseName = HorseNameNormalizer::stripJraAnnotationPrefix(trim($block[1]));
         if ($horseName === '') {
             throw new \InvalidArgumentException(sprintf('%d頭目: 馬名が空です。', $horseIndex));
         }

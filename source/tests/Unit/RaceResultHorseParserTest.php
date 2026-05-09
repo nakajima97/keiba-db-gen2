@@ -45,3 +45,19 @@ test('馬体重カラムが不正な形式のとき例外が投げられる', fu
     // Act & Assert
     expect(fn () => $parser->parse($text))->toThrow(InvalidArgumentException::class);
 });
+
+// ===== RaceResultHorseParser::parse() 馬名 JRA 注記 prefix の除去 =====
+
+test('馬名カラムに JRA 注記 prefix が含まれる場合は除去される', function () {
+    // Arrange
+    $parser = new RaceResultHorseParser;
+    $text = "1\t枠1白\t1\tマルガイテスト馬\t牡4\t57.0\tテスト騎手\t1:35.0\t\n"
+        ."1 1 1 1\n"
+        ."35.5\t508\tテスト調教師\t1";
+
+    // Act
+    $result = $parser->parse($text);
+
+    // Assert
+    expect($result[0]['horse_name'])->toBe('テスト馬');
+});
