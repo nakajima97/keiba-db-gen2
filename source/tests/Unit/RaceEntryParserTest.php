@@ -205,3 +205,38 @@ test('複数頭分のエントリが正しくパースされる', function () us
     expect($result[1]['horse_weight'])->toBe(510);
     expect($result[1]['birth_year'])->toBe(2021);
 });
+
+test('馬名行に JRA 注記 prefix が含まれる場合は除去される', function () {
+    // Arrange
+    $entryTextWithPrefix = implode("\n", [
+        '枠1白	1	',
+        'マルガイユウファラオ	',
+        '127.8',
+        '(11番人気)',
+        '426kg(-2)',
+        '加藤 晃央',
+        '',
+        '恵比寿牧場',
+        '',
+        '加藤 征弘(美浦)',
+        '',
+        '父：マジェスティックウォリアー',
+        '母：エビスオール',
+        '(母の父：Chief Seattle)',
+        '勝負服の画像',
+        '',
+        '牝3/黒鹿',
+        '',
+        '55.0kg',
+        '',
+        'M.ディー',
+    ]);
+    $parser = new RaceEntryParser;
+    $raceDate = Carbon::create(2026, 4, 18);
+
+    // Act
+    $result = $parser->parse($entryTextWithPrefix, $raceDate);
+
+    // Assert
+    expect($result[0]['horse_name'])->toBe('ユウファラオ');
+});
