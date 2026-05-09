@@ -15,7 +15,7 @@ $buildResultText = function (string $horseWeight): string {
 
 // ===== RaceResultHorseParser::parse() 馬体重パース 正常系 =====
 
-test('parses horse weight column into expected horse_weight and horse_weight_change', function (string $horseWeightInput, ?int $expectedWeight, ?int $expectedChange) use ($buildResultText) {
+test('馬体重カラムが想定どおり horse_weight と horse_weight_change にパースされる', function (string $horseWeightInput, ?int $expectedWeight, ?int $expectedChange) use ($buildResultText) {
     // Arrange
     $parser = new RaceResultHorseParser;
     $text = $buildResultText($horseWeightInput);
@@ -27,17 +27,17 @@ test('parses horse weight column into expected horse_weight and horse_weight_cha
     expect($result[0]['horse_weight'])->toBe($expectedWeight);
     expect($result[0]['horse_weight_change'])->toBe($expectedChange);
 })->with([
-    'weight only without parentheses' => ['508', 508, null],
-    'weight with positive change' => ['508(+4)', 508, 4],
-    'weight with negative change' => ['508(-2)', 508, -2],
-    'weight with zero change' => ['508(0)', 508, 0],
-    'weight with first-run marker' => ['508(初出走)', 508, null],
-    'empty horse weight column' => ['', null, null],
+    '括弧なしの体重のみ' => ['508', 508, null],
+    'プラスの増減を含む体重' => ['508(+4)', 508, 4],
+    'マイナスの増減を含む体重' => ['508(-2)', 508, -2],
+    '増減ゼロの体重' => ['508(0)', 508, 0],
+    '初出走マーク付きの体重' => ['508(初出走)', 508, null],
+    '体重カラムが空' => ['', null, null],
 ]);
 
 // ===== RaceResultHorseParser::parse() 馬体重パース 異常系 =====
 
-test('throws when horse weight column is malformed', function () use ($buildResultText) {
+test('馬体重カラムが不正な形式のとき例外が投げられる', function () use ($buildResultText) {
     // Arrange
     $parser = new RaceResultHorseParser;
     $text = $buildResultText('abc');

@@ -58,7 +58,7 @@ function insertRaceEntryForContractTest(int $raceId): int
 
 // ===== GET /api/races/{uid}/mark-columns =====
 
-test('contract: GET listRaceMarkColumns matches OpenAPI spec', function () {
+test('契約: GET listRaceMarkColumns が OpenAPI 仕様と一致する', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForContractTest(1);
@@ -73,7 +73,7 @@ test('contract: GET listRaceMarkColumns matches OpenAPI spec', function () {
 
 // ===== POST /api/races/{uid}/mark-columns =====
 
-test('contract: POST createOtherRaceMarkColumn matches OpenAPI spec', function () {
+test('契約: POST createOtherRaceMarkColumn が OpenAPI 仕様と一致する', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForContractTest(2);
@@ -90,7 +90,7 @@ test('contract: POST createOtherRaceMarkColumn matches OpenAPI spec', function (
 
 // ===== PATCH /api/races/{uid}/mark-columns/{id} =====
 
-test('contract: PATCH updateRaceMarkColumnLabel matches OpenAPI spec', function () {
+test('契約: PATCH updateRaceMarkColumnLabel が OpenAPI 仕様と一致する', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForContractTest(3);
@@ -115,7 +115,7 @@ test('contract: PATCH updateRaceMarkColumnLabel matches OpenAPI spec', function 
 
 // ===== DELETE /api/races/{uid}/mark-columns/{id} =====
 
-test('contract: DELETE deleteRaceMarkColumn matches OpenAPI spec', function () {
+test('契約: DELETE deleteRaceMarkColumn が OpenAPI 仕様と一致する', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForContractTest(4);
@@ -138,7 +138,7 @@ test('contract: DELETE deleteRaceMarkColumn matches OpenAPI spec', function () {
 
 // ===== PUT /api/races/{uid}/mark-columns/{column_id}/entries/{race_entry_id}/mark =====
 
-test('contract: PUT putRaceMark matches OpenAPI spec', function () {
+test('契約: PUT putRaceMark が OpenAPI 仕様と一致する', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForContractTest(5);
@@ -162,7 +162,7 @@ test('contract: PUT putRaceMark matches OpenAPI spec', function () {
 
 // ===== PUT /api/races/{uid}/mark-columns/{column_id}/entries/{race_entry_id}/memo =====
 
-test('contract: PUT putRaceMarkMemo matches OpenAPI spec', function () {
+test('契約: PUT putRaceMarkMemo が OpenAPI 仕様と一致する', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForContractTest(6);
@@ -188,7 +188,7 @@ test('contract: PUT putRaceMarkMemo matches OpenAPI spec', function () {
 
 // ===== DELETE /api/races/{uid}/mark-columns/{column_id}/entries/{race_entry_id}/memo =====
 
-test('contract: DELETE deleteRaceMarkMemo matches OpenAPI spec', function () {
+test('契約: DELETE deleteRaceMarkMemo が OpenAPI 仕様と一致する', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForContractTest(7);

@@ -7,7 +7,7 @@ use Inertia\Testing\AssertableInertia as Assert;
 
 // ===== GET /races/{uid}/entries/new =====
 
-test('unauthenticated user is redirected when accessing race entries create', function () {
+test('未認証ユーザーが出馬登録作成画面にアクセスするとリダイレクトされる', function () {
     // Arrange
     $venue = Venue::firstOrCreate(['name' => '東京']);
     $race = Race::create([
@@ -23,7 +23,7 @@ test('unauthenticated user is redirected when accessing race entries create', fu
     $response->assertRedirectToRoute('login');
 });
 
-test('authenticated user can access race entries create and inertia component is rendered with race info', function () {
+test('認証済みユーザーは出馬登録作成画面にアクセスでき Inertia コンポーネントがレース情報付きで描画される', function () {
     // Arrange
     $user = User::factory()->create();
     $venue = Venue::firstOrCreate(['name' => '東京']);

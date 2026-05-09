@@ -21,7 +21,7 @@ function createRaceForMarkColumnIndexTest(): Race
 
 // ===== GET /api/races/{uid}/mark-columns =====
 
-test('unauthenticated user cannot list race mark columns', function () {
+test('未認証ユーザーはレース印カラム一覧を取得できない', function () {
     // Arrange
     $race = createRaceForMarkColumnIndexTest();
 
@@ -32,7 +32,7 @@ test('unauthenticated user cannot list race mark columns', function () {
     $response->assertUnauthorized();
 });
 
-test('authenticated user can list own race mark columns', function () {
+test('認証済みユーザーは自分のレース印カラム一覧を取得できる', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForMarkColumnIndexTest();
@@ -49,7 +49,7 @@ test('authenticated user can list own race mark columns', function () {
     ]);
 });
 
-test('own column is auto-generated when listing for the first time', function () {
+test('初回一覧取得時に自分カテゴリのカラムが自動生成される', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForMarkColumnIndexTest();
@@ -64,7 +64,7 @@ test('own column is auto-generated when listing for the first time', function ()
     expect(collect($data)->pluck('type'))->toContain('own');
 });
 
-test('mark columns are returned in display_order ascending order', function () {
+test('印カラムは display_order 昇順で返る', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForMarkColumnIndexTest();
@@ -101,7 +101,7 @@ test('mark columns are returned in display_order ascending order', function () {
     expect($orders)->toBe([0, 1, 2]);
 });
 
-test('other users mark columns are not included in the list', function () {
+test('他ユーザーの印カラムは一覧に含まれない', function () {
     // Arrange
     $user = User::factory()->create();
     $otherUser = User::factory()->create();
@@ -125,7 +125,7 @@ test('other users mark columns are not included in the list', function () {
     expect($labels)->not->toContain('他人の列');
 });
 
-test('listing mark columns for non-existent race uid returns 404', function () {
+test('存在しないレースUIDで印カラム一覧を取得しようとすると404が返る', function () {
     // Arrange
     $user = User::factory()->create();
 

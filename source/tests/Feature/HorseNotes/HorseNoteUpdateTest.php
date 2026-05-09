@@ -17,7 +17,7 @@ function createHorseForHorseNoteUpdateTest(): Horse
 
 // ===== PUT /api/horse-notes/{note} =====
 
-test('unauthenticated user cannot update horse note', function () {
+test('未認証ユーザーは馬メモを更新できない', function () {
     // Arrange
     $user = User::factory()->create();
     $horse = createHorseForHorseNoteUpdateTest();
@@ -37,7 +37,7 @@ test('unauthenticated user cannot update horse note', function () {
     $response->assertUnauthorized();
 });
 
-test('authenticated user can update own horse note content', function () {
+test('認証済みユーザーは自分の馬メモ本文を更新できる', function () {
     // Arrange
     $user = User::factory()->create();
     $horse = createHorseForHorseNoteUpdateTest();
@@ -62,7 +62,7 @@ test('authenticated user can update own horse note content', function () {
     ]);
 });
 
-test('updating other users horse note returns 403', function () {
+test('他ユーザーの馬メモを更新しようとすると403が返る', function () {
     // Arrange
     $user = User::factory()->create();
     $otherUser = User::factory()->create();
@@ -83,7 +83,7 @@ test('updating other users horse note returns 403', function () {
     $response->assertForbidden();
 });
 
-test('updating non-existent horse note returns 404', function () {
+test('存在しない馬メモを更新しようとすると404が返る', function () {
     // Arrange
     $user = User::factory()->create();
 
@@ -96,7 +96,7 @@ test('updating non-existent horse note returns 404', function () {
     $response->assertNotFound();
 });
 
-test('empty content returns 422 on update', function () {
+test('更新時に本文が空のとき422が返る', function () {
     // Arrange
     $user = User::factory()->create();
     $horse = createHorseForHorseNoteUpdateTest();
@@ -117,7 +117,7 @@ test('empty content returns 422 on update', function () {
     $response->assertJsonValidationErrors(['content']);
 });
 
-test('content exceeding 1000 characters returns 422 on update', function () {
+test('更新時に本文が1000文字を超えると422が返る', function () {
     // Arrange
     $user = User::factory()->create();
     $horse = createHorseForHorseNoteUpdateTest();

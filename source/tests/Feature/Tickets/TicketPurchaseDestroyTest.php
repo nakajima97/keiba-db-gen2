@@ -55,7 +55,7 @@ function createTicketPurchaseForDestroyTest(int $userId): array
     return ['userId' => $userId, 'ticketPurchaseId' => $ticketPurchaseId];
 }
 
-test('authenticated user can delete own ticket purchase', function () {
+test('認証済みユーザーは自分の馬券購入を削除できる', function () {
     // Arrange
     $user = User::factory()->create();
     ['ticketPurchaseId' => $ticketPurchaseId] = createTicketPurchaseForDestroyTest($user->id);
@@ -70,7 +70,7 @@ test('authenticated user can delete own ticket purchase', function () {
     ]);
 });
 
-test('deleting other users ticket purchase returns 403', function () {
+test('他ユーザーの馬券購入を削除しようとすると403が返る', function () {
     // Arrange
     $user = User::factory()->create();
     $otherUser = User::factory()->create();
@@ -83,7 +83,7 @@ test('deleting other users ticket purchase returns 403', function () {
     $response->assertForbidden();
 });
 
-test('unauthenticated user is redirected to login when deleting ticket purchase', function () {
+test('未認証ユーザーが馬券購入を削除しようとするとログイン画面にリダイレクトされる', function () {
     // Arrange
     $user = User::factory()->create();
     ['ticketPurchaseId' => $ticketPurchaseId] = createTicketPurchaseForDestroyTest($user->id);

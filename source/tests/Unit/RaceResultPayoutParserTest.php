@@ -56,7 +56,7 @@ $completePayoutTextWithWakuren = implode("\n", [
 
 // ===== RaceResultPayoutParser::parse() 正常系 =====
 
-test('parses JRA copy-paste format with ticket-type-only line followed by data line', function () {
+test('券種行とデータ行が分かれた JRA コピペ形式をパースできる', function () {
     // Arrange
     $parser = new RaceResultPayoutParser;
     $text = implode("\n", [
@@ -75,7 +75,7 @@ test('parses JRA copy-paste format with ticket-type-only line followed by data l
     expect($result[0]['popularity'])->toBe(2);
 });
 
-test('parses inline format with ticket type, horse number, amount, popularity in one line', function () {
+test('券種・馬番・金額・人気が1行に並んだインライン形式をパースできる', function () {
     // Arrange
     $parser = new RaceResultPayoutParser;
     $text = "単勝\t3\t610円\t2番人気";
@@ -91,7 +91,7 @@ test('parses inline format with ticket type, horse number, amount, popularity in
     expect($result[0]['popularity'])->toBe(2);
 });
 
-test('parses continuation format where leading column is empty', function () {
+test('先頭カラムが空の継続行形式をパースできる', function () {
     // Arrange
     $parser = new RaceResultPayoutParser;
     $text = implode("\n", [
@@ -108,7 +108,7 @@ test('parses continuation format where leading column is empty', function () {
     expect($result[1]['ticket_type'])->toBe(TicketTypeName::Fukusho->value);
 });
 
-test('multi-row ticket types (fukusho, wide) produce independent entries per line', function () {
+test('複勝・ワイドなどの複数行券種は1行ごとに独立したエントリとなる', function () {
     // Arrange
     $parser = new RaceResultPayoutParser;
     $text = implode("\n", [
@@ -128,7 +128,7 @@ test('multi-row ticket types (fukusho, wide) produce independent entries per lin
     expect($result[2]['ticket_type'])->toBe(TicketTypeName::Fukusho->value);
 });
 
-test('amount with comma is parsed correctly', function () {
+test('カンマ区切りの金額が正しくパースされる', function () {
     // Arrange
     $parser = new RaceResultPayoutParser;
     $text = implode("\n", [
@@ -143,7 +143,7 @@ test('amount with comma is parsed correctly', function () {
     expect($result[0]['amount'])->toBe(12380);
 });
 
-test('multiple horse numbers separated by hyphen are parsed into array', function () {
+test('ハイフン区切りの複数馬番が配列にパースされる', function () {
     // Arrange
     $parser = new RaceResultPayoutParser;
     $text = implode("\n", [
@@ -158,7 +158,7 @@ test('multiple horse numbers separated by hyphen are parsed into array', functio
     expect($result[0]['horse_numbers'])->toBe([3, 6]);
 });
 
-test('three-horse ticket parses three horse numbers', function () {
+test('3頭組の券種が3つの馬番にパースされる', function () {
     // Arrange
     $parser = new RaceResultPayoutParser;
     $text = implode("\n", [
@@ -173,7 +173,7 @@ test('three-horse ticket parses three horse numbers', function () {
     expect($result[0]['horse_numbers'])->toBe([1, 2, 3]);
 });
 
-test('parses complete payout text with seven required ticket types (no wakuren)', function () use ($completePayoutTextWithoutWakuren) {
+test('必須7券種を含む完全な払戻テキスト（枠連なし）をパースできる', function () use ($completePayoutTextWithoutWakuren) {
     // Arrange
     $parser = new RaceResultPayoutParser;
 
@@ -191,7 +191,7 @@ test('parses complete payout text with seven required ticket types (no wakuren)'
     expect($ticketTypes)->toContain(TicketTypeName::Sanrentan->value);
 });
 
-test('parses complete payout text with all eight ticket types (with wakuren)', function () use ($completePayoutTextWithWakuren) {
+test('全8券種を含む完全な払戻テキスト（枠連あり）をパースできる', function () use ($completePayoutTextWithWakuren) {
     // Arrange
     $parser = new RaceResultPayoutParser;
 
@@ -210,7 +210,7 @@ test('parses complete payout text with all eight ticket types (with wakuren)', f
     expect($ticketTypes)->toContain(TicketTypeName::Sanrentan->value);
 });
 
-test('blank lines are ignored', function () {
+test('空行は無視される', function () {
     // Arrange
     $parser = new RaceResultPayoutParser;
     $text = implode("\n", [
@@ -233,7 +233,7 @@ test('blank lines are ignored', function () {
 
 // ===== RaceResultPayoutParser::parse() 異常系 =====
 
-test('throws when text is empty', function () {
+test('テキストが空のとき例外が投げられる', function () {
     // Arrange
     $parser = new RaceResultPayoutParser;
 
@@ -242,7 +242,7 @@ test('throws when text is empty', function () {
         ->toThrow(InvalidArgumentException::class, 'テキストが空です。');
 });
 
-test('throws when ticket-type-only line is unknown', function () {
+test('券種行が未知の券種名のとき例外が投げられる', function () {
     // Arrange
     $parser = new RaceResultPayoutParser;
     $text = implode("\n", [
@@ -254,7 +254,7 @@ test('throws when ticket-type-only line is unknown', function () {
     expect(fn () => $parser->parse($text))->toThrow(InvalidArgumentException::class);
 });
 
-test('throws when inline format ticket type is unknown', function () {
+test('インライン形式の券種名が未知のとき例外が投げられる', function () {
     // Arrange
     $parser = new RaceResultPayoutParser;
     $text = "謎券種\t3\t610円\t2番人気";
@@ -263,7 +263,7 @@ test('throws when inline format ticket type is unknown', function () {
     expect(fn () => $parser->parse($text))->toThrow(InvalidArgumentException::class);
 });
 
-test('throws when line has invalid column count', function () {
+test('行のカラム数が不正のとき例外が投げられる', function () {
     // Arrange
     $parser = new RaceResultPayoutParser;
     $text = implode("\n", [
@@ -275,7 +275,7 @@ test('throws when line has invalid column count', function () {
     expect(fn () => $parser->parse($text))->toThrow(InvalidArgumentException::class);
 });
 
-test('throws when data line appears before any ticket type is established', function () {
+test('券種が確定する前にデータ行が出現したとき例外が投げられる', function () {
     // Arrange
     $parser = new RaceResultPayoutParser;
     $text = "3\t610円\t2番人気";
@@ -284,7 +284,7 @@ test('throws when data line appears before any ticket type is established', func
     expect(fn () => $parser->parse($text))->toThrow(InvalidArgumentException::class);
 });
 
-test('throws when data column is invalid', function (string $dataLine) {
+test('データ行のカラム値が不正のとき例外が投げられる', function (string $dataLine) {
     // Arrange
     $parser = new RaceResultPayoutParser;
     $text = "単勝\n".$dataLine;
@@ -292,15 +292,15 @@ test('throws when data column is invalid', function (string $dataLine) {
     // Act & Assert
     expect(fn () => $parser->parse($text))->toThrow(InvalidArgumentException::class);
 })->with([
-    'empty horse number' => "\t610円\t2番人気",
-    'non-numeric horse number' => "A-B\t610円\t2番人気",
-    'invalid amount' => "3\tabc円\t2番人気",
-    'invalid popularity' => "3\t610円\tabc番人気",
+    '馬番が空' => "\t610円\t2番人気",
+    '馬番が数値でない' => "A-B\t610円\t2番人気",
+    '金額が不正' => "3\tabc円\t2番人気",
+    '人気が不正' => "3\t610円\tabc番人気",
 ]);
 
 // ===== RaceResultPayoutParser::validateAllTypesPresent() =====
 
-test('does not throw when all seven required ticket types are present', function () {
+test('必須7券種すべてが揃っているとき例外が投げられない', function () {
     // Arrange
     $parser = new RaceResultPayoutParser;
     $entries = [
@@ -318,7 +318,7 @@ test('does not throw when all seven required ticket types are present', function
     expect(true)->toBe(true);
 });
 
-test('throws when entries is empty', function () {
+test('エントリが空のとき例外が投げられる', function () {
     // Arrange
     $parser = new RaceResultPayoutParser;
 
@@ -326,7 +326,7 @@ test('throws when entries is empty', function () {
     expect(fn () => $parser->validateAllTypesPresent([]))->toThrow(InvalidArgumentException::class);
 });
 
-test('throws when only wakuren is present and required types are missing', function () {
+test('枠連のみで必須券種が欠けているとき例外が投げられる', function () {
     // Arrange
     $parser = new RaceResultPayoutParser;
     $entries = [
@@ -337,7 +337,7 @@ test('throws when only wakuren is present and required types are missing', funct
     expect(fn () => $parser->validateAllTypesPresent($entries))->toThrow(InvalidArgumentException::class);
 });
 
-test('throws and includes missing ticket label in Japanese when one type is missing', function () {
+test('1券種が欠けているとき例外メッセージに欠けた券種の日本語ラベルが含まれる', function () {
     // Arrange
     $parser = new RaceResultPayoutParser;
     $entries = [
@@ -354,7 +354,7 @@ test('throws and includes missing ticket label in Japanese when one type is miss
         ->toThrow(InvalidArgumentException::class, '単勝');
 });
 
-test('throws when multiple required types are missing', function () {
+test('複数の必須券種が欠けているとき例外が投げられる', function () {
     // Arrange
     $parser = new RaceResultPayoutParser;
     $entries = [

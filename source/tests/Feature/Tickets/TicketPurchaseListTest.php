@@ -61,7 +61,7 @@ function createTicketPurchase(int $userId, int $raceId, int $ticketTypeId, int $
     ]);
 }
 
-test('authenticated user can access ticket list page', function () {
+test('認証済みユーザーは馬券一覧画面にアクセスできる', function () {
     // Arrange
     $user = User::factory()->create();
 
@@ -76,7 +76,7 @@ test('authenticated user can access ticket list page', function () {
     );
 });
 
-test('purchases property contains only the authenticated user\'s data', function () {
+test('purchases プロパティには認証済みユーザー自身のデータのみ含まれる', function () {
     // Arrange
     $user = User::factory()->create();
     $otherUser = User::factory()->create();
@@ -102,7 +102,7 @@ test('purchases property contains only the authenticated user\'s data', function
     );
 });
 
-test('purchases is empty array when user has no purchases', function () {
+test('購入記録がないユーザーでは purchases が空配列で返る', function () {
     // Arrange
     $user = User::factory()->create();
 
@@ -116,7 +116,7 @@ test('purchases is empty array when user has no purchases', function () {
     );
 });
 
-test('purchases are sorted by race_date descending', function () {
+test('purchases は race_date 降順で並ぶ', function () {
     // Arrange
     $user = User::factory()->create();
 
@@ -143,7 +143,7 @@ test('purchases are sorted by race_date descending', function () {
     );
 });
 
-test('purchases on same date are sorted by race_number descending', function () {
+test('同日の purchases は race_number 降順で並ぶ', function () {
     // Arrange
     $user = User::factory()->create();
 
@@ -170,7 +170,7 @@ test('purchases on same date are sorted by race_number descending', function () 
     );
 });
 
-test('nextCursor is null when purchases are 30 or fewer', function () {
+test('purchases が30件以下のとき nextCursor は null で返る', function () {
     // Arrange
     $user = User::factory()->create();
 
@@ -191,7 +191,7 @@ test('nextCursor is null when purchases are 30 or fewer', function () {
     );
 });
 
-test('nextCursor is non-null when purchases exceed 30', function () {
+test('purchases が30件を超えるとき nextCursor は非null で返る', function () {
     // Arrange
     $user = User::factory()->create();
 
@@ -233,7 +233,7 @@ test('nextCursor is non-null when purchases exceed 30', function () {
     );
 });
 
-test('cursor pagination returns next 30 items', function () {
+test('カーソルページネーションは次の30件を返す', function () {
     // Arrange
     $user = User::factory()->create();
 
@@ -277,7 +277,7 @@ test('cursor pagination returns next 30 items', function () {
     );
 });
 
-test('unauthenticated user is redirected to login page', function () {
+test('未認証ユーザーはログイン画面にリダイレクトされる', function () {
     // Act
     $response = $this->get(route('tickets.index'));
 
@@ -541,7 +541,7 @@ test('unit_stake が null の場合: purchase_amount が null で返される', 
     );
 });
 
-test('purchases on same date are sorted by venue_name descending', function () {
+test('同日の purchases は venue_name 降順で並ぶ', function () {
     // Arrange
     $user = User::factory()->create();
 

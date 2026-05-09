@@ -62,7 +62,7 @@ function markUpsertUrl(string $raceUid, int $columnId, int $raceEntryId): string
 
 // ===== PUT /api/races/{uid}/mark-columns/{column_id}/entries/{race_entry_id}/mark =====
 
-test('unauthenticated user cannot upsert race mark', function () {
+test('未認証ユーザーはレース印を upsert できない', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForMarkUpsertTest();
@@ -83,7 +83,7 @@ test('unauthenticated user cannot upsert race mark', function () {
     $response->assertUnauthorized();
 });
 
-test('authenticated user can set new race mark', function () {
+test('認証済みユーザーは新しいレース印を登録できる', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForMarkUpsertTest();
@@ -105,7 +105,7 @@ test('authenticated user can set new race mark', function () {
     $response->assertJsonPath('data.mark_value', '◎');
 });
 
-test('existing race mark can be updated to a different value', function () {
+test('既存のレース印は別の値に更新できる', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForMarkUpsertTest();
@@ -133,7 +133,7 @@ test('existing race mark can be updated to a different value', function () {
     $response->assertJsonPath('data.mark_value', '○');
 });
 
-test('empty mark_value removes the existing race mark', function () {
+test('mark_value が空のとき既存のレース印が削除される', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForMarkUpsertTest();
@@ -164,7 +164,7 @@ test('empty mark_value removes the existing race mark', function () {
     ]);
 });
 
-test('upserting mark on other users column returns 403', function () {
+test('他ユーザーのカラムに印を upsert しようとすると403が返る', function () {
     // Arrange
     $user = User::factory()->create();
     $otherUser = User::factory()->create();
@@ -188,7 +188,7 @@ test('upserting mark on other users column returns 403', function () {
     $response->assertForbidden();
 });
 
-test('invalid mark_value returns 422', function () {
+test('mark_value が不正のとき422が返る', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForMarkUpsertTest();
@@ -210,7 +210,7 @@ test('invalid mark_value returns 422', function () {
     $response->assertJsonValidationErrors(['mark_value']);
 });
 
-test('× mark_value is no longer accepted and returns 422', function () {
+test('mark_value=× はもはや受け付けられず422が返る', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForMarkUpsertTest();
@@ -232,7 +232,7 @@ test('× mark_value is no longer accepted and returns 422', function () {
     $response->assertJsonValidationErrors(['mark_value']);
 });
 
-test('☆ mark_value can be set as dark horse mark', function () {
+test('mark_value=☆ を穴馬印として登録できる', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForMarkUpsertTest();
@@ -254,7 +254,7 @@ test('☆ mark_value can be set as dark horse mark', function () {
     $response->assertJsonPath('data.mark_value', '☆');
 });
 
-test('null mark_value returns 422', function () {
+test('mark_value が null のとき422が返る', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForMarkUpsertTest();
@@ -276,7 +276,7 @@ test('null mark_value returns 422', function () {
     $response->assertJsonValidationErrors(['mark_value']);
 });
 
-test('upserting mark on non-existent column returns 404', function () {
+test('存在しないカラムに印を upsert しようとすると404が返る', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForMarkUpsertTest();

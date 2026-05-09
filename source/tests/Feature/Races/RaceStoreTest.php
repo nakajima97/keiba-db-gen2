@@ -47,7 +47,7 @@ function createVenueForStoreTest(): int
 
 // ===== POST /races =====
 
-test('unauthenticated user is redirected when posting to races store', function () use ($sampleText) {
+test('未認証ユーザーがレース store にPOSTするとリダイレクトされる', function () use ($sampleText) {
     // Arrange
     $venueId = createVenueForStoreTest();
 
@@ -64,7 +64,7 @@ test('unauthenticated user is redirected when posting to races store', function 
     $this->assertGuest();
 });
 
-test('valid post creates race, horses, jockeys and race_entries', function () use ($sampleText) {
+test('正常POSTで race・horses・jockeys・race_entries が作成される', function () use ($sampleText) {
     // Arrange
     $user = User::factory()->create();
     $venueId = createVenueForStoreTest();
@@ -105,7 +105,7 @@ test('valid post creates race, horses, jockeys and race_entries', function () us
     ]);
 });
 
-test('existing horse and jockey are reused and not duplicated', function () use ($sampleText) {
+test('既存の馬と騎手は再利用され重複登録されない', function () use ($sampleText) {
     // Arrange
     $user = User::factory()->create();
     $venueId = createVenueForStoreTest();
@@ -137,7 +137,7 @@ test('existing horse and jockey are reused and not duplicated', function () use 
     $this->assertDatabaseCount('race_entries', 1);
 });
 
-test('successful post redirects back to races create page', function () use ($sampleText) {
+test('POST成功時はレース作成画面に戻る', function () use ($sampleText) {
     // Arrange
     $user = User::factory()->create();
     $venueId = createVenueForStoreTest();
@@ -154,7 +154,7 @@ test('successful post redirects back to races create page', function () use ($sa
     $response->assertRedirect(route('races.create'));
 });
 
-test('missing venue_id returns validation error', function () use ($sampleText) {
+test('venue_id が未指定のときバリデーションエラーが返る', function () use ($sampleText) {
     // Arrange
     $user = User::factory()->create();
 
@@ -169,7 +169,7 @@ test('missing venue_id returns validation error', function () use ($sampleText) 
     $response->assertSessionHasErrors(['venue_id']);
 });
 
-test('missing race_date returns validation error', function () use ($sampleText) {
+test('race_date が未指定のときバリデーションエラーが返る', function () use ($sampleText) {
     // Arrange
     $user = User::factory()->create();
     $venueId = createVenueForStoreTest();
@@ -185,7 +185,7 @@ test('missing race_date returns validation error', function () use ($sampleText)
     $response->assertSessionHasErrors(['race_date']);
 });
 
-test('missing race_number returns validation error', function () use ($sampleText) {
+test('race_number が未指定のときバリデーションエラーが返る', function () use ($sampleText) {
     // Arrange
     $user = User::factory()->create();
     $venueId = createVenueForStoreTest();
@@ -201,7 +201,7 @@ test('missing race_number returns validation error', function () use ($sampleTex
     $response->assertSessionHasErrors(['race_number']);
 });
 
-test('race_number out of range returns validation error', function () use ($sampleText) {
+test('race_number が範囲外のときバリデーションエラーが返る', function () use ($sampleText) {
     // Arrange
     $user = User::factory()->create();
     $venueId = createVenueForStoreTest();
@@ -218,7 +218,7 @@ test('race_number out of range returns validation error', function () use ($samp
     $response->assertSessionHasErrors(['race_number']);
 });
 
-test('missing paste_text returns validation error', function () {
+test('paste_text が未指定のときバリデーションエラーが返る', function () {
     // Arrange
     $user = User::factory()->create();
     $venueId = createVenueForStoreTest();
@@ -303,7 +303,7 @@ test('race_number が 12 の場合、セッションの last_race_number は 12 
     $response->assertSessionHas('last_race_number', 12);
 });
 
-test('duplicate race registration returns error', function () use ($sampleText) {
+test('レースを重複登録しようとするとエラーが返る', function () use ($sampleText) {
     // Arrange
     $user = User::factory()->create();
     $venueId = createVenueForStoreTest();

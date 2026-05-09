@@ -3,7 +3,7 @@
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
-test('authenticated user can purchase a ticket', function () {
+test('認証済みユーザーは馬券を購入できる', function () {
     // Arrange
     $user = User::factory()->create();
 

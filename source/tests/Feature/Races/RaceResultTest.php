@@ -149,7 +149,7 @@ function createRaceWithUid(int $venueId, CarbonInterface $now): array
 
 // ===== GET /races/{uid}/result/new =====
 
-test('authenticated user can access race result create page', function () {
+test('認証済みユーザーはレース結果作成画面にアクセスできる', function () {
     // Arrange
     $user = User::factory()->create();
     ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
@@ -162,7 +162,7 @@ test('authenticated user can access race result create page', function () {
     $response->assertInertia(fn (Assert $page) => $page->component('races/result/create'));
 });
 
-test('unauthenticated user is redirected to login page when accessing race result create page', function () {
+test('未認証ユーザーがレース結果作成画面にアクセスするとログイン画面にリダイレクトされる', function () {
     // Arrange
     ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
     ['raceUid' => $raceUid] = createRaceWithUid($venueId, $now);
@@ -174,7 +174,7 @@ test('unauthenticated user is redirected to login page when accessing race resul
     $response->assertRedirect(route('login'));
 });
 
-test('accessing race result create page with non-existent uid returns 404', function () {
+test('存在しないUIDでレース結果作成画面にアクセスすると404が返る', function () {
     // Arrange
     $user = User::factory()->create();
 
@@ -185,7 +185,7 @@ test('accessing race result create page with non-existent uid returns 404', func
     $response->assertNotFound();
 });
 
-test('race result create page returns has_existing_result as false when no race result exists', function () {
+test('レース結果が未登録のときレース結果作成画面は has_existing_result を false で返す', function () {
     // Arrange
     $user = User::factory()->create();
     ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
@@ -201,7 +201,7 @@ test('race result create page returns has_existing_result as false when no race 
     );
 });
 
-test('race result create page returns has_existing_result as true when race result exists', function () {
+test('レース結果が登録済みのときレース結果作成画面は has_existing_result を true で返す', function () {
     // Arrange
     $user = User::factory()->create();
     ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
@@ -233,7 +233,7 @@ test('race result create page returns has_existing_result as true when race resu
     );
 });
 
-test('race result create page returns has_existing_result as true when only race_payouts exist', function () {
+test('race_payouts のみ存在するときレース結果作成画面は has_existing_result を true で返す', function () {
     // Arrange
     $user = User::factory()->create();
     ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
@@ -261,7 +261,7 @@ test('race result create page returns has_existing_result as true when only race
 
 // ===== POST /races/{uid}/result =====
 
-test('valid payout text is stored with 8 race_payouts records', function () use ($sampleText, $resultSampleText) {
+test('正常な払戻テキストで race_payouts が8件保存される', function () use ($sampleText, $resultSampleText) {
     // Arrange
     $user = User::factory()->create();
     ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
@@ -277,7 +277,7 @@ test('valid payout text is stored with 8 race_payouts records', function () use 
     expect(DB::table('race_payouts')->where('race_id', $raceId)->count())->toBe(12);
 });
 
-test('tansho and fukusho horse_number is stored correctly in race_payout_horses', function () use ($sampleText, $resultSampleText) {
+test('単勝・複勝の horse_number が race_payout_horses に正しく保存される', function () use ($sampleText, $resultSampleText) {
     // Arrange
     $user = User::factory()->create();
     ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
@@ -302,7 +302,7 @@ test('tansho and fukusho horse_number is stored correctly in race_payout_horses'
     ]);
 });
 
-test('umatan and sanrentan horse_numbers are stored with correct sort_order', function () use ($sampleText, $resultSampleText) {
+test('馬単・3連単の horse_numbers が正しい sort_order で保存される', function () use ($sampleText, $resultSampleText) {
     // Arrange
     $user = User::factory()->create();
     ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
@@ -354,7 +354,7 @@ test('umatan and sanrentan horse_numbers are stored with correct sort_order', fu
     ]);
 });
 
-test('umaren, wide, wakuren, and sanrenpuku horse_numbers are stored in ascending order', function () use ($sampleText, $resultSampleText) {
+test('馬連・ワイド・枠連・3連複の horse_numbers が昇順で保存される', function () use ($sampleText, $resultSampleText) {
     // Arrange
     $user = User::factory()->create();
     ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
@@ -393,7 +393,7 @@ test('umaren, wide, wakuren, and sanrenpuku horse_numbers are stored in ascendin
     expect($sanrenpukuHorses)->toBe([3, 6, 11]);
 });
 
-test('successful post redirects to race result edit page', function () use ($sampleText, $resultSampleText) {
+test('POST成功時はレース結果編集画面にリダイレクトされる', function () use ($sampleText, $resultSampleText) {
     // Arrange
     $user = User::factory()->create();
     ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
@@ -408,7 +408,7 @@ test('successful post redirects to race result edit page', function () use ($sam
     $response->assertRedirect(route('tickets.index'));
 });
 
-test('empty text returns validation error and nothing is stored', function () {
+test('テキストが空のときバリデーションエラーが返り何も保存されない', function () {
     // Arrange
     $user = User::factory()->create();
     ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
@@ -424,7 +424,7 @@ test('empty text returns validation error and nothing is stored', function () {
     expect(DB::table('race_payouts')->where('race_id', $raceId)->count())->toBe(0);
 });
 
-test('invalid format text returns error and nothing is stored', function () {
+test('テキストのフォーマットが不正のときエラーが返り何も保存されない', function () {
     // Arrange
     $user = User::factory()->create();
     ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
@@ -440,7 +440,7 @@ test('invalid format text returns error and nothing is stored', function () {
     expect(DB::table('race_payouts')->where('race_id', $raceId)->count())->toBe(0);
 });
 
-test('missing required ticket types in text returns error and nothing is stored', function () {
+test('テキストに必須券種が欠けているときエラーが返り何も保存されない', function () {
     // Arrange
     // tansho・fukusho のみ含み、必須7券種のうち wide, umaren, umatan, sanrenpuku, sanrentan が欠落している。
     // 枠連は任意券種なので欠落してもエラーにならないが、それ以外の必須券種が欠落するとエラーになることを保証する。
@@ -465,7 +465,7 @@ test('missing required ticket types in text returns error and nothing is stored'
     expect(DB::table('race_payouts')->where('race_id', $raceId)->count())->toBe(0);
 });
 
-test('JRA format payout text (ticket type on separate header line) is stored correctly', function () use ($jraSampleText, $resultSampleText) {
+test('JRA形式の払戻テキスト（券種が別行にあるヘッダー形式）が正しく保存される', function () use ($jraSampleText, $resultSampleText) {
     // Arrange
     $user = User::factory()->create();
     ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
@@ -481,7 +481,7 @@ test('JRA format payout text (ticket type on separate header line) is stored cor
     expect(DB::table('race_payouts')->where('race_id', $raceId)->count())->toBe(12);
 });
 
-test('JRA format payout text without wakuren data (only header) is stored correctly', function () use ($jraSampleTextWithoutWakuren, $resultSampleText) {
+test('枠連データなしのJRA形式払戻テキスト（ヘッダーのみ）が正しく保存される', function () use ($jraSampleTextWithoutWakuren, $resultSampleText) {
     // Arrange
     $user = User::factory()->create();
     ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
@@ -502,7 +502,7 @@ test('JRA format payout text without wakuren data (only header) is stored correc
         ->count())->toBe(0);
 });
 
-test('unauthenticated user is redirected to login page when posting race result', function () {
+test('未認証ユーザーがレース結果をPOSTするとログイン画面にリダイレクトされる', function () {
     // Arrange
     ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
     ['raceUid' => $raceUid] = createRaceWithUid($venueId, $now);
@@ -516,7 +516,7 @@ test('unauthenticated user is redirected to login page when posting race result'
     $response->assertRedirect(route('login'));
 });
 
-test('posting race result with non-existent uid returns 404', function () use ($sampleText, $resultSampleText) {
+test('存在しないUIDでレース結果をPOSTすると404が返る', function () use ($sampleText, $resultSampleText) {
     // Arrange
     $user = User::factory()->create();
 
@@ -1005,7 +1005,7 @@ test('unit_stake が 100円より多い場合、払い戻し金額は購入金�
 
 // ===== race_result_horses — 着順保存ロジック =====
 
-test('valid result_text is stored with correct number of race_result_horses records', function () use ($resultSampleText, $sampleText) {
+test('正常な result_text で race_result_horses が正しい件数で保存される', function () use ($resultSampleText, $sampleText) {
     // Arrange
     $user = User::factory()->create();
     ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
@@ -1021,7 +1021,7 @@ test('valid result_text is stored with correct number of race_result_horses reco
     expect(DB::table('race_result_horses')->where('race_id', $raceId)->count())->toBe(4);
 });
 
-test('race_result_horses records have correct field mappings', function () use ($resultSampleText, $sampleText) {
+test('race_result_horses レコードのフィールドマッピングが正しい', function () use ($resultSampleText, $sampleText) {
     // Arrange
     $user = User::factory()->create();
     ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
@@ -1058,7 +1058,7 @@ test('race_result_horses records have correct field mappings', function () use (
     ]);
 });
 
-test('horse weight change is null when horse has no race experience', function () use ($resultSampleText, $sampleText) {
+test('出走経験がない馬の馬体重増減は null で保存される', function () use ($resultSampleText, $sampleText) {
     // Arrange
     $user = User::factory()->create();
     ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
@@ -1079,7 +1079,7 @@ test('horse weight change is null when horse has no race experience', function (
     ]);
 });
 
-test('horses and jockeys are created in their tables when not previously registered', function () use ($resultSampleText, $sampleText) {
+test('未登録の馬と騎手はそれぞれのテーブルに新規作成される', function () use ($resultSampleText, $sampleText) {
     // Arrange
     $user = User::factory()->create();
     ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
@@ -1098,7 +1098,7 @@ test('horses and jockeys are created in their tables when not previously registe
     $this->assertDatabaseHas('jockeys', ['name' => '騎手B']);
 });
 
-test('existing horse and jockey records are reused when result text contains same name', function () use ($resultSampleText, $sampleText) {
+test('結果テキストに同名がある場合は既存の馬・騎手レコードが再利用される', function () use ($resultSampleText, $sampleText) {
     // Arrange
     $user = User::factory()->create();
     ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
@@ -1123,7 +1123,7 @@ test('existing horse and jockey records are reused when result text contains sam
     ]);
 });
 
-test('empty result_text returns validation error and nothing is stored', function () use ($sampleText) {
+test('result_text が空のときバリデーションエラーが返り何も保存されない', function () use ($sampleText) {
     // Arrange
     $user = User::factory()->create();
     ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
@@ -1142,7 +1142,7 @@ test('empty result_text returns validation error and nothing is stored', functio
 
 // ===== GET /races/{uid}/result/edit =====
 
-test('authenticated user can access race result edit page', function () {
+test('認証済みユーザーはレース結果編集画面にアクセスできる', function () {
     // Arrange
     $user = User::factory()->create();
     ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
@@ -1155,7 +1155,7 @@ test('authenticated user can access race result edit page', function () {
     $response->assertInertia(fn (Assert $page) => $page->component('races/result/edit'));
 });
 
-test('unauthenticated user is redirected to login page when accessing race result edit page', function () {
+test('未認証ユーザーがレース結果編集画面にアクセスするとログイン画面にリダイレクトされる', function () {
     // Arrange
     ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
     ['raceUid' => $raceUid] = createRaceWithUid($venueId, $now);
@@ -1167,7 +1167,7 @@ test('unauthenticated user is redirected to login page when accessing race resul
     $response->assertRedirect(route('login'));
 });
 
-test('accessing race result edit page with non-existent uid returns 404', function () {
+test('存在しないUIDでレース結果編集画面にアクセスすると404が返る', function () {
     // Arrange
     $user = User::factory()->create();
 
@@ -1178,7 +1178,7 @@ test('accessing race result edit page with non-existent uid returns 404', functi
     $response->assertNotFound();
 });
 
-test('race result edit page response includes payout fields', function () {
+test('レース結果編集画面のレスポンスには払戻フィールドが含まれる', function () {
     // Arrange
     $user = User::factory()->create();
     ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
@@ -1214,7 +1214,7 @@ test('race result edit page response includes payout fields', function () {
     );
 });
 
-test('umatan horses in race result edit page are ordered by sort_order', function () {
+test('レース結果編集画面では馬単の馬は sort_order 順で並ぶ', function () {
     // Arrange
     $user = User::factory()->create();
     ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
@@ -1250,7 +1250,7 @@ test('umatan horses in race result edit page are ordered by sort_order', functio
 
 // ===== GET /races/{uid}/result/edit — finishing_horses =====
 
-test('finishing_horses items have correct fields and values', function () {
+test('finishing_horses の各項目は正しいフィールドと値を持つ', function () {
     // Arrange
     $user = User::factory()->create();
     ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
@@ -1291,7 +1291,7 @@ test('finishing_horses items have correct fields and values', function () {
     );
 });
 
-test('finishing_horses is empty array when no race_result_horses records exist', function () {
+test('race_result_horses レコードが存在しないとき finishing_horses は空配列で返る', function () {
     // Arrange
     $user = User::factory()->create();
     ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
@@ -1307,7 +1307,7 @@ test('finishing_horses is empty array when no race_result_horses records exist',
     );
 });
 
-test('finishing_horses are sorted by finishing_order ascending', function () {
+test('finishing_horses は finishing_order 昇順で返る', function () {
     // Arrange
     $user = User::factory()->create();
     ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
@@ -1376,7 +1376,7 @@ test('finishing_horses are sorted by finishing_order ascending', function () {
 
 // ===== GET /races/{uid}/result/edit — tickets =====
 
-test('race result edit page response includes tickets prop when user has tickets for the race', function () {
+test('対象レースの馬券を持つユーザーのレース結果編集画面レスポンスには tickets prop が含まれる', function () {
     // Arrange
     $user = User::factory()->create();
     ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
@@ -1403,7 +1403,7 @@ test('race result edit page response includes tickets prop when user has tickets
     );
 });
 
-test('tickets in race result edit page response have required fields', function () {
+test('レース結果編集画面レスポンスの tickets は必要なフィールドを揃えて返す', function () {
     // Arrange
     $user = User::factory()->create();
     ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
@@ -1442,7 +1442,7 @@ test('tickets in race result edit page response have required fields', function 
     );
 });
 
-test('tickets in race result edit page response only includes tickets owned by the authenticated user', function () {
+test('レース結果編集画面レスポンスの tickets は認証済みユーザー所有の馬券のみ含む', function () {
     // Arrange
     $user = User::factory()->create();
     $otherUser = User::factory()->create();
@@ -1476,7 +1476,7 @@ test('tickets in race result edit page response only includes tickets owned by t
     );
 });
 
-test('tickets in race result edit page response is empty when user has no tickets for the race', function () {
+test('対象レースの馬券を持たないユーザーのレース結果編集画面レスポンスでは tickets が空で返る', function () {
     // Arrange
     $user = User::factory()->create();
     ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
@@ -1492,7 +1492,7 @@ test('tickets in race result edit page response is empty when user has no ticket
     );
 });
 
-test('tickets purchase_amount is calculated as unit_stake multiplied by num_combinations', function () {
+test('tickets の purchase_amount は unit_stake × num_combinations で計算される', function () {
     // Arrange
     // umaren box with 3 horses → 3 combinations × unit_stake 1000 = 3000
     $user = User::factory()->create();
@@ -1522,7 +1522,7 @@ test('tickets purchase_amount is calculated as unit_stake multiplied by num_comb
     );
 });
 
-test('tickets buy_type_label reflects the BuyType model label', function () {
+test('tickets の buy_type_label は BuyType モデルのラベルを反映する', function () {
     // Arrange
     $user = User::factory()->create();
     ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
@@ -1550,7 +1550,7 @@ test('tickets buy_type_label reflects the BuyType model label', function () {
     );
 });
 
-test('tickets selections in col1/col2/col3 form is normalized to columns form', function () {
+test('tickets の selections は col1/col2/col3 形式から columns 形式に正規化される', function () {
     // Arrange
     $user = User::factory()->create();
     ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
@@ -1578,7 +1578,7 @@ test('tickets selections in col1/col2/col3 form is normalized to columns form', 
     );
 });
 
-test('tickets selections in axis1/axis2/others form is normalized to axis/others form', function () {
+test('tickets の selections は axis1/axis2/others 形式から axis/others 形式に正規化される', function () {
     // Arrange
     $user = User::factory()->create();
     ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();

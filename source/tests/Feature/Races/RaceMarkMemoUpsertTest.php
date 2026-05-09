@@ -61,7 +61,7 @@ function markMemoUrl(string $raceUid, int $columnId, int $raceEntryId): string
 
 // ===== PUT /api/races/{uid}/mark-columns/{column_id}/entries/{race_entry_id}/memo =====
 
-test('unauthenticated user cannot upsert race mark memo', function () {
+test('未認証ユーザーはレース印メモを upsert できない', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForMarkMemoUpsertTest();
@@ -84,7 +84,7 @@ test('unauthenticated user cannot upsert race mark memo', function () {
     $response->assertUnauthorized();
 });
 
-test('authenticated user can create new race mark memo on other column', function () {
+test('認証済みユーザーは他カテゴリのカラムに新規メモを作成できる', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForMarkMemoUpsertTest();
@@ -113,7 +113,7 @@ test('authenticated user can create new race mark memo on other column', functio
     ]);
 });
 
-test('existing race mark memo can be updated via upsert', function () {
+test('既存のレース印メモは upsert で更新できる', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForMarkMemoUpsertTest();
@@ -155,7 +155,7 @@ test('existing race mark memo can be updated via upsert', function () {
     ])->count())->toBe(1);
 });
 
-test('memo can be created even when race_marks record does not exist', function () {
+test('race_marks レコードが存在しなくてもメモを作成できる', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForMarkMemoUpsertTest();
@@ -183,7 +183,7 @@ test('memo can be created even when race_marks record does not exist', function 
     ]);
 });
 
-test('creating memo on own column returns 422', function () {
+test('自分カテゴリのカラムにメモを作成しようとすると422が返る', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForMarkMemoUpsertTest();
@@ -204,7 +204,7 @@ test('creating memo on own column returns 422', function () {
     $response->assertUnprocessable();
 });
 
-test('creating memo on other users column returns 403', function () {
+test('他ユーザーのカラムにメモを作成しようとすると403が返る', function () {
     // Arrange
     $user = User::factory()->create();
     $otherUser = User::factory()->create();
@@ -228,7 +228,7 @@ test('creating memo on other users column returns 403', function () {
     $response->assertForbidden();
 });
 
-test('empty content returns 422', function () {
+test('本文が空のとき422が返る', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForMarkMemoUpsertTest();
@@ -252,7 +252,7 @@ test('empty content returns 422', function () {
     $response->assertJsonValidationErrors(['content']);
 });
 
-test('content exceeding 1000 characters returns 422', function () {
+test('本文が1000文字を超えると422が返る', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForMarkMemoUpsertTest();
@@ -276,7 +276,7 @@ test('content exceeding 1000 characters returns 422', function () {
     $response->assertJsonValidationErrors(['content']);
 });
 
-test('missing content returns 422', function () {
+test('本文が未指定のとき422が返る', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForMarkMemoUpsertTest();
@@ -298,7 +298,7 @@ test('missing content returns 422', function () {
     $response->assertJsonValidationErrors(['content']);
 });
 
-test('content with exactly 1000 characters is accepted', function () {
+test('ちょうど1000文字の本文は受け付けられる', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForMarkMemoUpsertTest();
@@ -322,7 +322,7 @@ test('content with exactly 1000 characters is accepted', function () {
     $response->assertJsonPath('data.content', str_repeat('あ', 1000));
 });
 
-test('upserting memo on non-existent race uid returns 404', function () {
+test('存在しないレースUIDでメモを upsert しようとすると404が返る', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForMarkMemoUpsertTest();
@@ -345,7 +345,7 @@ test('upserting memo on non-existent race uid returns 404', function () {
     $response->assertNotFound();
 });
 
-test('upserting memo on non-existent column id returns 404', function () {
+test('存在しないカラムIDでメモを upsert しようとすると404が返る', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForMarkMemoUpsertTest();
@@ -360,7 +360,7 @@ test('upserting memo on non-existent column id returns 404', function () {
     $response->assertNotFound();
 });
 
-test('upserting memo on non-existent race entry id returns 404', function () {
+test('存在しない出馬IDでメモを upsert しようとすると404が返る', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForMarkMemoUpsertTest();

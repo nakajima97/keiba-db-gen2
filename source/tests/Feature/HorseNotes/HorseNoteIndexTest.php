@@ -34,7 +34,7 @@ function createHorseForHorseNoteIndexTest(): Horse
 
 // ===== GET /api/horses/{horse}/notes =====
 
-test('unauthenticated user cannot list horse notes', function () {
+test('未認証ユーザーは馬メモ一覧を取得できない', function () {
     // Arrange
     $horse = createHorseForHorseNoteIndexTest();
 
@@ -45,7 +45,7 @@ test('unauthenticated user cannot list horse notes', function () {
     $response->assertUnauthorized();
 });
 
-test('authenticated user can list own horse notes ordered by updated_at desc', function () {
+test('認証済みユーザーは自分の馬メモ一覧を updated_at の降順で取得できる', function () {
     // Arrange
     $user = User::factory()->create();
     $horse = createHorseForHorseNoteIndexTest();
@@ -75,7 +75,7 @@ test('authenticated user can list own horse notes ordered by updated_at desc', f
     expect($contents)->toBe(['レース紐づきなしメモ', 'レース紐づきありメモ']);
 });
 
-test('horse note linked to a race includes race details', function () {
+test('レースに紐づく馬メモにはレース詳細が含まれる', function () {
     // Arrange
     $user = User::factory()->create();
     $horse = createHorseForHorseNoteIndexTest();
@@ -100,7 +100,7 @@ test('horse note linked to a race includes race details', function () {
     $response->assertJsonPath('data.0.race.race_name', '皐月賞');
 });
 
-test('horse note without race returns race as null', function () {
+test('レース未紐付けの馬メモは race が null で返る', function () {
     // Arrange
     $user = User::factory()->create();
     $horse = createHorseForHorseNoteIndexTest();
@@ -120,7 +120,7 @@ test('horse note without race returns race as null', function () {
     $response->assertJsonPath('data.0.race', null);
 });
 
-test('other users horse notes are not included in the list', function () {
+test('他ユーザーの馬メモは一覧に含まれない', function () {
     // Arrange
     $user = User::factory()->create();
     $otherUser = User::factory()->create();
@@ -142,7 +142,7 @@ test('other users horse notes are not included in the list', function () {
     expect($contents)->not->toContain('他人のメモ');
 });
 
-test('listing horse notes for non-existent horse id returns 404', function () {
+test('存在しない馬IDで馬メモ一覧を取得しようとすると404が返る', function () {
     // Arrange
     $user = User::factory()->create();
 

@@ -64,7 +64,7 @@ beforeEach(function () {
     Spectator::using('openapi.yaml');
 });
 
-test('contract: <operationId> matches OpenAPI spec', function () {
+test('契約: <operationId> が OpenAPI 仕様と一致する', function () {
     // Arrange
     $user = User::factory()->create();
     // ... エンドポイントが要求する最小構成のデータを用意
@@ -79,3 +79,7 @@ test('contract: <operationId> matches OpenAPI spec', function () {
 
 - 既存例: `tests/Feature/Contract/RaceMarkColumnContractTest.php`
 - 異常系（401/403/404/422）の契約検証はスコープ外。必要になったタイミングで追加する
+
+## テスト説明文の言語
+
+`test()` / `it()` / `describe()` の説明文および `->with([...])` のキーは日本語で記述する。固有名詞・カラム名・HTTPステータス・`null` 等の技術用語はそのまま英数字を残す。

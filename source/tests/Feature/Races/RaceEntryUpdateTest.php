@@ -80,7 +80,7 @@ function validRaceEntryUpdatePayload(array $overrides = []): array
 
 // ===== PUT /races/{race:uid}/entries/{entry} =====
 
-test('unauthenticated user is redirected when updating race entry', function () {
+test('未認証ユーザーが出馬登録を更新しようとするとリダイレクトされる', function () {
     // Arrange
     $entry = createRaceEntryForUpdateTest();
 
@@ -95,7 +95,7 @@ test('unauthenticated user is redirected when updating race entry', function () 
     $this->assertGuest();
 });
 
-test('authenticated user can update race entry with valid data', function () {
+test('認証済みユーザーは正常データで出馬登録を更新できる', function () {
     // Arrange
     $user = User::factory()->create();
     $entry = createRaceEntryForUpdateTest();
@@ -116,7 +116,7 @@ test('authenticated user can update race entry with valid data', function () {
     ]);
 });
 
-test('updating with existing horse name reuses existing horse without creating new', function () {
+test('既存の馬名で更新すると新規作成せず既存の馬を再利用する', function () {
     // Arrange
     $user = User::factory()->create();
     $entry = createRaceEntryForUpdateTest();
@@ -137,7 +137,7 @@ test('updating with existing horse name reuses existing horse without creating n
     expect(Horse::count())->toBe($horseCountBefore);
 });
 
-test('updating with new horse name creates new horse record', function () {
+test('新しい馬名で更新すると新規の馬レコードが作成される', function () {
     // Arrange
     $user = User::factory()->create();
     $entry = createRaceEntryForUpdateTest();
@@ -159,7 +159,7 @@ test('updating with new horse name creates new horse record', function () {
     ]);
 });
 
-test('updating with existing jockey name reuses existing jockey without creating new', function () {
+test('既存の騎手名で更新すると新規作成せず既存の騎手を再利用する', function () {
     // Arrange
     $user = User::factory()->create();
     $entry = createRaceEntryForUpdateTest();
@@ -180,7 +180,7 @@ test('updating with existing jockey name reuses existing jockey without creating
     expect(Jockey::count())->toBe($jockeyCountBefore);
 });
 
-test('updating with new jockey name creates new jockey record', function () {
+test('新しい騎手名で更新すると新規の騎手レコードが作成される', function () {
     // Arrange
     $user = User::factory()->create();
     $entry = createRaceEntryForUpdateTest();
@@ -202,7 +202,7 @@ test('updating with new jockey name creates new jockey record', function () {
     ]);
 });
 
-test('horse_weight is optional and can be set to null', function () {
+test('horse_weight は省略可能で null として保存できる', function () {
     // Arrange
     $user = User::factory()->create();
     $entry = createRaceEntryForUpdateTest();
@@ -220,7 +220,7 @@ test('horse_weight is optional and can be set to null', function () {
     ]);
 });
 
-test('empty horse_name returns 422', function () {
+test('horse_name が空のとき422が返る', function () {
     // Arrange
     $user = User::factory()->create();
     $entry = createRaceEntryForUpdateTest();
@@ -236,7 +236,7 @@ test('empty horse_name returns 422', function () {
     $response->assertJsonValidationErrors(['horse_name']);
 });
 
-test('empty jockey_name returns 422', function () {
+test('jockey_name が空のとき422が返る', function () {
     // Arrange
     $user = User::factory()->create();
     $entry = createRaceEntryForUpdateTest();
@@ -252,7 +252,7 @@ test('empty jockey_name returns 422', function () {
     $response->assertJsonValidationErrors(['jockey_name']);
 });
 
-test('frame_number out of range returns 422', function () {
+test('frame_number が範囲外のとき422が返る', function () {
     // Arrange
     $user = User::factory()->create();
     $entry = createRaceEntryForUpdateTest();
@@ -268,7 +268,7 @@ test('frame_number out of range returns 422', function () {
     $response->assertJsonValidationErrors(['frame_number']);
 });
 
-test('horse_number out of range returns 422', function () {
+test('horse_number が範囲外のとき422が返る', function () {
     // Arrange
     $user = User::factory()->create();
     $entry = createRaceEntryForUpdateTest();
@@ -284,7 +284,7 @@ test('horse_number out of range returns 422', function () {
     $response->assertJsonValidationErrors(['horse_number']);
 });
 
-test('empty weight returns 422', function () {
+test('weight が空のとき422が返る', function () {
     // Arrange
     $user = User::factory()->create();
     $entry = createRaceEntryForUpdateTest();
@@ -300,7 +300,7 @@ test('empty weight returns 422', function () {
     $response->assertJsonValidationErrors(['weight']);
 });
 
-test('horse_number colliding with another entry in the same race returns 422', function () {
+test('同じレース内の他エントリと horse_number が衝突するとき422が返る', function () {
     // Arrange
     $user = User::factory()->create();
     $entry = createRaceEntryForUpdateTest();
@@ -334,7 +334,7 @@ test('horse_number colliding with another entry in the same race returns 422', f
     ]);
 });
 
-test('non-existent entry id returns 404', function () {
+test('存在しないエントリIDを指定すると404が返る', function () {
     // Arrange
     $user = User::factory()->create();
     $entry = createRaceEntryForUpdateTest();
@@ -349,7 +349,7 @@ test('non-existent entry id returns 404', function () {
     $response->assertNotFound();
 });
 
-test('non-existent race uid returns 404', function () {
+test('存在しないレースUIDを指定すると404が返る', function () {
     // Arrange
     $user = User::factory()->create();
     $entry = createRaceEntryForUpdateTest();

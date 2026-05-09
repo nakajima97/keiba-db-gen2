@@ -21,7 +21,7 @@ function createRaceForAddTest(): Race
 
 // ===== GET /races/{uid}/entries/add =====
 
-test('unauthenticated user is redirected when accessing race entry add', function () {
+test('未認証ユーザーが出馬登録追加画面にアクセスするとリダイレクトされる', function () {
     // Arrange
     $race = createRaceForAddTest();
 
@@ -32,7 +32,7 @@ test('unauthenticated user is redirected when accessing race entry add', functio
     $response->assertRedirectToRoute('login');
 });
 
-test('authenticated user can access race entry add and inertia component is rendered with race info', function () {
+test('認証済みユーザーは出馬登録追加画面にアクセスでき Inertia コンポーネントがレース情報付きで描画される', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForAddTest();
@@ -54,7 +54,7 @@ test('authenticated user can access race entry add and inertia component is rend
     );
 });
 
-test('non-existent race uid returns 404 on add page', function () {
+test('追加画面で存在しないレースUIDを指定すると404が返る', function () {
     // Arrange
     $user = User::factory()->create();
 

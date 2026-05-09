@@ -21,7 +21,7 @@ function createRaceForMarkColumnUpdateTest(): Race
 
 // ===== PATCH /api/races/{uid}/mark-columns/{id} =====
 
-test('unauthenticated user cannot update mark column label', function () {
+test('未認証ユーザーは印カラムのラベルを更新できない', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForMarkColumnUpdateTest();
@@ -43,7 +43,7 @@ test('unauthenticated user cannot update mark column label', function () {
     $response->assertUnauthorized();
 });
 
-test('authenticated user can update other column label', function () {
+test('認証済みユーザーは他カテゴリのカラムのラベルを更新できる', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForMarkColumnUpdateTest();
@@ -66,7 +66,7 @@ test('authenticated user can update other column label', function () {
     $response->assertJsonPath('data.label', '友人B');
 });
 
-test('updating other users mark column returns 403', function () {
+test('他ユーザーの印カラムを更新しようとすると403が返る', function () {
     // Arrange
     $user = User::factory()->create();
     $otherUser = User::factory()->create();
@@ -89,7 +89,7 @@ test('updating other users mark column returns 403', function () {
     $response->assertForbidden();
 });
 
-test('updating own column returns 422', function () {
+test('自分カテゴリのカラムを更新しようとすると422が返る', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForMarkColumnUpdateTest();
@@ -109,7 +109,7 @@ test('updating own column returns 422', function () {
     $response->assertUnprocessable();
 });
 
-test('label exceeding 32 characters returns 422 on update', function () {
+test('更新時にラベルが32文字を超えると422が返る', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForMarkColumnUpdateTest();
@@ -132,7 +132,7 @@ test('label exceeding 32 characters returns 422 on update', function () {
     $response->assertJsonValidationErrors(['label']);
 });
 
-test('updating non-existent mark column returns 404', function () {
+test('存在しない印カラムを更新しようとすると404が返る', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForMarkColumnUpdateTest();

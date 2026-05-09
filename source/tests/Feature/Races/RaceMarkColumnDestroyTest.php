@@ -54,7 +54,7 @@ function insertRaceEntryForDestroy(int $raceId): int
 
 // ===== DELETE /api/races/{uid}/mark-columns/{id} =====
 
-test('unauthenticated user cannot delete mark column', function () {
+test('未認証ユーザーは印カラムを削除できない', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForMarkColumnDestroyTest();
@@ -74,7 +74,7 @@ test('unauthenticated user cannot delete mark column', function () {
     $response->assertUnauthorized();
 });
 
-test('authenticated user can delete other mark column', function () {
+test('認証済みユーザーは他カテゴリの印カラムを削除できる', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForMarkColumnDestroyTest();
@@ -95,7 +95,7 @@ test('authenticated user can delete other mark column', function () {
     $this->assertDatabaseMissing('race_mark_columns', ['id' => $column->id]);
 });
 
-test('related race_marks are also deleted when removing other mark column', function () {
+test('他カテゴリの印カラム削除時に関連する race_marks も削除される', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForMarkColumnDestroyTest();
@@ -124,7 +124,7 @@ test('related race_marks are also deleted when removing other mark column', func
     ]);
 });
 
-test('deleting other users mark column returns 403', function () {
+test('他ユーザーの印カラムを削除しようとすると403が返る', function () {
     // Arrange
     $user = User::factory()->create();
     $otherUser = User::factory()->create();
@@ -145,7 +145,7 @@ test('deleting other users mark column returns 403', function () {
     $response->assertForbidden();
 });
 
-test('deleting own column returns 422', function () {
+test('自分カテゴリの印カラムを削除しようとすると422が返る', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForMarkColumnDestroyTest();
@@ -163,7 +163,7 @@ test('deleting own column returns 422', function () {
     $response->assertUnprocessable();
 });
 
-test('deleting non-existent mark column returns 404', function () {
+test('存在しない印カラムを削除しようとすると404が返る', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForMarkColumnDestroyTest();

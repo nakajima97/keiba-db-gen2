@@ -17,7 +17,7 @@ function createHorseForHorseNoteDestroyTest(): Horse
 
 // ===== DELETE /api/horse-notes/{note} =====
 
-test('unauthenticated user cannot delete horse note', function () {
+test('未認証ユーザーは馬メモを削除できない', function () {
     // Arrange
     $user = User::factory()->create();
     $horse = createHorseForHorseNoteDestroyTest();
@@ -35,7 +35,7 @@ test('unauthenticated user cannot delete horse note', function () {
     $response->assertUnauthorized();
 });
 
-test('authenticated user can delete own horse note', function () {
+test('認証済みユーザーは自分の馬メモを削除できる', function () {
     // Arrange
     $user = User::factory()->create();
     $horse = createHorseForHorseNoteDestroyTest();
@@ -56,7 +56,7 @@ test('authenticated user can delete own horse note', function () {
     ]);
 });
 
-test('deleting other users horse note returns 403', function () {
+test('他ユーザーの馬メモを削除しようとすると403が返る', function () {
     // Arrange
     $user = User::factory()->create();
     $otherUser = User::factory()->create();
@@ -75,7 +75,7 @@ test('deleting other users horse note returns 403', function () {
     $response->assertForbidden();
 });
 
-test('deleting non-existent horse note returns 404', function () {
+test('存在しない馬メモを削除しようとすると404が返る', function () {
     // Arrange
     $user = User::factory()->create();
 

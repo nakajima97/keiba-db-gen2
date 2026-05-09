@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Hash;
 use Inertia\Testing\AssertableInertia as Assert;
 use Laravel\Fortify\Features;
 
-test('security page is displayed', function () {
+test('セキュリティ画面が表示される', function () {
     $this->skipUnlessFortifyHas(Features::twoFactorAuthentication());
 
     // Arrange
@@ -27,7 +27,7 @@ test('security page is displayed', function () {
         );
 });
 
-test('security page requires password confirmation when enabled', function () {
+test('パスワード再確認が有効のときセキュリティ画面はパスワード再確認を要求する', function () {
     $this->skipUnlessFortifyHas(Features::twoFactorAuthentication());
 
     // Arrange
@@ -46,7 +46,7 @@ test('security page requires password confirmation when enabled', function () {
     $response->assertRedirect(route('password.confirm'));
 });
 
-test('security page does not require password confirmation when disabled', function () {
+test('パスワード再確認が無効のときセキュリティ画面はパスワード再確認を要求しない', function () {
     $this->skipUnlessFortifyHas(Features::twoFactorAuthentication());
 
     // Arrange
@@ -66,7 +66,7 @@ test('security page does not require password confirmation when disabled', funct
         );
 });
 
-test('security page renders without two factor when feature is disabled', function () {
+test('2段階認証機能が無効のときセキュリティ画面は2段階認証セクションなしで描画される', function () {
     $this->skipUnlessFortifyHas(Features::twoFactorAuthentication());
 
     // Arrange
@@ -85,7 +85,7 @@ test('security page renders without two factor when feature is disabled', functi
         );
 });
 
-test('password can be updated', function () {
+test('パスワードを更新できる', function () {
     // Arrange
     $user = User::factory()->create();
 
@@ -107,7 +107,7 @@ test('password can be updated', function () {
     expect(Hash::check('new-password', $user->refresh()->password))->toBeTrue();
 });
 
-test('correct password must be provided to update password', function () {
+test('パスワード更新には正しい現在のパスワードが必要', function () {
     // Arrange
     $user = User::factory()->create();
 
