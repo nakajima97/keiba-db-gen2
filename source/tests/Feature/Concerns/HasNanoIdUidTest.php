@@ -78,8 +78,15 @@ test('他カラムの UNIQUE 違反 (race_id, horse_number) はリトライさ�
         'weight' => 55.0,
     ]);
 
-    DB::flushQueryLog();
-    DB::enableQueryLog();
+    // QueryException で失敗したクエリは DB::getQueryLog() に記録されない
+    // (Connection::run() が re-throw 時に logQuery() をスキップするため)。
+    // 試行ごとにカウントするには beforeExecuting コールバックを使う。
+    $insertAttempts = 0;
+    DB::beforeExecuting(function ($query) use (&$insertAttempts) {
+        if (stripos($query, 'insert') === 0 && str_contains($query, 'race_entries')) {
+            $insertAttempts++;
+        }
+    });
 
     expect(fn () => RaceEntry::create([
         'race_id' => $race->id,
@@ -91,13 +98,7 @@ test('他カラムの UNIQUE 違反 (race_id, horse_number) はリトライさ�
     ]))->toThrow(QueryException::class);
 
     // race_entries への INSERT は 1 回のみ。リトライされていないことを保証する。
-    $insertCount = collect(DB::getQueryLog())
-        ->filter(fn ($q) => str_contains($q['query'], 'race_entries')
-            && stripos($q['query'], 'insert') === 0)
-        ->count();
-    expect($insertCount)->toBe(1);
-
-    DB::disableQueryLog();
+    expect($insertAttempts)->toBe(1);
 });
 
 test('Race モデルでも UNIQUE 衝突時にリトライされる', function () {
