@@ -6,6 +6,7 @@ on:
       - 'source/**/*.php'
       - 'source/composer.json'
       - 'source/composer.lock'
+      - 'docs/specs/openapi.yaml'
 
 jobs:
   pest:
