@@ -20,4 +20,7 @@ export type BalanceDashboardProps = {
 	summary: YearlySummary | null;
 	dailyBalances: DailyBalance[];
 	onYearChange: (year: number) => void;
+	hasMore: boolean;
+	isLoadingMore: boolean;
+	onLoadMore: () => void;
 };
