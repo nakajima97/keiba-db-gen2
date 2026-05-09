@@ -9,6 +9,7 @@ use App\UseCases\RaceResult\DestroyAction;
 use App\UseCases\RaceResult\ShowAction;
 use App\UseCases\RaceResult\ShowResultAction;
 use App\UseCases\RaceResult\StoreAction;
+use App\UseCases\TicketPurchase\ListByRaceAction;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -35,10 +36,14 @@ class RaceResultController extends Controller
         return redirect()->route('tickets.index');
     }
 
-    public function edit(string $uid, Request $request, ShowResultAction $action): Response
+    public function edit(string $uid, Request $request, ShowResultAction $action, ListByRaceAction $listByRace): Response
     {
+        $user = $request->user();
+        $race = $action->execute($uid, $user);
+
         return Inertia::render('races/result/edit', [
-            'race' => $action->execute($uid, $request->user()),
+            'race' => $race,
+            'tickets' => $listByRace->execute($user->id, $race['id']),
         ]);
     }
 

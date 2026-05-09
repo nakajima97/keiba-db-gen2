@@ -34,6 +34,17 @@ vi.mock("@inertiajs/react", () => ({
 					},
 				],
 			},
+			tickets: [
+				{
+					id: 1,
+					ticket_type_label: "馬連",
+					buy_type_name: "box",
+					buy_type_label: "ボックス",
+					selections: { horses: [1, 3, 5] },
+					purchase_amount: 3000,
+					payout_amount: 700,
+				},
+			],
 		},
 	}),
 }));
@@ -47,5 +58,16 @@ describe("RaceResultEdit ページ", () => {
 		expect(screen.getByText("レース結果")).toBeInTheDocument();
 		expect(screen.getByText("テストホース")).toBeInTheDocument();
 		expect(screen.getByText("前走は出遅れ気味")).toBeInTheDocument();
+	});
+
+	it("tickets が渡されたとき「自分の購入馬券」セクションが描画される", () => {
+		// Act
+		render(<RaceResultEdit />);
+
+		// Assert
+		expect(
+			screen.getByRole("heading", { name: "自分の購入馬券" }),
+		).toBeInTheDocument();
+		expect(screen.getByText("ボックス")).toBeInTheDocument();
 	});
 });

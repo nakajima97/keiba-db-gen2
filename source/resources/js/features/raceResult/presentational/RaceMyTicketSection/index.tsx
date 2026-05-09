@@ -103,4 +103,4 @@ const RaceMyTicketSection = ({ tickets }: RaceMyTicketSectionProps) => {
 
 export default RaceMyTicketSection;
 
-export type { RaceMyTicketSectionProps } from "./types";
+export type { RaceMyTicket, RaceMyTicketSectionProps } from "./types";

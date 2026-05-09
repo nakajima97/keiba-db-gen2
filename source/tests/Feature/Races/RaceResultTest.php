@@ -1491,3 +1491,61 @@ test('tickets in race result edit page response is empty when user has no ticket
         ->where('tickets', [])
     );
 });
+
+test('tickets purchase_amount is calculated as unit_stake multiplied by num_combinations', function () {
+    // Arrange
+    // umaren box with 3 horses → 3 combinations × unit_stake 1000 = 3000
+    $user = User::factory()->create();
+    ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
+    ['raceId' => $raceId, 'raceUid' => $raceUid] = createRaceWithUid($venueId, $now);
+    createBuyTypes($now);
+
+    $ticketType = TicketType::where('name', 'umaren')->first();
+    $buyType = BuyType::where('name', 'box')->first();
+
+    TicketPurchase::factory()->create([
+        'user_id' => $user->id,
+        'race_id' => $raceId,
+        'ticket_type_id' => $ticketType->id,
+        'buy_type_id' => $buyType->id,
+        'selections' => ['horses' => [1, 3, 5]],
+        'unit_stake' => 1000,
+    ]);
+
+    // Act
+    $response = $this->actingAs($user)->get(route('races.result.edit', ['uid' => $raceUid]));
+
+    // Assert
+    $response->assertInertia(fn (Assert $page) => $page
+        ->component('races/result/edit')
+        ->where('tickets.0.purchase_amount', 3000)
+    );
+});
+
+test('tickets buy_type_label reflects the BuyType model label', function () {
+    // Arrange
+    $user = User::factory()->create();
+    ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
+    ['raceId' => $raceId, 'raceUid' => $raceUid] = createRaceWithUid($venueId, $now);
+    createBuyTypes($now);
+
+    $ticketType = TicketType::where('name', 'umaren')->first();
+    $buyType = BuyType::where('name', 'box')->first();
+
+    TicketPurchase::factory()->create([
+        'user_id' => $user->id,
+        'race_id' => $raceId,
+        'ticket_type_id' => $ticketType->id,
+        'buy_type_id' => $buyType->id,
+    ]);
+
+    // Act
+    $response = $this->actingAs($user)->get(route('races.result.edit', ['uid' => $raceUid]));
+
+    // Assert
+    $response->assertInertia(fn (Assert $page) => $page
+        ->component('races/result/edit')
+        ->where('tickets.0.buy_type_name', 'box')
+        ->where('tickets.0.buy_type_label', 'ボックス')
+    );
+});

@@ -1,3 +1,5 @@
+import type { RaceMyTicket } from "@/features/raceResult/presentational/RaceMyTicketSection";
+
 export type PayoutEntry = {
 	ticket_type_label: string;
 	ticket_type_name: string;
@@ -35,6 +37,7 @@ export type RaceResultDetailProps = {
 		payouts: PayoutEntry[];
 		finishing_horses: FinishingHorse[];
 	};
+	tickets?: RaceMyTicket[];
 	onNoteClick?: (horseId: number) => void;
 	onDeleteClick?: () => void;
 };
