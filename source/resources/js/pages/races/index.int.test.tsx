@@ -1,33 +1,30 @@
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import { createInertiaReactMock } from "@/tests/mocks";
 import RacesIndex from "./index";
 
-vi.mock("@inertiajs/react", () => ({
-	Head: ({ title }: { title: string }) => <title>{title}</title>,
-	usePage: () => ({
-		props: {
-			races: [
-				{
-					uid: "abc123",
+vi.mock("@inertiajs/react", () =>
+	createInertiaReactMock({
+		usePage: () => ({
+			props: {
+				races: [
+					{
+						uid: "abc123",
+						race_date: "2026-04-05",
+						venue_name: "東京",
+						race_number: 1,
+					},
+				],
+				venues: [{ id: 1, name: "東京" }],
+				filters: {
 					race_date: "2026-04-05",
-					venue_name: "東京",
-					race_number: 1,
+					venue_id: null,
 				},
-			],
-			venues: [{ id: 1, name: "東京" }],
-			filters: {
-				race_date: "2026-04-05",
-				venue_id: null,
 			},
-		},
+		}),
+		router: { get: vi.fn() },
 	}),
-	router: {
-		get: vi.fn(),
-	},
-	Link: ({ href, children }: { href: string; children: unknown }) => (
-		<a href={href}>{children as never}</a>
-	),
-}));
+);
 
 vi.mock("@/routes/races", () => ({
 	create: { url: () => "/races/new" },

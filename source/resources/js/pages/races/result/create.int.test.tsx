@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import { createInertiaReactMock } from "@/tests/mocks";
 import RaceResultCreate from "./create";
 
 vi.mock("@inertiajs/react", async () => {
@@ -7,9 +8,8 @@ vi.mock("@inertiajs/react", async () => {
 		await vi.importActual<typeof import("@inertiajs/react")>(
 			"@inertiajs/react",
 		);
-	return {
-		...actual,
-		Head: ({ title }: { title: string }) => <title>{title}</title>,
+	return createInertiaReactMock({
+		actual,
 		usePage: () => ({
 			props: {
 				race: {
@@ -20,7 +20,7 @@ vi.mock("@inertiajs/react", async () => {
 				},
 			},
 		}),
-	};
+	});
 });
 
 describe("RaceResultCreate ページ", () => {
