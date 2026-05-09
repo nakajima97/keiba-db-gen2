@@ -1,54 +1,51 @@
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import { createInertiaReactMock } from "@/tests/mocks";
 import Insights from "./insights";
 
-const routerGet = vi.fn();
+const { routerGet } = vi.hoisted(() => ({ routerGet: vi.fn() }));
 
-vi.mock("@inertiajs/react", () => ({
-	Head: ({ title }: { title: string }) => <title>{title}</title>,
-	usePage: () => ({
-		props: {
-			period: "1m",
-			summary: {
-				total_tickets: 10,
-				total_purchase_amount: 10000,
-				total_payout_amount: 8000,
-				return_rate: 80.0,
-				hit_rate: 20.0,
-			},
-			patternBreakdown: [
-				{ pattern: "hit", count: 2, ratio: 20.0 },
-				{ pattern: "axis_only", count: 1, ratio: 10.0 },
-				{ pattern: "others_only", count: 4, ratio: 40.0 },
-				{ pattern: "miss", count: 3, ratio: 30.0 },
-			],
-			popularityPatternMatrix: [],
-			popularityReturns: [],
-			monthlyTrends: [],
-			recentSamples: [
-				{
-					ticket_id: 1,
-					race_uid: "uid-1",
-					race_date: "2026-04-28",
-					venue_name: "東京",
-					race_number: 11,
-					axis_horse_numbers: [3],
-					axis_best_finishing_order: 1,
-					others_best_finishing_order: 2,
-					pattern: "hit",
-					purchase_amount: 1000,
-					payout_amount: 4200,
+vi.mock("@inertiajs/react", () =>
+	createInertiaReactMock({
+		usePage: () => ({
+			props: {
+				period: "1m",
+				summary: {
+					total_tickets: 10,
+					total_purchase_amount: 10000,
+					total_payout_amount: 8000,
+					return_rate: 80.0,
+					hit_rate: 20.0,
 				},
-			],
-		},
+				patternBreakdown: [
+					{ pattern: "hit", count: 2, ratio: 20.0 },
+					{ pattern: "axis_only", count: 1, ratio: 10.0 },
+					{ pattern: "others_only", count: 4, ratio: 40.0 },
+					{ pattern: "miss", count: 3, ratio: 30.0 },
+				],
+				popularityPatternMatrix: [],
+				popularityReturns: [],
+				monthlyTrends: [],
+				recentSamples: [
+					{
+						ticket_id: 1,
+						race_uid: "uid-1",
+						race_date: "2026-04-28",
+						venue_name: "東京",
+						race_number: 11,
+						axis_horse_numbers: [3],
+						axis_best_finishing_order: 1,
+						others_best_finishing_order: 2,
+						pattern: "hit",
+						purchase_amount: 1000,
+						payout_amount: 4200,
+					},
+				],
+			},
+		}),
+		router: { get: routerGet },
 	}),
-	router: {
-		get: (...args: unknown[]) => routerGet(...args),
-	},
-	Link: ({ href, children }: { href: string; children: React.ReactNode }) => (
-		<a href={href}>{children}</a>
-	),
-}));
+);
 
 vi.mock("@/routes", () => ({
 	insights: Object.assign(() => "/insights", {

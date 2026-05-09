@@ -1,40 +1,43 @@
-import { router } from "@inertiajs/react";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import TicketsIndex from "./index";
+import { createInertiaReactMock } from "@/tests/mocks";
 
-vi.mock("@inertiajs/react", () => ({
-	Head: ({ title }: { title: string }) => <title>{title}</title>,
-	usePage: () => ({
-		props: {
-			purchases: [
-				{
-					id: 1,
-					race_uid: null,
-					has_race_result: false,
-					race_date: "2026-04-05",
-					venue_name: "東京",
-					race_number: 1,
-					ticket_type_label: "馬連",
-					buy_type_name: "nagashi",
-					selections: { axis: [1], others: [2, 4, 6] },
-					num_combinations: 3,
-					purchase_amount: 100,
-					payout_amount: null,
-				},
-			],
-			nextCursor: null,
-		},
-	}),
-	router: {
-		reload: vi.fn(),
-		delete: vi.fn(),
-	},
-	Link: ({ href, children }: { href: string; children: unknown }) => (
-		<a href={href}>{children as never}</a>
-	),
+const { routerReload, routerDelete } = vi.hoisted(() => ({
+	routerReload: vi.fn(),
+	routerDelete: vi.fn(),
 }));
+
+vi.mock("@inertiajs/react", () =>
+	createInertiaReactMock({
+		usePage: () => ({
+			props: {
+				purchases: [
+					{
+						id: 1,
+						race_uid: null,
+						has_race_result: false,
+						race_date: "2026-04-05",
+						venue_name: "東京",
+						race_number: 1,
+						ticket_type_label: "馬連",
+						buy_type_name: "nagashi",
+						selections: { axis: [1], others: [2, 4, 6] },
+						num_combinations: 3,
+						purchase_amount: 100,
+						payout_amount: null,
+					},
+				],
+				nextCursor: null,
+			},
+		}),
+		router: { reload: routerReload, delete: routerDelete },
+	}),
+);
+
+// vi.mock factory が createInertiaReactMock を参照するため、`@inertiajs/react` の import は vi.mock の後に置く（前に置くと __vi_import 未初期化エラー）
+import { router } from "@inertiajs/react";
+import TicketsIndex from "./index";
 
 vi.mock("@/routes/tickets", () => ({
 	newMethod: {

@@ -1,40 +1,41 @@
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import { createInertiaReactMock } from "@/tests/mocks";
 import Dashboard from "./dashboard";
 
-const routerGet = vi.fn();
-const routerReload = vi.fn();
-
-vi.mock("@inertiajs/react", () => ({
-	Head: ({ title }: { title: string }) => <title>{title}</title>,
-	usePage: () => ({
-		props: {
-			selected_year: 2026,
-			available_years: [2025, 2026],
-			summary: {
-				year: 2026,
-				total_purchase_amount: 50000,
-				total_payout_amount: 45000,
-				total_net_amount: -5000,
-				total_return_rate: 90.0,
-			},
-			daily_balances: [
-				{
-					date: "2026-04-05",
-					purchase_amount: 3000,
-					payout_amount: 5000,
-					net_amount: 2000,
-					return_rate: 166.7,
-				},
-			],
-			next_cursor: "cursor-string",
-		},
-	}),
-	router: {
-		get: (...args: unknown[]) => routerGet(...args),
-		reload: (...args: unknown[]) => routerReload(...args),
-	},
+const { routerGet, routerReload } = vi.hoisted(() => ({
+	routerGet: vi.fn(),
+	routerReload: vi.fn(),
 }));
+
+vi.mock("@inertiajs/react", () =>
+	createInertiaReactMock({
+		usePage: () => ({
+			props: {
+				selected_year: 2026,
+				available_years: [2025, 2026],
+				summary: {
+					year: 2026,
+					total_purchase_amount: 50000,
+					total_payout_amount: 45000,
+					total_net_amount: -5000,
+					total_return_rate: 90.0,
+				},
+				daily_balances: [
+					{
+						date: "2026-04-05",
+						purchase_amount: 3000,
+						payout_amount: 5000,
+						net_amount: 2000,
+						return_rate: 166.7,
+					},
+				],
+				next_cursor: "cursor-string",
+			},
+		}),
+		router: { get: routerGet, reload: routerReload },
+	}),
+);
 
 vi.mock("@/routes", () => ({
 	dashboard: Object.assign(() => "/dashboard", {
