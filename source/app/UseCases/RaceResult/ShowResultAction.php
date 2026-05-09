@@ -2,7 +2,6 @@
 
 namespace App\UseCases\RaceResult;
 
-use App\Models\Horse;
 use App\Models\Race;
 use App\Models\User;
 use App\UseCases\HorseNote\LoadNotesByHorseId;
@@ -59,6 +58,7 @@ class ShowResultAction
                 'raceResultHorses' => function ($query) {
                     $query->orderBy('finishing_order');
                 },
+                'raceResultHorses.horse:id,uid',
             ])
             ->firstOrFail();
 
@@ -87,9 +87,7 @@ class ShowResultAction
 
         $notesByHorseId = $this->loadNotesByHorseId->execute($user, $horseIds, (int) $race->id);
 
-        $horseUidById = Horse::whereIn('id', $horseIds)->pluck('uid', 'id')->all();
-
-        $finishingHorses = $race->raceResultHorses->map(function ($horse) use ($notesByHorseId, $horseUidById) {
+        $finishingHorses = $race->raceResultHorses->map(function ($horse) use ($notesByHorseId) {
             $horseId = $horse->horse_id !== null ? (int) $horse->horse_id : null;
 
             return [
@@ -97,7 +95,7 @@ class ShowResultAction
                 'frame_number' => $horse->frame_number,
                 'horse_number' => $horse->horse_number,
                 'horse_id' => $horseId,
-                'horse_uid' => $horseId !== null ? ($horseUidById[$horseId] ?? null) : null,
+                'horse_uid' => $horse->horse?->uid,
                 'horse_name' => $horse->horse_name,
                 'jockey_name' => $horse->jockey_name,
                 'race_time' => $horse->race_time,

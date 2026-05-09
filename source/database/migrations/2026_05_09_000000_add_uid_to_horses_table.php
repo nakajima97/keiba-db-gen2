@@ -17,13 +17,17 @@ return new class extends Migration
             $table->string('uid')->nullable()->after('id')->comment('URL用のnanoid');
         });
 
-        // 既存レコードにuidを付与
-        $horses = DB::table('horses')->whereNull('uid')->get();
-        foreach ($horses as $horse) {
-            DB::table('horses')->where('id', $horse->id)->update([
-                'uid' => NanoId::generate(),
-            ]);
-        }
+        // 既存レコードにuidを付与（大規模テーブル対応のため chunkById でメモリ消費を抑える）
+        DB::table('horses')
+            ->whereNull('uid')
+            ->orderBy('id')
+            ->chunkById(1000, function ($horses) {
+                foreach ($horses as $horse) {
+                    DB::table('horses')->where('id', $horse->id)->update([
+                        'uid' => NanoId::generate(),
+                    ]);
+                }
+            });
 
         Schema::table('horses', function (Blueprint $table) {
             $table->string('uid')->nullable(false)->unique()->change();
