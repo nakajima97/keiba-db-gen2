@@ -44,7 +44,7 @@ trait HasNanoIdUid
             try {
                 return parent::save($options);
             } catch (QueryException $e) {
-                if (! static::isUidUniqueViolation($e) || $attempts >= static::$uidMaxRetries) {
+                if (! $this->isUidUniqueViolation($e) || $attempts >= static::$uidMaxRetries) {
                     throw $e;
                 }
                 $attempts++;
@@ -53,19 +53,26 @@ trait HasNanoIdUid
         }
     }
 
-    protected static function isUidUniqueViolation(QueryException $e): bool
+    /**
+     * テーブル名で前置することで、同テーブル内に `*_{$uidColumn}` を末尾に持つ
+     * 別カラム (例: external_uid) があっても誤マッチしない。
+     * UNIQUE インデックス名を Laravel デフォルト命名規則 (`{table}_{col}_unique`)
+     * から変更している場合は別途調整が必要。
+     */
+    protected function isUidUniqueViolation(QueryException $e): bool
     {
         if ((string) $e->getCode() !== '23000') {
             return false;
         }
         $col = static::$uidColumn;
+        $table = $this->getTable();
         $msg = $e->getMessage();
 
-        // MySQL: "for key 'horses.horses_uid_unique'"
-        // SQLite: "UNIQUE constraint failed: horses.uid"
-        return str_contains($msg, ".{$col}")
-            || str_contains($msg, "_{$col}_unique")
-            || str_contains($msg, "'{$col}'");
+        // SQLite: "UNIQUE constraint failed: {table}.{col}"
+        // MySQL (8.0+): "for key '{table}.{table}_{col}_unique'"
+        // MySQL (旧):    "for key '{table}_{col}_unique'"
+        return str_contains($msg, "{$table}.{$col}")
+            || str_contains($msg, "{$table}_{$col}_unique");
     }
 
     protected static function generateUid(): string
