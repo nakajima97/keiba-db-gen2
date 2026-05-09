@@ -1,41 +1,40 @@
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import { createInertiaReactMock } from "@/tests/mocks";
 import RacesShow from "./show";
 
-vi.mock("@inertiajs/react", () => ({
-	Head: ({ title }: { title: string }) => <title>{title}</title>,
-	Link: ({ href, children }: { href: string; children: unknown }) => (
-		<a href={href}>{children as never}</a>
-	),
-	usePage: () => ({
-		props: {
-			race: {
-				id: 200,
-				uid: "abc123",
-				race_date: "2026-04-05",
-				venue_name: "東京",
-				race_number: 3,
-				race_name: "皐月賞",
-				entries: [
-					{
-						id: 1,
-						frame_number: 1,
-						horse_number: 1,
-						horse_id: 100,
-						horse_name: "テストホース",
-						jockey_name: "テスト騎手",
-						weight: 480,
-						note: null,
-					},
-				],
-				mark_columns: [
-					{ id: 100, type: "own", label: null, display_order: 0 },
-				],
-				marks: [],
+vi.mock("@inertiajs/react", () =>
+	createInertiaReactMock({
+		usePage: () => ({
+			props: {
+				race: {
+					id: 200,
+					uid: "abc123",
+					race_date: "2026-04-05",
+					venue_name: "東京",
+					race_number: 3,
+					race_name: "皐月賞",
+					entries: [
+						{
+							id: 1,
+							frame_number: 1,
+							horse_number: 1,
+							horse_id: 100,
+							horse_name: "テストホース",
+							jockey_name: "テスト騎手",
+							weight: 480,
+							note: null,
+						},
+					],
+					mark_columns: [
+						{ id: 100, type: "own", label: null, display_order: 0 },
+					],
+					marks: [],
+				},
 			},
-		},
+		}),
 	}),
-}));
+);
 
 describe("RacesShow ページ", () => {
 	it("ハッピーパス: Inertia propsのデータがRaceDetailに表示される", () => {

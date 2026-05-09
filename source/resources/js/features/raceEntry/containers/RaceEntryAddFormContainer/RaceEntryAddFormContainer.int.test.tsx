@@ -1,22 +1,13 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { createInertiaCoreMock } from "@/tests/mocks";
 import RaceEntryAddFormContainer from "./index";
 
 vi.mock("@inertiajs/core", async () => {
 	const actual =
 		await vi.importActual<typeof import("@inertiajs/core")>("@inertiajs/core");
-	return {
-		...actual,
-		router: {
-			post: vi.fn(),
-			put: vi.fn(),
-			patch: vi.fn(),
-			delete: vi.fn(),
-			visit: vi.fn(),
-			reload: vi.fn(),
-		},
-	};
+	return createInertiaCoreMock({ actual });
 });
 
 import { router } from "@inertiajs/core";
