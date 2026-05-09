@@ -1,16 +1,7 @@
 import type { ReactNode } from "react";
 import { vi } from "vitest";
 
-type RouterMethod =
-	| "get"
-	| "post"
-	| "put"
-	| "patch"
-	| "delete"
-	| "reload"
-	| "visit";
-
-type RouterFns = Partial<Record<RouterMethod, ReturnType<typeof vi.fn>>>;
+type RouterFns = Record<string, ReturnType<typeof vi.fn>>;
 
 type UsePageFn = () => { props: Record<string, unknown> };
 
@@ -38,14 +29,19 @@ export function createInertiaReactMock(
 		Head: MockHead,
 		Link: MockLink,
 		usePage: opts.usePage ?? defaultUsePage,
-		router: opts.router ?? {},
+		...(opts.router ? { router: opts.router } : {}),
 	};
 }
 
-export function createInertiaCoreMock<T extends object>(actual: T) {
+export function createInertiaCoreMock<T extends object>(
+	opts: {
+		actual?: T;
+		router?: RouterFns;
+	} = {},
+) {
 	return {
-		...actual,
-		router: {
+		...(opts.actual ?? {}),
+		router: opts.router ?? {
 			post: vi.fn(),
 			put: vi.fn(),
 			patch: vi.fn(),

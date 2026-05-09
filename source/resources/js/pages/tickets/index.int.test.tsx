@@ -35,6 +35,7 @@ vi.mock("@inertiajs/react", () =>
 	}),
 );
 
+// vi.mock factory が createInertiaReactMock を参照するため、`@inertiajs/react` の import は vi.mock の後に置く（前に置くと __vi_import 未初期化エラー）
 import { router } from "@inertiajs/react";
 import TicketsIndex from "./index";
 

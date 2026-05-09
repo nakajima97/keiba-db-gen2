@@ -7,7 +7,7 @@ import RaceResultFormContainer from "./index";
 vi.mock("@inertiajs/core", async () => {
 	const actual =
 		await vi.importActual<typeof import("@inertiajs/core")>("@inertiajs/core");
-	return createInertiaCoreMock(actual);
+	return createInertiaCoreMock({ actual });
 });
 
 import { router } from "@inertiajs/core";
