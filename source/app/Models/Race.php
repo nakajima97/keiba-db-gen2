@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Support\NanoId;
+use App\Concerns\HasNanoIdUid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Race extends Model
 {
     use HasFactory;
+    use HasNanoIdUid;
 
     protected $fillable = [
         'uid',
@@ -19,15 +20,6 @@ class Race extends Model
         'race_number',
         'race_name',
     ];
-
-    protected static function booted(): void
-    {
-        static::creating(function (Race $race): void {
-            if (empty($race->uid)) {
-                $race->uid = NanoId::generate();
-            }
-        });
-    }
 
     /** @return BelongsTo<Venue, $this> */
     public function venue(): BelongsTo
