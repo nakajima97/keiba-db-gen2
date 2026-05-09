@@ -22,6 +22,7 @@ export type FinishingHorse = {
 	frame_number: number;
 	horse_number: number;
 	horse_id: number | null;
+	horse_uid: string | null;
 	horse_name: string;
 	jockey_name: string;
 	race_time: string;

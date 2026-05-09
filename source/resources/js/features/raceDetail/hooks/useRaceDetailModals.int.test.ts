@@ -10,9 +10,11 @@ import { useRaceDetailModals } from "./useRaceDetailModals";
 
 const entry: RaceEntry = {
 	id: 1,
+	uid: "entry-uid-1",
 	frame_number: 2,
 	horse_number: 3,
 	horse_id: 42,
+	horse_uid: "horse-uid-42",
 	horse_name: "テストホース",
 	jockey_name: "テスト騎手",
 	weight: 480,

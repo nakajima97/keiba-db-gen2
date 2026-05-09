@@ -18,7 +18,7 @@ test('未認証ユーザーが馬詳細にアクセスするとログイン画�
     ]);
 
     // Act
-    $response = $this->get(route('horses.show', ['horse' => $horse->id]));
+    $response = $this->get(route('horses.show', ['horse' => $horse->uid]));
 
     // Assert
     $response->assertRedirectToRoute('login');
@@ -33,7 +33,7 @@ test('認証済みユーザーは馬詳細にアクセスでき Inertia コン�
     ]);
 
     // Act
-    $response = $this->actingAs($user)->get(route('horses.show', ['horse' => $horse->id]));
+    $response = $this->actingAs($user)->get(route('horses.show', ['horse' => $horse->uid]));
 
     // Assert
     $response->assertOk();
@@ -49,7 +49,7 @@ test('馬詳細は Inertia props として馬の基本情報を返す', function
     ]);
 
     // Act
-    $response = $this->actingAs($user)->get(route('horses.show', ['horse' => $horse->id]));
+    $response = $this->actingAs($user)->get(route('horses.show', ['horse' => $horse->uid]));
 
     // Assert
     $response->assertInertia(fn (Assert $page) => $page
@@ -95,7 +95,7 @@ test('馬詳細は Inertia props として必要なフィールドを揃えた�
     ]);
 
     // Act
-    $response = $this->actingAs($user)->get(route('horses.show', ['horse' => $horse->id]));
+    $response = $this->actingAs($user)->get(route('horses.show', ['horse' => $horse->uid]));
 
     // Assert
     $response->assertInertia(fn (Assert $page) => $page
@@ -123,7 +123,7 @@ test('出走履歴がない馬は race_histories が空配列で返る', functio
     ]);
 
     // Act
-    $response = $this->actingAs($user)->get(route('horses.show', ['horse' => $horse->id]));
+    $response = $this->actingAs($user)->get(route('horses.show', ['horse' => $horse->uid]));
 
     // Assert
     $response->assertInertia(fn (Assert $page) => $page
@@ -165,7 +165,7 @@ test('races.race_name が null のとき race_name は null で返る', function
     ]);
 
     // Act
-    $response = $this->actingAs($user)->get(route('horses.show', ['horse' => $horse->id]));
+    $response = $this->actingAs($user)->get(route('horses.show', ['horse' => $horse->uid]));
 
     // Assert
     $response->assertInertia(fn (Assert $page) => $page
@@ -186,7 +186,7 @@ test('生年が未設定の馬は birth_year が null で返る', function () {
     ]);
 
     // Act
-    $response = $this->actingAs($user)->get(route('horses.show', ['horse' => $horse->id]));
+    $response = $this->actingAs($user)->get(route('horses.show', ['horse' => $horse->uid]));
 
     // Assert
     $response->assertInertia(fn (Assert $page) => $page
@@ -246,7 +246,7 @@ test('出走履歴は race_date 降順・race_number 昇順で返る', function 
     }
 
     // Act
-    $response = $this->actingAs($user)->get(route('horses.show', ['horse' => $horse->id]));
+    $response = $this->actingAs($user)->get(route('horses.show', ['horse' => $horse->uid]));
 
     // Assert
     $response->assertInertia(fn (Assert $page) => $page
@@ -258,12 +258,12 @@ test('出走履歴は race_date 降順・race_number 昇順で返る', function 
     );
 });
 
-test('存在しない馬IDで馬詳細にアクセスすると404が返る', function () {
+test('存在しない馬UIDで馬詳細にアクセスすると404が返る', function () {
     // Arrange
     $user = User::factory()->create();
 
     // Act
-    $response = $this->actingAs($user)->get(route('horses.show', ['horse' => 999999]));
+    $response = $this->actingAs($user)->get(route('horses.show', ['horse' => 'non-existent-uid']));
 
     // Assert
     $response->assertNotFound();

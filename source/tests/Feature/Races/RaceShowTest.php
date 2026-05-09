@@ -5,6 +5,7 @@ use App\Models\RacePayout;
 use App\Models\RaceResultHorse;
 use App\Models\User;
 use App\Models\Venue;
+use App\Support\NanoId;
 use Illuminate\Support\Facades\DB;
 use Inertia\Testing\AssertableInertia as Assert;
 
@@ -106,6 +107,7 @@ test('レース詳細は Inertia props として馬・騎手情報付きの出�
 
     $now = now();
     $horseId = DB::table('horses')->insertGetId([
+        'uid' => NanoId::generate(),
         'name' => 'テストホース',
         'birth_year' => 2022,
         'created_at' => $now,
@@ -117,6 +119,7 @@ test('レース詳細は Inertia props として馬・騎手情報付きの出�
         'updated_at' => $now,
     ]);
     DB::table('race_entries')->insert([
+        'uid' => NanoId::generate(),
         'race_id' => $race->id,
         'horse_id' => $horseId,
         'jockey_id' => $jockeyId,

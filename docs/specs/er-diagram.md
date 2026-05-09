@@ -91,6 +91,7 @@ erDiagram
 
     horses {
         bigint id PK
+        string uid UK "URL用nanoid"
         string name "競走馬名"
         smallint birth_year "生年"
         timestamp created_at
@@ -106,6 +107,7 @@ erDiagram
 
     race_entries {
         bigint id PK
+        string uid UK "URL用nanoid"
         bigint race_id FK
         bigint horse_id FK
         bigint jockey_id FK

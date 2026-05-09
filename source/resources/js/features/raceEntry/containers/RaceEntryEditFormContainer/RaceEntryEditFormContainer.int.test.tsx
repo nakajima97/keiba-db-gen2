@@ -14,7 +14,7 @@ import { router } from "@inertiajs/core";
 
 const defaultProps = {
 	raceUid: "abc123uid",
-	entryId: 42,
+	entryUid: "entry42uid",
 	raceInfo: {
 		race_date: "2026-04-26",
 		venue_name: "東京",
@@ -50,7 +50,7 @@ describe("RaceEntryEditFormContainer", () => {
 		// Assert
 		expect(router.put).toHaveBeenCalledTimes(1);
 		expect(router.put).toHaveBeenCalledWith(
-			expect.stringContaining("races/abc123uid/entries/42"),
+			expect.stringContaining("races/abc123uid/entries/entry42uid"),
 			expect.objectContaining({
 				horse_name: "新しい馬名",
 				jockey_name: "福永祐一",

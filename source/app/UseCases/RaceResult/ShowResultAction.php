@@ -33,6 +33,7 @@ class ShowResultAction
      *         frame_number: int,
      *         horse_number: int,
      *         horse_id: int|null,
+     *         horse_uid: string|null,
      *         horse_name: string,
      *         jockey_name: string,
      *         race_time: string,
@@ -57,6 +58,7 @@ class ShowResultAction
                 'raceResultHorses' => function ($query) {
                     $query->orderBy('finishing_order');
                 },
+                'raceResultHorses.horse',
             ])
             ->firstOrFail();
 
@@ -93,6 +95,7 @@ class ShowResultAction
                 'frame_number' => $horse->frame_number,
                 'horse_number' => $horse->horse_number,
                 'horse_id' => $horseId,
+                'horse_uid' => $horse->horse?->uid,
                 'horse_name' => $horse->horse_name,
                 'jockey_name' => $horse->jockey_name,
                 'race_time' => $horse->race_time,

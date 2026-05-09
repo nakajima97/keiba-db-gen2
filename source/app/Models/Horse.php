@@ -2,15 +2,26 @@
 
 namespace App\Models;
 
+use App\Support\NanoId;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Horse extends Model
 {
     protected $fillable = [
+        'uid',
         'name',
         'birth_year',
     ];
+
+    protected static function booted(): void
+    {
+        static::creating(function (Horse $horse): void {
+            if (empty($horse->uid)) {
+                $horse->uid = NanoId::generate();
+            }
+        });
+    }
 
     /** @return HasMany<RaceEntry, $this> */
     public function raceEntries(): HasMany

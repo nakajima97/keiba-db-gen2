@@ -17,9 +17,11 @@ vi.mock("@inertiajs/react", () =>
 					entries: [
 						{
 							id: 1,
+							uid: "entry-uid-1",
 							frame_number: 1,
 							horse_number: 1,
 							horse_id: 100,
+							horse_uid: "horse-uid-100",
 							horse_name: "テストホース",
 							jockey_name: "テスト騎手",
 							weight: 480,

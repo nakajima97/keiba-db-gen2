@@ -164,7 +164,7 @@ const RaceDetail = ({
 							<td className="px-4 py-3">
 								<div className="flex items-center gap-1">
 									<Link
-										href={`/horses/${entry.horse_id}`}
+										href={`/horses/${entry.horse_uid}`}
 										className="text-primary hover:underline"
 									>
 										{entry.horse_name}
@@ -229,7 +229,7 @@ const RaceDetail = ({
 							})}
 							<td className="px-4 py-3">
 								<Link
-									href={raceEntryEdit.url({ race: race.uid, entry: entry.id })}
+									href={raceEntryEdit.url({ race: race.uid, entry: entry.uid })}
 									className="text-primary hover:underline"
 								>
 									編集

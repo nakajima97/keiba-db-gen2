@@ -46,6 +46,9 @@
   - ロックファイルからの復元（`npm install` のみ・`composer install` のみ）は承認不要
 - サンドボックスの影響で操作できないことは人間に操作を依頼すること
   - 絶対にサンドボックスを無効化しない
+- Inertia でページを描画する Web GET ルートでは、URL パラメータに主キー (auto-increment ID) を使わず NanoId 等の uid を使うこと (`{model:uid}` 暗黙バインディング)
+  - 既存パターン: `races` / `horses` / `race_entries` がいずれも `uid` カラムを持ち、ルートは `{race:uid}` / `{horse:uid}` / `{entry:uid}` で記述する
+  - スコープ外: `/api/...` 配下のルート、および POST/PUT/DELETE のフォーム送信先（アドレスバーに露出しないため id のままで良い）
 
 ## 開発ワークフロー
 新機能・改修を実装する際は以下の順序で進める:

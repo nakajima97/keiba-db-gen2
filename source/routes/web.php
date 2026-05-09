@@ -35,15 +35,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/races/{race:uid}/entries', [RaceEntryController::class, 'store'])->name('races.entries.store');
     Route::get('/races/{race:uid}/entries/add', [RaceEntryController::class, 'addCreate'])->name('races.entries.add.create');
     Route::post('/races/{race:uid}/entries/add', [RaceEntryController::class, 'addStore'])->name('races.entries.add.store');
-    Route::get('/races/{race:uid}/entries/{entry}/edit', [RaceEntryController::class, 'edit'])->name('races.entries.edit');
-    Route::put('/races/{race:uid}/entries/{entry}', [RaceEntryController::class, 'update'])->name('races.entries.update');
+    Route::get('/races/{race:uid}/entries/{entry:uid}/edit', [RaceEntryController::class, 'edit'])->name('races.entries.edit');
+    Route::put('/races/{race:uid}/entries/{entry:uid}', [RaceEntryController::class, 'update'])->name('races.entries.update');
 
     Route::get('/races/{uid}/result/new', [RaceResultController::class, 'create'])->name('races.result.create');
     Route::post('/races/{uid}/result', [RaceResultController::class, 'store'])->name('races.result.store');
     Route::get('/races/{uid}/result/edit', [RaceResultController::class, 'edit'])->name('races.result.edit');
     Route::delete('/races/{uid}/result', [RaceResultController::class, 'destroy'])->name('races.result.destroy');
 
-    Route::get('/horses/{horse}', [HorseController::class, 'show'])->name('horses.show');
+    Route::get('/horses/{horse:uid}', [HorseController::class, 'show'])->name('horses.show');
 
     Route::prefix('api')->group(function () {
         Route::get('/races/{race:uid}/mark-columns', [RaceMarkColumnController::class, 'index'])->name('api.races.mark-columns.index');

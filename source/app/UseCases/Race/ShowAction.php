@@ -31,9 +31,11 @@ class ShowAction
      *     race_name: string|null,
      *     entries: array<int, array{
      *         id: int,
+     *         uid: string,
      *         frame_number: int,
      *         horse_number: int,
      *         horse_id: int,
+     *         horse_uid: string,
      *         horse_name: string,
      *         jockey_name: string,
      *         weight: int|null,
@@ -49,9 +51,9 @@ class ShowAction
     {
         $race->load([
             'venue',
-            'raceEntries' => fn ($query) => $query->orderBy('horse_number'),
-            'raceEntries.horse',
-            'raceEntries.jockey',
+            'entries' => fn ($query) => $query->orderBy('horse_number'),
+            'entries.horse',
+            'entries.jockey',
         ]);
 
         $this->ensureOwnColumnExistsAction->execute($race, $user);
@@ -85,7 +87,7 @@ class ShowAction
             ])
             ->all();
 
-        $horseIds = $race->raceEntries
+        $horseIds = $race->entries
             ->map(fn ($entry) => (int) $entry->horse->id)
             ->unique()
             ->values()
@@ -102,11 +104,13 @@ class ShowAction
             'venue_name' => $race->venue->name,
             'race_number' => (int) $race->race_number,
             'race_name' => $race->race_name,
-            'entries' => $race->raceEntries->map(fn ($entry) => [
+            'entries' => $race->entries->map(fn ($entry) => [
                 'id' => (int) $entry->id,
+                'uid' => (string) $entry->uid,
                 'frame_number' => (int) $entry->frame_number,
                 'horse_number' => (int) $entry->horse_number,
                 'horse_id' => (int) $entry->horse->id,
+                'horse_uid' => (string) $entry->horse->uid,
                 'horse_name' => $entry->horse->name,
                 'jockey_name' => $entry->jockey->name,
                 'weight' => $entry->horse_weight !== null ? (int) $entry->horse_weight : null,

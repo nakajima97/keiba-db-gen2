@@ -84,7 +84,7 @@ class RaceEntryController extends Controller
 
         return Inertia::render('races/entries/edit', [
             'race_uid' => $race->uid,
-            'entry_id' => (int) $entry->id,
+            'entry_uid' => $entry->uid,
             'race_info' => [
                 'race_date' => $race->race_date instanceof CarbonInterface
                     ? $race->race_date->format('Y-m-d')
