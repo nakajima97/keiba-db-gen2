@@ -11,6 +11,8 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/shadcn/ui/select";
+import { Button } from "@/components/shadcn/ui/button";
+import { Spinner } from "@/components/shadcn/ui/spinner";
 import ScrollableTable from "@/components/presentational/ScrollableTable";
 import { formatDateDisplay } from "@/utils/date";
 import type { BalanceDashboardProps } from "./types";
@@ -21,6 +23,9 @@ const BalanceDashboard = ({
 	summary,
 	dailyBalances,
 	onYearChange,
+	hasMore,
+	isLoadingMore,
+	onLoadMore,
 }: BalanceDashboardProps) => {
 	return (
 		<div className="flex flex-col gap-6 p-4">
@@ -138,60 +143,81 @@ const BalanceDashboard = ({
 						<p>記録がありません</p>
 					</div>
 				) : (
-					<ScrollableTable>
-						<thead>
-							<tr className="border-b bg-muted/50">
-								<th className="px-4 py-3 text-left font-medium text-muted-foreground">
-									日付
-								</th>
-								<th className="px-4 py-3 text-right font-medium text-muted-foreground">
-									購入金額
-								</th>
-								<th className="px-4 py-3 text-right font-medium text-muted-foreground">
-									払い戻し金額
-								</th>
-								<th className="px-4 py-3 text-right font-medium text-muted-foreground">
-									プラスマイナス
-								</th>
-								<th className="px-4 py-3 text-right font-medium text-muted-foreground">
-									回収率
-								</th>
-							</tr>
-						</thead>
-						<tbody>
-							{dailyBalances.map((row) => (
-								<tr
-									key={row.date}
-									className="border-b last:border-0 hover:bg-muted/30"
-								>
-									<td className="px-4 py-3">{formatDateDisplay(row.date)}</td>
-									<td className="px-4 py-3 text-right">
-										¥{row.purchase_amount.toLocaleString()}
-									</td>
-									<td className="px-4 py-3 text-right">
-										¥{row.payout_amount.toLocaleString()}
-									</td>
-									<td
-										className={`px-4 py-3 text-right font-medium ${
-											row.net_amount >= 0 ? "text-green-600" : "text-red-600"
-										}`}
-									>
-										{row.net_amount >= 0 ? "+" : ""}¥
-										{row.net_amount.toLocaleString()}
-									</td>
-									<td
-										className={`px-4 py-3 text-right ${
-											row.return_rate >= 100
-												? "text-green-600"
-												: "text-red-600"
-										}`}
-									>
-										{row.return_rate.toFixed(1)}%
-									</td>
+					<>
+						<ScrollableTable>
+							<thead>
+								<tr className="border-b bg-muted/50">
+									<th className="px-4 py-3 text-left font-medium text-muted-foreground">
+										日付
+									</th>
+									<th className="px-4 py-3 text-right font-medium text-muted-foreground">
+										購入金額
+									</th>
+									<th className="px-4 py-3 text-right font-medium text-muted-foreground">
+										払い戻し金額
+									</th>
+									<th className="px-4 py-3 text-right font-medium text-muted-foreground">
+										プラスマイナス
+									</th>
+									<th className="px-4 py-3 text-right font-medium text-muted-foreground">
+										回収率
+									</th>
 								</tr>
-							))}
-						</tbody>
-					</ScrollableTable>
+							</thead>
+							<tbody>
+								{dailyBalances.map((row) => (
+									<tr
+										key={row.date}
+										className="border-b last:border-0 hover:bg-muted/30"
+									>
+										<td className="px-4 py-3">{formatDateDisplay(row.date)}</td>
+										<td className="px-4 py-3 text-right">
+											¥{row.purchase_amount.toLocaleString()}
+										</td>
+										<td className="px-4 py-3 text-right">
+											¥{row.payout_amount.toLocaleString()}
+										</td>
+										<td
+											className={`px-4 py-3 text-right font-medium ${
+												row.net_amount >= 0 ? "text-green-600" : "text-red-600"
+											}`}
+										>
+											{row.net_amount >= 0 ? "+" : ""}¥
+											{row.net_amount.toLocaleString()}
+										</td>
+										<td
+											className={`px-4 py-3 text-right ${
+												row.return_rate >= 100
+													? "text-green-600"
+													: "text-red-600"
+											}`}
+										>
+											{row.return_rate.toFixed(1)}%
+										</td>
+									</tr>
+								))}
+							</tbody>
+						</ScrollableTable>
+
+						{hasMore && (
+							<div className="flex justify-center">
+								<Button
+									variant="outline"
+									onClick={onLoadMore}
+									disabled={isLoadingMore}
+								>
+									{isLoadingMore ? (
+										<>
+											<Spinner className="mr-2" />
+											読み込み中...
+										</>
+									) : (
+										"もっと読み込む"
+									)}
+								</Button>
+							</div>
+						)}
+					</>
 				)}
 			</div>
 		</div>

@@ -3,6 +3,7 @@ import { describe, it, expect, vi } from "vitest";
 import Dashboard from "./dashboard";
 
 const routerGet = vi.fn();
+const routerReload = vi.fn();
 
 vi.mock("@inertiajs/react", () => ({
 	Head: ({ title }: { title: string }) => <title>{title}</title>,
@@ -26,10 +27,12 @@ vi.mock("@inertiajs/react", () => ({
 					return_rate: 166.7,
 				},
 			],
+			next_cursor: "cursor-string",
 		},
 	}),
 	router: {
 		get: (...args: unknown[]) => routerGet(...args),
+		reload: (...args: unknown[]) => routerReload(...args),
 	},
 }));
 
@@ -96,5 +99,26 @@ describe("Dashboard ページ", () => {
 		const callArgs = routerGet.mock.calls[0];
 		const dataArg = callArgs[1] as { year: number };
 		expect(dataArg.year).toBe(2025);
+	});
+
+	it("next_cursor がある場合、「もっと読み込む」ボタンをクリックすると router.reload が cursor パラメータと only: ['daily_balances', 'next_cursor'] で呼ばれる", async () => {
+		// Arrange
+		routerReload.mockClear();
+		const { default: userEvent } = await import("@testing-library/user-event");
+		const user = userEvent.setup();
+
+		// Act
+		render(<Dashboard />);
+		await user.click(screen.getByRole("button", { name: "もっと読み込む" }));
+
+		// Assert
+		expect(routerReload).toHaveBeenCalledTimes(1);
+		const callArgs = routerReload.mock.calls[0];
+		const optionsArg = callArgs[0] as {
+			data: { cursor: string };
+			only: string[];
+		};
+		expect(optionsArg.data.cursor).toBe("cursor-string");
+		expect(optionsArg.only).toEqual(["daily_balances", "next_cursor"]);
 	});
 });

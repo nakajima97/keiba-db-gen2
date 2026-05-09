@@ -3,6 +3,8 @@
 namespace App\UseCases\Balance;
 
 use App\UseCases\TicketPurchase\ExpandSelectionsAction;
+use Illuminate\Pagination\Cursor;
+use Illuminate\Pagination\CursorPaginator;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -10,9 +12,18 @@ use Illuminate\Support\Facades\DB;
  *
  * 購入金額は「単価 × 有効点数」で算出する。有効点数は selections を
  * ExpandSelectionsAction で展開した結果の件数。
+ *
+ * summary は年間全体で集計し、daily_balances のみカーソルページネーション
+ * （30件/ページ、日付降順）を適用する。ページネーションはメモリ上で
+ * スライスするだけで、DB クエリ自体は year 内全件を取得する。
  */
 class ShowDashboardAction
 {
+    /**
+     * 1ページあたりの日次収支件数。
+     */
+    private const DAILY_BALANCES_PER_PAGE = 30;
+
     public function __construct(
         private ExpandSelectionsAction $expandSelections,
     ) {}
@@ -35,9 +46,10 @@ class ShowDashboardAction
      *     net_amount: int,
      *     return_rate: float,
      *   }>,
+     *   next_cursor: string|null,
      * }
      */
-    public function execute(int $userId, ?int $year = null): array
+    public function execute(int $userId, ?int $year = null, ?string $cursor = null): array
     {
         $selectedYear = $year ?? now()->year;
 
@@ -126,11 +138,40 @@ class ShowDashboardAction
             ];
         }
 
+        $cursorObj = null;
+        if ($cursor !== null) {
+            try {
+                // 不正なカーソルは先頭ページにフォールバック（古い URL の共有等で 500 を返さない）
+                $cursorObj = Cursor::fromEncoded($cursor);
+            } catch (\Throwable) {
+                $cursorObj = null;
+            }
+        }
+
+        $itemsAfterCursor = $dailyBalances;
+        if ($cursorObj !== null) {
+            $cursorDate = $cursorObj->parameter('date');
+            $itemsAfterCursor = array_values(array_filter(
+                $dailyBalances,
+                fn (array $item): bool => $item['date'] < $cursorDate,
+            ));
+        }
+
+        $pageItems = array_slice($itemsAfterCursor, 0, self::DAILY_BALANCES_PER_PAGE + 1);
+
+        $paginator = new CursorPaginator(
+            $pageItems,
+            self::DAILY_BALANCES_PER_PAGE,
+            $cursorObj,
+            ['parameters' => ['date']],
+        );
+
         return [
             'selected_year' => $selectedYear,
             'available_years' => $availableYears,
             'summary' => $summary,
-            'daily_balances' => $dailyBalances,
+            'daily_balances' => array_values($paginator->items()),
+            'next_cursor' => $paginator->nextCursor()?->encode(),
         ];
     }
 }
