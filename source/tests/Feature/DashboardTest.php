@@ -608,6 +608,82 @@ test('cursor クエリパラメータを指定するとそのカーソル以降�
     );
 });
 
+test('daily_balances がちょうど 30件の場合 next_cursor は null で返る', function () {
+    // Arrange
+    $user = User::factory()->create();
+    for ($day = 1; $day <= 30; $day++) {
+        createDashboardTicketPurchase([
+            'user_id' => $user->id,
+            'race_date' => sprintf('2026-01-%02d', $day),
+            'unit_stake' => 100,
+            'payout_amount' => 0,
+        ]);
+    }
+
+    // Act
+    $response = $this->actingAs($user)->get(route('dashboard', ['year' => 2026]));
+
+    // Assert
+    $response->assertInertia(fn ($page) => $page
+        ->component('dashboard')
+        ->where('next_cursor', null)
+    );
+});
+
+test('最終ページのカーソルを指定すると next_cursor は null で返る', function () {
+    // Arrange
+    $user = User::factory()->create();
+    for ($day = 1; $day <= 31; $day++) {
+        createDashboardTicketPurchase([
+            'user_id' => $user->id,
+            'race_date' => sprintf('2026-01-%02d', $day),
+            'unit_stake' => 100,
+            'payout_amount' => 0,
+        ]);
+    }
+
+    $firstResponse = $this->actingAs($user)->get(route('dashboard', ['year' => 2026]));
+    $nextCursor = $firstResponse->viewData('page')['props']['next_cursor'];
+
+    // Act
+    $response = $this->actingAs($user)->get(route('dashboard', [
+        'year' => 2026,
+        'cursor' => $nextCursor,
+    ]));
+
+    // Assert
+    $response->assertInertia(fn ($page) => $page
+        ->component('dashboard')
+        ->where('next_cursor', null)
+    );
+});
+
+test('不正な cursor を指定しても 500 にならず先頭ページが返る', function () {
+    // Arrange
+    $user = User::factory()->create();
+    for ($day = 1; $day <= 31; $day++) {
+        createDashboardTicketPurchase([
+            'user_id' => $user->id,
+            'race_date' => sprintf('2026-01-%02d', $day),
+            'unit_stake' => 100,
+            'payout_amount' => 0,
+        ]);
+    }
+
+    // Act
+    $response = $this->actingAs($user)->get(route('dashboard', [
+        'year' => 2026,
+        'cursor' => 'invalid-cursor-string',
+    ]));
+
+    // Assert
+    $response->assertOk();
+    $response->assertInertia(fn ($page) => $page
+        ->component('dashboard')
+        ->where('daily_balances', fn ($balances) => collect($balances)->pluck('date')->contains('2026-01-31'))
+    );
+});
+
 test('unit_stake が null の馬券は purchase_amount が 0 として集計される', function () {
     // Arrange
     $user = User::factory()->create();

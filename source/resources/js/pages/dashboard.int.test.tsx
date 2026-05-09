@@ -101,7 +101,7 @@ describe("Dashboard ページ", () => {
 		expect(dataArg.year).toBe(2025);
 	});
 
-	it("next_cursor がある場合、「もっと読み込む」ボタンをクリックすると router.reload が cursor パラメータと merge: ['daily_balances'] で呼ばれる", async () => {
+	it("next_cursor がある場合、「もっと読み込む」ボタンをクリックすると router.reload が cursor パラメータと only: ['daily_balances', 'next_cursor'] で呼ばれる", async () => {
 		// Arrange
 		routerReload.mockClear();
 		const { default: userEvent } = await import("@testing-library/user-event");
@@ -116,9 +116,9 @@ describe("Dashboard ページ", () => {
 		const callArgs = routerReload.mock.calls[0];
 		const optionsArg = callArgs[0] as {
 			data: { cursor: string };
-			merge: string[];
+			only: string[];
 		};
 		expect(optionsArg.data.cursor).toBe("cursor-string");
-		expect(optionsArg.merge).toEqual(["daily_balances"]);
+		expect(optionsArg.only).toEqual(["daily_balances", "next_cursor"]);
 	});
 });

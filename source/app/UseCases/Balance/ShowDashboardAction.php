@@ -14,7 +14,8 @@ use Illuminate\Support\Facades\DB;
  * ExpandSelectionsAction で展開した結果の件数。
  *
  * summary は年間全体で集計し、daily_balances のみカーソルページネーション
- * （30件/ページ、日付降順）を適用する。
+ * （30件/ページ、日付降順）を適用する。ページネーションはメモリ上で
+ * スライスするだけで、DB クエリ自体は year 内全件を取得する。
  */
 class ShowDashboardAction
 {
@@ -137,7 +138,15 @@ class ShowDashboardAction
             ];
         }
 
-        $cursorObj = $cursor !== null ? Cursor::fromEncoded($cursor) : null;
+        $cursorObj = null;
+        if ($cursor !== null) {
+            try {
+                // 不正なカーソルは先頭ページにフォールバック（古い URL の共有等で 500 を返さない）
+                $cursorObj = Cursor::fromEncoded($cursor);
+            } catch (\Throwable) {
+                $cursorObj = null;
+            }
+        }
 
         $itemsAfterCursor = $dailyBalances;
         if ($cursorObj !== null) {

@@ -35,11 +35,11 @@ const Dashboard = () => {
 		}
 
 		setIsLoadingMore(true);
+		// daily_balances の追記マージはサーバ側 Inertia::merge() で制御されるため、
+		// クライアント側の reload オプションでマージ指定は不要。
 		router.reload({
 			data: { cursor: next_cursor },
 			only: ["daily_balances", "next_cursor"],
-			// @ts-expect-error: Inertia v3 の ReloadOptions 型には含まれないが、サーバ側 Inertia::merge() と組み合わせて daily_balances 配列を追記する意図を明示するため指定する
-			merge: ["daily_balances"],
 			onFinish: () => setIsLoadingMore(false),
 		});
 	};
