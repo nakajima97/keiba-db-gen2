@@ -44,6 +44,9 @@ const baseProps: BalanceDashboardProps = {
 	summary: null,
 	dailyBalances: [],
 	onYearChange: vi.fn(),
+	hasMore: false,
+	isLoadingMore: false,
+	onLoadMore: vi.fn(),
 };
 
 const dummySummary: YearlySummary = {
@@ -229,6 +232,118 @@ describe("BalanceDashboard", () => {
 			// Assert
 			expect(onYearChange).toHaveBeenCalledWith(2025);
 			expect(typeof onYearChange.mock.calls[0][0]).toBe("number");
+		});
+	});
+
+	describe("もっと読み込む", () => {
+		it("hasMore=true のとき「もっと読み込む」ボタンが表示される", () => {
+			// Arrange
+			const props: BalanceDashboardProps = {
+				...baseProps,
+				dailyBalances: dummyDailyBalances,
+				hasMore: true,
+			};
+
+			// Act
+			render(<BalanceDashboard {...props} />);
+
+			// Assert
+			expect(
+				screen.getByRole("button", { name: "もっと読み込む" }),
+			).toBeInTheDocument();
+		});
+
+		it("hasMore=false のとき「もっと読み込む」ボタンが表示されない", () => {
+			// Arrange
+			const props: BalanceDashboardProps = {
+				...baseProps,
+				dailyBalances: dummyDailyBalances,
+				hasMore: false,
+			};
+
+			// Act
+			render(<BalanceDashboard {...props} />);
+
+			// Assert
+			expect(
+				screen.queryByRole("button", { name: "もっと読み込む" }),
+			).not.toBeInTheDocument();
+		});
+
+		it("hasMore が未指定（デフォルト）のとき「もっと読み込む」ボタンが表示されない", () => {
+			// Arrange
+			const props: BalanceDashboardProps = {
+				selectedYear: 2026,
+				availableYears: [2025, 2026],
+				summary: null,
+				dailyBalances: dummyDailyBalances,
+				onYearChange: vi.fn(),
+			};
+
+			// Act
+			render(<BalanceDashboard {...props} />);
+
+			// Assert
+			expect(
+				screen.queryByRole("button", { name: "もっと読み込む" }),
+			).not.toBeInTheDocument();
+		});
+
+		it("isLoadingMore=true のとき Spinner が表示される", () => {
+			// Arrange
+			const props: BalanceDashboardProps = {
+				...baseProps,
+				dailyBalances: dummyDailyBalances,
+				hasMore: true,
+				isLoadingMore: true,
+			};
+
+			// Act
+			render(<BalanceDashboard {...props} />);
+
+			// Assert
+			expect(screen.getByRole("status")).toBeInTheDocument();
+		});
+
+		it("isLoadingMore=true のとき「もっと読み込む」ボタンが表示されない", () => {
+			// Arrange
+			const props: BalanceDashboardProps = {
+				...baseProps,
+				dailyBalances: dummyDailyBalances,
+				hasMore: true,
+				isLoadingMore: true,
+			};
+
+			// Act
+			render(<BalanceDashboard {...props} />);
+
+			// Assert
+			expect(
+				screen.queryByRole("button", { name: "もっと読み込む" }),
+			).not.toBeInTheDocument();
+		});
+
+		it("「もっと読み込む」ボタンをクリックすると onLoadMore が呼ばれる", async () => {
+			// Arrange
+			const onLoadMore = vi.fn();
+			const { default: userEvent } = await import(
+				"@testing-library/user-event"
+			);
+			const user = userEvent.setup();
+			const props: BalanceDashboardProps = {
+				...baseProps,
+				dailyBalances: dummyDailyBalances,
+				hasMore: true,
+				isLoadingMore: false,
+				onLoadMore,
+			};
+
+			// Act
+			render(<BalanceDashboard {...props} />);
+			await user.click(screen.getByRole("button", { name: "もっと読み込む" }));
+
+			// Assert
+			expect(onLoadMore).toHaveBeenCalledTimes(1);
 		});
 	});
 });
