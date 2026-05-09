@@ -1549,3 +1549,59 @@ test('tickets buy_type_label reflects the BuyType model label', function () {
         ->where('tickets.0.buy_type_label', 'ボックス')
     );
 });
+
+test('tickets selections in col1/col2/col3 form is normalized to columns form', function () {
+    // Arrange
+    $user = User::factory()->create();
+    ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
+    ['raceId' => $raceId, 'raceUid' => $raceUid] = createRaceWithUid($venueId, $now);
+    createBuyTypes($now);
+
+    $ticketType = TicketType::where('name', 'sanrentan')->first();
+    $buyType = BuyType::where('name', 'formation')->first();
+
+    TicketPurchase::factory()->create([
+        'user_id' => $user->id,
+        'race_id' => $raceId,
+        'ticket_type_id' => $ticketType->id,
+        'buy_type_id' => $buyType->id,
+        'selections' => ['col1' => [1, 2], 'col2' => [3, 4], 'col3' => [5, 6, 7]],
+    ]);
+
+    // Act
+    $response = $this->actingAs($user)->get(route('races.result.edit', ['uid' => $raceUid]));
+
+    // Assert
+    $response->assertInertia(fn (Assert $page) => $page
+        ->component('races/result/edit')
+        ->where('tickets.0.selections', ['columns' => [[1, 2], [3, 4], [5, 6, 7]]])
+    );
+});
+
+test('tickets selections in axis1/axis2/others form is normalized to axis/others form', function () {
+    // Arrange
+    $user = User::factory()->create();
+    ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
+    ['raceId' => $raceId, 'raceUid' => $raceUid] = createRaceWithUid($venueId, $now);
+    createBuyTypes($now);
+
+    $ticketType = TicketType::where('name', 'sanrenpuku')->first();
+    $buyType = BuyType::where('name', 'nagashi')->first();
+
+    TicketPurchase::factory()->create([
+        'user_id' => $user->id,
+        'race_id' => $raceId,
+        'ticket_type_id' => $ticketType->id,
+        'buy_type_id' => $buyType->id,
+        'selections' => ['axis1' => [3], 'axis2' => [5], 'others' => [1, 7, 9]],
+    ]);
+
+    // Act
+    $response = $this->actingAs($user)->get(route('races.result.edit', ['uid' => $raceUid]));
+
+    // Assert
+    $response->assertInertia(fn (Assert $page) => $page
+        ->component('races/result/edit')
+        ->where('tickets.0.selections', ['axis' => [3, 5], 'others' => [1, 7, 9]])
+    );
+});
