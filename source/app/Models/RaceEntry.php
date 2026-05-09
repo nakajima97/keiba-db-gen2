@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
-use App\Support\NanoId;
+use App\Concerns\HasNanoIdUid;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class RaceEntry extends Model
 {
+    use HasNanoIdUid;
+
     protected $fillable = [
         'uid',
         'race_id',
@@ -18,15 +20,6 @@ class RaceEntry extends Model
         'weight',
         'horse_weight',
     ];
-
-    protected static function booted(): void
-    {
-        static::creating(function (RaceEntry $entry): void {
-            if (empty($entry->uid)) {
-                $entry->uid = NanoId::generate();
-            }
-        });
-    }
 
     /** @return BelongsTo<Race, $this> */
     public function race(): BelongsTo
