@@ -141,7 +141,7 @@ function seedRaceResultForDestroyTest(int $raceId, CarbonInterface $now): void
 
 // ===== DELETE /races/{uid}/result =====
 
-test('authenticated user can delete race result and related records are removed', function () {
+test('認証済みユーザーはレース結果を削除でき関連レコードも削除される', function () {
     // Arrange
     $user = User::factory()->create();
     ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterDataForDestroyTest();
@@ -159,7 +159,7 @@ test('authenticated user can delete race result and related records are removed'
     expect(DB::table('race_payout_horses')->count())->toBe(0);
 });
 
-test('deleting race result resets ticket_purchases.payout_amount to null only for target race', function () {
+test('レース結果削除時に対象レースの ticket_purchases.payout_amount のみが null にリセットされる', function () {
     // Arrange
     $user = User::factory()->create();
     $otherUser = User::factory()->create();
@@ -228,7 +228,7 @@ test('deleting race result resets ticket_purchases.payout_amount to null only fo
     ]);
 });
 
-test('unauthenticated user is redirected to login page when deleting race result', function () {
+test('未認証ユーザーがレース結果を削除しようとするとログイン画面にリダイレクトされる', function () {
     // Arrange
     ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterDataForDestroyTest();
     ['raceUid' => $raceUid] = createRaceWithUidForDestroyTest($venueId, $now);
@@ -240,7 +240,7 @@ test('unauthenticated user is redirected to login page when deleting race result
     $response->assertRedirect(route('login'));
 });
 
-test('deleting race result with non-existent uid returns 404', function () {
+test('存在しないレースUIDでレース結果を削除しようとすると404が返る', function () {
     // Arrange
     $user = User::factory()->create();
 
@@ -251,7 +251,7 @@ test('deleting race result with non-existent uid returns 404', function () {
     $response->assertNotFound();
 });
 
-test('deleting race result returns 409 when no result exists for the race', function () {
+test('レース結果が存在しないレースで削除しようとすると409が返る', function () {
     // Arrange
     $user = User::factory()->create();
     ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterDataForDestroyTest();

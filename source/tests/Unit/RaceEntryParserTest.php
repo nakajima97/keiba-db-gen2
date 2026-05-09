@@ -81,7 +81,7 @@ $multipleEntriesText = implode("\n", [
 
 // ===== RaceEntryParser::parse() =====
 
-test('horse name is correctly extracted without blinker notation', function () use ($singleEntryText) {
+test('ブリンカー表記なしの馬名が正しく抽出される', function () use ($singleEntryText) {
     // Arrange
     $parser = new RaceEntryParser;
     $raceDate = Carbon::create(2026, 4, 18);
@@ -93,7 +93,7 @@ test('horse name is correctly extracted without blinker notation', function () u
     expect($result[0]['horse_name'])->toBe('エビスディアーナ');
 });
 
-test('blinker notation does not contaminate horse name', function () use ($multipleEntriesText) {
+test('ブリンカー着用表記が馬名に混入しない', function () use ($multipleEntriesText) {
     // Arrange
     $parser = new RaceEntryParser;
     $raceDate = Carbon::create(2026, 4, 18);
@@ -105,7 +105,7 @@ test('blinker notation does not contaminate horse name', function () use ($multi
     expect($result[1]['horse_name'])->toBe('オーシャンステラ');
 });
 
-test('age is correctly extracted from sex-age string like 牝3', function () use ($singleEntryText) {
+test('「牝3」のような性齢文字列から年齢が正しく抽出される', function () use ($singleEntryText) {
     // Arrange
     $parser = new RaceEntryParser;
     $raceDate = Carbon::create(2026, 4, 18);
@@ -117,7 +117,7 @@ test('age is correctly extracted from sex-age string like 牝3', function () use
     expect($result[0]['birth_year'])->toBe(2023);
 });
 
-test('birth year is back-calculated from race year and age', function () use ($singleEntryText) {
+test('レース年と年齢から生年が逆算される', function () use ($singleEntryText) {
     // Arrange
     $parser = new RaceEntryParser;
     $raceDate = Carbon::create(2026, 4, 18);
@@ -129,7 +129,7 @@ test('birth year is back-calculated from race year and age', function () use ($s
     expect($result[0]['birth_year'])->toBe(2023);
 });
 
-test('jockey name is correctly extracted', function () use ($singleEntryText) {
+test('騎手名が正しく抽出される', function () use ($singleEntryText) {
     // Arrange
     $parser = new RaceEntryParser;
     $raceDate = Carbon::create(2026, 4, 18);
@@ -141,7 +141,7 @@ test('jockey name is correctly extracted', function () use ($singleEntryText) {
     expect($result[0]['jockey_name'])->toBe('M.ディー');
 });
 
-test('frame number and horse number are correctly extracted', function () use ($singleEntryText) {
+test('枠番と馬番が正しく抽出される', function () use ($singleEntryText) {
     // Arrange
     $parser = new RaceEntryParser;
     $raceDate = Carbon::create(2026, 4, 18);
@@ -154,7 +154,7 @@ test('frame number and horse number are correctly extracted', function () use ($
     expect($result[0]['horse_number'])->toBe(1);
 });
 
-test('weight is correctly extracted', function () use ($singleEntryText) {
+test('斤量が正しく抽出される', function () use ($singleEntryText) {
     // Arrange
     $parser = new RaceEntryParser;
     $raceDate = Carbon::create(2026, 4, 18);
@@ -166,7 +166,7 @@ test('weight is correctly extracted', function () use ($singleEntryText) {
     expect($result[0]['weight'])->toBe(55.0);
 });
 
-test('horse weight is correctly extracted', function () use ($singleEntryText) {
+test('馬体重が正しく抽出される', function () use ($singleEntryText) {
     // Arrange
     $parser = new RaceEntryParser;
     $raceDate = Carbon::create(2026, 4, 18);
@@ -178,7 +178,7 @@ test('horse weight is correctly extracted', function () use ($singleEntryText) {
     expect($result[0]['horse_weight'])->toBe(426);
 });
 
-test('multiple entries are parsed correctly', function () use ($multipleEntriesText) {
+test('複数頭分のエントリが正しくパースされる', function () use ($multipleEntriesText) {
     // Arrange
     $parser = new RaceEntryParser;
     $raceDate = Carbon::create(2026, 4, 18);

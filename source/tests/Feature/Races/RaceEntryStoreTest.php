@@ -48,7 +48,7 @@ function createRaceForEntryTest(): Race
 
 // ===== POST /races/{uid}/entries =====
 
-test('unauthenticated user is redirected when posting to race entries store', function () use ($entryStoreSampleText) {
+test('未認証ユーザーが出馬登録 store にPOSTするとリダイレクトされる', function () use ($entryStoreSampleText) {
     // Arrange
     $race = createRaceForEntryTest();
 
@@ -62,7 +62,7 @@ test('unauthenticated user is redirected when posting to race entries store', fu
     $this->assertGuest();
 });
 
-test('valid paste text creates race_entries, horses and jockeys with correct count', function () use ($entryStoreSampleText) {
+test('正常な貼り付けテキストで race_entries・horses・jockeys が正しい件数で作成される', function () use ($entryStoreSampleText) {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForEntryTest();
@@ -93,7 +93,7 @@ test('valid paste text creates race_entries, horses and jockeys with correct cou
     ]);
 });
 
-test('existing horse is reused and not duplicated on race entry store', function () use ($entryStoreSampleText) {
+test('出馬登録 store 時に既存の馬は再利用され重複登録されない', function () use ($entryStoreSampleText) {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForEntryTest();
@@ -116,7 +116,7 @@ test('existing horse is reused and not duplicated on race entry store', function
     $this->assertDatabaseCount('race_entries', 1);
 });
 
-test('existing jockey is reused and not duplicated on race entry store', function () use ($entryStoreSampleText) {
+test('出馬登録 store 時に既存の騎手は再利用され重複登録されない', function () use ($entryStoreSampleText) {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForEntryTest();
@@ -138,7 +138,7 @@ test('existing jockey is reused and not duplicated on race entry store', functio
     $this->assertDatabaseCount('race_entries', 1);
 });
 
-test('successful race entry store redirects to races show', function () use ($entryStoreSampleText) {
+test('出馬登録 store 成功時はレース詳細画面にリダイレクトされる', function () use ($entryStoreSampleText) {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForEntryTest();
@@ -152,7 +152,7 @@ test('successful race entry store redirects to races show', function () use ($en
     $response->assertRedirect(route('races.show', ['race' => $race->uid]));
 });
 
-test('empty paste_text returns validation error on race entry store', function () {
+test('出馬登録 store で paste_text が空のときバリデーションエラーが返る', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForEntryTest();
@@ -166,7 +166,7 @@ test('empty paste_text returns validation error on race entry store', function (
     $response->assertSessionHasErrors(['paste_text']);
 });
 
-test('invalid paste_text format returns session errors on race entry store', function () {
+test('出馬登録 store で paste_text のフォーマットが不正のときセッションエラーが返る', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForEntryTest();

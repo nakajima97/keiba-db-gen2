@@ -6,7 +6,7 @@ use Inertia\Testing\AssertableInertia as Assert;
 
 // ===== GET /races/new =====
 
-test('unauthenticated user is redirected to login page when accessing race create page', function () {
+test('未認証ユーザーがレース作成画面にアクセスするとログイン画面にリダイレクトされる', function () {
     // Act
     $response = $this->get(route('races.create'));
 
@@ -14,7 +14,7 @@ test('unauthenticated user is redirected to login page when accessing race creat
     $response->assertRedirectToRoute('login');
 });
 
-test('authenticated user can access race create page with venues prop', function () {
+test('認証済みユーザーは venues prop 付きでレース作成画面にアクセスできる', function () {
     // Arrange
     $user = User::factory()->create();
     $now = now();
@@ -34,7 +34,7 @@ test('authenticated user can access race create page with venues prop', function
     );
 });
 
-test('race_date query parameter takes precedence over session last_race_date', function () {
+test('race_date クエリパラメータはセッションの last_race_date より優先される', function () {
     // Arrange
     $user = User::factory()->create();
 
@@ -50,7 +50,7 @@ test('race_date query parameter takes precedence over session last_race_date', f
     );
 });
 
-test('session last_race_date is used when race_date query parameter is absent', function () {
+test('race_date クエリパラメータが無いときセッションの last_race_date が使われる', function () {
     // Arrange
     $user = User::factory()->create();
 
@@ -66,7 +66,7 @@ test('session last_race_date is used when race_date query parameter is absent', 
     );
 });
 
-test('invalid race_date query parameter is ignored and falls back to session last_race_date', function () {
+test('race_date クエリパラメータが不正のとき無視されセッションの last_race_date にフォールバックする', function () {
     // Arrange
     $user = User::factory()->create();
 

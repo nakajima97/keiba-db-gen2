@@ -9,7 +9,7 @@ beforeEach(function () {
     $this->skipUnlessFortifyHas(Features::emailVerification());
 });
 
-test('sends verification notification', function () {
+test('メール認証通知が送信される', function () {
     // Arrange
     Notification::fake();
     $user = User::factory()->unverified()->create();
@@ -22,7 +22,7 @@ test('sends verification notification', function () {
     Notification::assertSentTo($user, VerifyEmail::class);
 });
 
-test('does not send verification notification if email is verified', function () {
+test('メール認証済みのときは認証通知を送信しない', function () {
     // Arrange
     Notification::fake();
     $user = User::factory()->create();

@@ -8,7 +8,7 @@ beforeEach(function () {
     $this->skipUnlessFortifyHas(Features::twoFactorAuthentication());
 });
 
-test('two factor challenge redirects to login when not authenticated', function () {
+test('未認証の場合は2段階認証チャレンジ画面からログイン画面にリダイレクトされる', function () {
     // Act
     $response = $this->get(route('two-factor.login'));
 
@@ -16,7 +16,7 @@ test('two factor challenge redirects to login when not authenticated', function 
     $response->assertRedirect(route('login'));
 });
 
-test('two factor challenge can be rendered', function () {
+test('2段階認証チャレンジ画面が描画される', function () {
     // Arrange
     Features::twoFactorAuthentication([
         'confirm' => true,

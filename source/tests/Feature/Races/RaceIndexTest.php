@@ -7,7 +7,7 @@ use Inertia\Testing\AssertableInertia as Assert;
 
 // ===== GET /races =====
 
-test('unauthenticated user is redirected to login page when accessing races index', function () {
+test('未認証ユーザーがレース一覧にアクセスするとログイン画面にリダイレクトされる', function () {
     // Act
     $response = $this->get(route('races.index'));
 
@@ -15,7 +15,7 @@ test('unauthenticated user is redirected to login page when accessing races inde
     $response->assertRedirectToRoute('login');
 });
 
-test('authenticated user can access races index and inertia component is rendered', function () {
+test('認証済みユーザーはレース一覧にアクセスでき Inertia コンポーネントが描画される', function () {
     // Arrange
     $user = User::factory()->create();
 
@@ -29,7 +29,7 @@ test('authenticated user can access races index and inertia component is rendere
 
 // ===== GET /races (フィルタリング) =====
 
-test('races index returns empty races and empty venues as inertia props when no filter is specified', function () {
+test('フィルター未指定のときレース一覧は races と venues が空配列で返る', function () {
     // Arrange
     $user = User::factory()->create();
     $venue = Venue::firstOrCreate(['name' => '東京']);
@@ -50,7 +50,7 @@ test('races index returns empty races and empty venues as inertia props when no 
     );
 });
 
-test('races index returns only venues with races on the specified date', function () {
+test('レース一覧は指定日にレースがある競馬場のみを返す', function () {
     // Arrange
     $user = User::factory()->create();
     $tokyo = Venue::firstOrCreate(['name' => '東京']);
@@ -79,7 +79,7 @@ test('races index returns only venues with races on the specified date', functio
     );
 });
 
-test('races index returns only races matching race_date query parameter', function () {
+test('レース一覧は race_date クエリパラメータに合致するレースのみを返す', function () {
     // Arrange
     $user = User::factory()->create();
     $venue = Venue::firstOrCreate(['name' => '東京']);
@@ -107,7 +107,7 @@ test('races index returns only races matching race_date query parameter', functi
     );
 });
 
-test('races index returns only races matching venue_id query parameter when race_date is also specified', function () {
+test('race_date と venue_id を併せて指定するとレース一覧は両方に合致するレースのみを返す', function () {
     // Arrange
     $user = User::factory()->create();
     $tokyo = Venue::firstOrCreate(['name' => '東京']);
@@ -136,7 +136,7 @@ test('races index returns only races matching venue_id query parameter when race
     );
 });
 
-test('races index includes race_name in each race item in inertia props', function () {
+test('レース一覧の Inertia props は各レース項目に race_name を含む', function () {
     // Arrange
     $user = User::factory()->create();
     $venue = Venue::firstOrCreate(['name' => '東京']);

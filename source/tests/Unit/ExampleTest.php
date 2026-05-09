@@ -1,6 +1,6 @@
 <?php
 
-test('returns a successful response', function () {
+test('ホームへのGETリクエストが成功レスポンスを返す', function () {
     // Act
     $response = $this->get(route('home'));
 

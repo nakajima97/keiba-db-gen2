@@ -10,7 +10,7 @@ use Inertia\Testing\AssertableInertia as Assert;
 
 // ===== GET /races/{uid} =====
 
-test('unauthenticated user is redirected when accessing race show', function () {
+test('未認証ユーザーがレース詳細にアクセスするとリダイレクトされる', function () {
     // Arrange
     $venue = Venue::firstOrCreate(['name' => '東京']);
     $race = Race::create([
@@ -26,7 +26,7 @@ test('unauthenticated user is redirected when accessing race show', function () 
     $response->assertRedirectToRoute('login');
 });
 
-test('authenticated user can access race show and inertia component is rendered', function () {
+test('認証済みユーザーはレース詳細にアクセスでき Inertia コンポーネントが描画される', function () {
     // Arrange
     $user = User::factory()->create();
     $venue = Venue::firstOrCreate(['name' => '東京']);
@@ -44,7 +44,7 @@ test('authenticated user can access race show and inertia component is rendered'
     $response->assertInertia(fn (Assert $page) => $page->component('races/show'));
 });
 
-test('race show returns race basic info as inertia props', function () {
+test('レース詳細は Inertia props としてレースの基本情報を返す', function () {
     // Arrange
     $user = User::factory()->create();
     $venue = Venue::firstOrCreate(['name' => '東京']);
@@ -94,7 +94,7 @@ test('レース名が null のレースは Inertia props で race_name が null 
     );
 });
 
-test('race show returns entries with horse and jockey info as inertia props', function () {
+test('レース詳細は Inertia props として馬・騎手情報付きの出馬登録を返す', function () {
     // Arrange
     $user = User::factory()->create();
     $venue = Venue::firstOrCreate(['name' => '東京']);
@@ -145,7 +145,7 @@ test('race show returns entries with horse and jockey info as inertia props', fu
     );
 });
 
-test('race show returns 404 for non-existent uid', function () {
+test('存在しないUIDでレース詳細にアクセスすると404が返る', function () {
     // Arrange
     $user = User::factory()->create();
 
@@ -156,7 +156,7 @@ test('race show returns 404 for non-existent uid', function () {
     $response->assertNotFound();
 });
 
-test('race show returns mark_columns including own column as inertia props', function () {
+test('レース詳細は Inertia props として自分カテゴリのカラムを含む mark_columns を返す', function () {
     // Arrange
     $user = User::factory()->create();
     $venue = Venue::firstOrCreate(['name' => '東京']);
@@ -179,7 +179,7 @@ test('race show returns mark_columns including own column as inertia props', fun
     );
 });
 
-test('race show returns marks as inertia props', function () {
+test('レース詳細は Inertia props として marks を返す', function () {
     // Arrange
     $user = User::factory()->create();
     $venue = Venue::firstOrCreate(['name' => '東京']);

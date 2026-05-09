@@ -10,7 +10,7 @@ beforeEach(function () {
     $this->skipUnlessFortifyHas(Features::emailVerification());
 });
 
-test('email verification screen can be rendered', function () {
+test('メール認証画面が描画される', function () {
     // Arrange
     $user = User::factory()->unverified()->create();
 
@@ -21,7 +21,7 @@ test('email verification screen can be rendered', function () {
     $response->assertOk();
 });
 
-test('email can be verified', function () {
+test('メールアドレスを認証できる', function () {
     // Arrange
     $user = User::factory()->unverified()->create();
     Event::fake();
@@ -40,7 +40,7 @@ test('email can be verified', function () {
     $response->assertRedirect(route('dashboard', absolute: false).'?verified=1');
 });
 
-test('email is not verified with invalid hash', function () {
+test('ハッシュが不正なときメールアドレスは認証されない', function () {
     // Arrange
     $user = User::factory()->unverified()->create();
     Event::fake();
@@ -58,7 +58,7 @@ test('email is not verified with invalid hash', function () {
     expect($user->fresh()->hasVerifiedEmail())->toBeFalse();
 });
 
-test('email is not verified with invalid user id', function () {
+test('ユーザーIDが不正なときメールアドレスは認証されない', function () {
     // Arrange
     $user = User::factory()->unverified()->create();
     Event::fake();
@@ -76,7 +76,7 @@ test('email is not verified with invalid user id', function () {
     expect($user->fresh()->hasVerifiedEmail())->toBeFalse();
 });
 
-test('verified user is redirected to dashboard from verification prompt', function () {
+test('認証済みユーザーはメール認証案内画面からダッシュボードにリダイレクトされる', function () {
     // Arrange
     $user = User::factory()->create();
     Event::fake();
@@ -89,7 +89,7 @@ test('verified user is redirected to dashboard from verification prompt', functi
     $response->assertRedirect(route('dashboard', absolute: false));
 });
 
-test('already verified user visiting verification link is redirected without firing event again', function () {
+test('認証済みユーザーが認証リンクを再度開いてもイベントは再発火されずリダイレクトされる', function () {
     // Arrange
     $user = User::factory()->create();
     Event::fake();

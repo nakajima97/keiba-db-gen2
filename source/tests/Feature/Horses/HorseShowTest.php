@@ -10,7 +10,7 @@ use Inertia\Testing\AssertableInertia as Assert;
 
 // ===== GET /horses/{horse} =====
 
-test('unauthenticated user is redirected to login page when accessing horse show', function () {
+test('未認証ユーザーが馬詳細にアクセスするとログイン画面にリダイレクトされる', function () {
     // Arrange
     $horse = Horse::create([
         'name' => 'テストホース',
@@ -24,7 +24,7 @@ test('unauthenticated user is redirected to login page when accessing horse show
     $response->assertRedirectToRoute('login');
 });
 
-test('authenticated user can access horse show and inertia component is rendered', function () {
+test('認証済みユーザーは馬詳細にアクセスでき Inertia コンポーネントが描画される', function () {
     // Arrange
     $user = User::factory()->create();
     $horse = Horse::create([
@@ -40,7 +40,7 @@ test('authenticated user can access horse show and inertia component is rendered
     $response->assertInertia(fn (Assert $page) => $page->component('horses/show'));
 });
 
-test('horse show returns horse basic info as inertia props', function () {
+test('馬詳細は Inertia props として馬の基本情報を返す', function () {
     // Arrange
     $user = User::factory()->create();
     $horse = Horse::create([
@@ -62,7 +62,7 @@ test('horse show returns horse basic info as inertia props', function () {
     );
 });
 
-test('horse show returns race histories with all required fields as inertia props', function () {
+test('馬詳細は Inertia props として必要なフィールドを揃えた出走履歴を返す', function () {
     // Arrange
     $user = User::factory()->create();
     $venue = Venue::firstOrCreate(['name' => '東京']);
@@ -114,7 +114,7 @@ test('horse show returns race histories with all required fields as inertia prop
     );
 });
 
-test('horse show returns empty race_histories when horse has no race history', function () {
+test('出走履歴がない馬は race_histories が空配列で返る', function () {
     // Arrange
     $user = User::factory()->create();
     $horse = Horse::create([
@@ -132,7 +132,7 @@ test('horse show returns empty race_histories when horse has no race history', f
     );
 });
 
-test('horse show returns race_name as null when races.race_name is null', function () {
+test('races.race_name が null のとき race_name は null で返る', function () {
     // Arrange
     $user = User::factory()->create();
     $venue = Venue::firstOrCreate(['name' => '東京']);
@@ -177,7 +177,7 @@ test('horse show returns race_name as null when races.race_name is null', functi
     );
 });
 
-test('horse show returns birth_year as null when horse has no birth_year', function () {
+test('生年が未設定の馬は birth_year が null で返る', function () {
     // Arrange
     $user = User::factory()->create();
     $horse = Horse::create([
@@ -198,7 +198,7 @@ test('horse show returns birth_year as null when horse has no birth_year', funct
     );
 });
 
-test('horse show returns race_histories ordered by race_date desc then race_number asc', function () {
+test('出走履歴は race_date 降順・race_number 昇順で返る', function () {
     // Arrange
     $user = User::factory()->create();
     $venue = Venue::firstOrCreate(['name' => '東京']);
@@ -258,7 +258,7 @@ test('horse show returns race_histories ordered by race_date desc then race_numb
     );
 });
 
-test('horse show returns 404 for non-existent horse id', function () {
+test('存在しない馬IDで馬詳細にアクセスすると404が返る', function () {
     // Arrange
     $user = User::factory()->create();
 

@@ -14,7 +14,7 @@ beforeEach(function () {
     $this->seed(BuyTypeSeeder::class);
 });
 
-test('guests are redirected to the login page', function () {
+test('ゲストはログイン画面にリダイレクトされる', function () {
     // Act
     $response = $this->get(route('insights'));
 
@@ -22,7 +22,7 @@ test('guests are redirected to the login page', function () {
     $response->assertRedirect(route('login'));
 });
 
-test('authenticated users can visit the insights page', function () {
+test('認証済みユーザーはインサイト画面にアクセスできる', function () {
     // Arrange
     $user = User::factory()->create();
     $this->actingAs($user);

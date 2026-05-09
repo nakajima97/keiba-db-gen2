@@ -21,7 +21,7 @@ function createRaceForMarkColumnStoreTest(): Race
 
 // ===== POST /api/races/{uid}/mark-columns =====
 
-test('unauthenticated user cannot create other race mark column', function () {
+test('未認証ユーザーは他カテゴリの印カラムを作成できない', function () {
     // Arrange
     $race = createRaceForMarkColumnStoreTest();
 
@@ -34,7 +34,7 @@ test('unauthenticated user cannot create other race mark column', function () {
     $response->assertUnauthorized();
 });
 
-test('authenticated user can add other mark column', function () {
+test('認証済みユーザーは他カテゴリの印カラムを追加できる', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForMarkColumnStoreTest();
@@ -50,7 +50,7 @@ test('authenticated user can add other mark column', function () {
     $response->assertJsonPath('data.label', '友人A');
 });
 
-test('other mark column can be created with empty label', function () {
+test('他カテゴリの印カラムはラベル空でも作成できる', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForMarkColumnStoreTest();
@@ -66,7 +66,7 @@ test('other mark column can be created with empty label', function () {
     $response->assertJsonPath('data.label', '');
 });
 
-test('display_order is appended to the end when creating new other column', function () {
+test('新規の他カテゴリカラム作成時に display_order は末尾に付与される', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForMarkColumnStoreTest();
@@ -96,7 +96,7 @@ test('display_order is appended to the end when creating new other column', func
     $response->assertJsonPath('data.display_order', 4);
 });
 
-test('label exceeding 32 characters returns 422', function () {
+test('ラベルが32文字を超えると422が返る', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForMarkColumnStoreTest();
@@ -111,7 +111,7 @@ test('label exceeding 32 characters returns 422', function () {
     $response->assertJsonValidationErrors(['label']);
 });
 
-test('creating mark column for non-existent race uid returns 404', function () {
+test('存在しないレースUIDで印カラムを作成しようとすると404が返る', function () {
     // Arrange
     $user = User::factory()->create();
 

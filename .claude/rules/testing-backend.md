@@ -48,3 +48,7 @@ Arrangeのないテスト（画面表示確認など）はActとAssertのみコ�
 | 外部サービス（メール等） | Laravelの Fake 機能（`Mail::fake()` 等）でモックする |
 
 GitHub Actions では MySQL サービスコンテナが起動済みのため、`RefreshDatabase` はCIでそのまま動作する。
+
+## テスト説明文の言語
+
+`test()` / `it()` の説明文および `->with([...])` のキーは日本語で記述する。固有名詞・カラム名・HTTPステータス・`null` 等の技術用語はそのまま英数字を残す。

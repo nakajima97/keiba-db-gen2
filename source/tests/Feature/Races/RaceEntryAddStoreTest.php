@@ -61,7 +61,7 @@ function validRaceEntryAddPayload(array $overrides = []): array
 
 // ===== POST /races/{race:uid}/entries/add =====
 
-test('unauthenticated user is redirected when adding race entry', function () {
+test('未認証ユーザーが出馬登録を追加しようとするとリダイレクトされる', function () {
     // Arrange
     $race = createRaceForAddStoreTest();
 
@@ -76,7 +76,7 @@ test('unauthenticated user is redirected when adding race entry', function () {
     $this->assertGuest();
 });
 
-test('authenticated user can add a race entry with valid data', function () {
+test('認証済みユーザーは正常データで出馬登録を追加できる', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForAddStoreTest();
@@ -97,7 +97,7 @@ test('authenticated user can add a race entry with valid data', function () {
     ]);
 });
 
-test('adding with existing horse name reuses existing horse without creating new', function () {
+test('既存の馬名で追加すると新規作成せず既存の馬を再利用する', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForAddStoreTest();
@@ -118,7 +118,7 @@ test('adding with existing horse name reuses existing horse without creating new
     expect(Horse::count())->toBe($horseCountBefore);
 });
 
-test('adding with new horse name creates new horse record', function () {
+test('新しい馬名で追加すると新規の馬レコードが作成される', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForAddStoreTest();
@@ -140,7 +140,7 @@ test('adding with new horse name creates new horse record', function () {
     ]);
 });
 
-test('adding with existing jockey name reuses existing jockey without creating new', function () {
+test('既存の騎手名で追加すると新規作成せず既存の騎手を再利用する', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForAddStoreTest();
@@ -161,7 +161,7 @@ test('adding with existing jockey name reuses existing jockey without creating n
     expect(Jockey::count())->toBe($jockeyCountBefore);
 });
 
-test('adding with new jockey name creates new jockey record', function () {
+test('新しい騎手名で追加すると新規の騎手レコードが作成される', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForAddStoreTest();
@@ -183,7 +183,7 @@ test('adding with new jockey name creates new jockey record', function () {
     ]);
 });
 
-test('horse_weight is optional and can be set to null on add', function () {
+test('追加時に horse_weight は省略可能で null として保存できる', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForAddStoreTest();
@@ -201,7 +201,7 @@ test('horse_weight is optional and can be set to null on add', function () {
     ]);
 });
 
-test('successful race entry add redirects to races show', function () {
+test('出馬登録追加成功時はレース詳細画面にリダイレクトされる', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForAddStoreTest();
@@ -216,7 +216,7 @@ test('successful race entry add redirects to races show', function () {
     $response->assertRedirect(route('races.show', ['race' => $race->uid]));
 });
 
-test('empty horse_name returns 422 on add', function () {
+test('追加時に horse_name が空のとき422が返る', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForAddStoreTest();
@@ -232,7 +232,7 @@ test('empty horse_name returns 422 on add', function () {
     $response->assertJsonValidationErrors(['horse_name']);
 });
 
-test('empty jockey_name returns 422 on add', function () {
+test('追加時に jockey_name が空のとき422が返る', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForAddStoreTest();
@@ -248,7 +248,7 @@ test('empty jockey_name returns 422 on add', function () {
     $response->assertJsonValidationErrors(['jockey_name']);
 });
 
-test('frame_number below range returns 422 on add', function () {
+test('追加時に frame_number が範囲未満のとき422が返る', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForAddStoreTest();
@@ -264,7 +264,7 @@ test('frame_number below range returns 422 on add', function () {
     $response->assertJsonValidationErrors(['frame_number']);
 });
 
-test('frame_number above range returns 422 on add', function () {
+test('追加時に frame_number が範囲超過のとき422が返る', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForAddStoreTest();
@@ -280,7 +280,7 @@ test('frame_number above range returns 422 on add', function () {
     $response->assertJsonValidationErrors(['frame_number']);
 });
 
-test('horse_number below range returns 422 on add', function () {
+test('追加時に horse_number が範囲未満のとき422が返る', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForAddStoreTest();
@@ -296,7 +296,7 @@ test('horse_number below range returns 422 on add', function () {
     $response->assertJsonValidationErrors(['horse_number']);
 });
 
-test('horse_number above range returns 422 on add', function () {
+test('追加時に horse_number が範囲超過のとき422が返る', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForAddStoreTest();
@@ -312,7 +312,7 @@ test('horse_number above range returns 422 on add', function () {
     $response->assertJsonValidationErrors(['horse_number']);
 });
 
-test('empty weight returns 422 on add', function () {
+test('追加時に weight が空のとき422が返る', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForAddStoreTest();
@@ -328,7 +328,7 @@ test('empty weight returns 422 on add', function () {
     $response->assertJsonValidationErrors(['weight']);
 });
 
-test('horse_number colliding with another entry in the same race returns 422 on add', function () {
+test('追加時に同じレース内の他エントリと horse_number が衝突するとき422が返る', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForAddStoreTest();
@@ -362,7 +362,7 @@ test('horse_number colliding with another entry in the same race returns 422 on 
     ]);
 });
 
-test('non-existent race uid returns 404 on add store', function () {
+test('追加保存時に存在しないレースUIDを指定すると404が返る', function () {
     // Arrange
     $user = User::factory()->create();
 

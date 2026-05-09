@@ -52,7 +52,7 @@ function entryHorseForHorseNoteStoreTest(Race $race, Horse $horse, int $horseNum
 
 // ===== POST /api/horses/{horse}/notes =====
 
-test('unauthenticated user cannot create horse note', function () {
+test('未認証ユーザーは馬メモを作成できない', function () {
     // Arrange
     $horse = createHorseForHorseNoteStoreTest();
 
@@ -65,7 +65,7 @@ test('unauthenticated user cannot create horse note', function () {
     $response->assertUnauthorized();
 });
 
-test('authenticated user can create horse note with race_id', function () {
+test('認証済みユーザーは race_id 付きの馬メモを作成できる', function () {
     // Arrange
     $user = User::factory()->create();
     $horse = createHorseForHorseNoteStoreTest();
@@ -91,7 +91,7 @@ test('authenticated user can create horse note with race_id', function () {
     ]);
 });
 
-test('authenticated user can create horse note without race_id', function () {
+test('認証済みユーザーは race_id なしで馬メモを作成できる', function () {
     // Arrange
     $user = User::factory()->create();
     $horse = createHorseForHorseNoteStoreTest();
@@ -114,7 +114,7 @@ test('authenticated user can create horse note without race_id', function () {
     ]);
 });
 
-test('creating horse note for non-existent horse id returns 404', function () {
+test('存在しない馬IDで馬メモを作成しようとすると404が返る', function () {
     // Arrange
     $user = User::factory()->create();
 
@@ -127,7 +127,7 @@ test('creating horse note for non-existent horse id returns 404', function () {
     $response->assertNotFound();
 });
 
-test('empty content returns 422', function () {
+test('本文が空のとき422が返る', function () {
     // Arrange
     $user = User::factory()->create();
     $horse = createHorseForHorseNoteStoreTest();
@@ -142,7 +142,7 @@ test('empty content returns 422', function () {
     $response->assertJsonValidationErrors(['content']);
 });
 
-test('content exceeding 1000 characters returns 422', function () {
+test('本文が1000文字を超えると422が返る', function () {
     // Arrange
     $user = User::factory()->create();
     $horse = createHorseForHorseNoteStoreTest();
@@ -157,7 +157,7 @@ test('content exceeding 1000 characters returns 422', function () {
     $response->assertJsonValidationErrors(['content']);
 });
 
-test('missing content returns 422', function () {
+test('本文が未指定のとき422が返る', function () {
     // Arrange
     $user = User::factory()->create();
     $horse = createHorseForHorseNoteStoreTest();
@@ -170,7 +170,7 @@ test('missing content returns 422', function () {
     $response->assertJsonValidationErrors(['content']);
 });
 
-test('duplicate note for same user, horse, and race_id returns 422', function () {
+test('同じユーザー・馬・race_id の馬メモが既に存在するとき422が返る', function () {
     // Arrange
     $user = User::factory()->create();
     $horse = createHorseForHorseNoteStoreTest();
@@ -194,7 +194,7 @@ test('duplicate note for same user, horse, and race_id returns 422', function ()
     $response->assertUnprocessable();
 });
 
-test('creating horse note with race_id that the horse has not run returns 422', function () {
+test('対象馬が出走していない race_id で馬メモを作成しようとすると422が返る', function () {
     // Arrange
     $user = User::factory()->create();
     $horse = createHorseForHorseNoteStoreTest();
@@ -212,7 +212,7 @@ test('creating horse note with race_id that the horse has not run returns 422', 
     $response->assertJsonValidationErrors(['race_id']);
 });
 
-test('duplicate note for same user, horse, and null race_id returns 422', function () {
+test('同じユーザー・馬で race_id が null の馬メモが既に存在するとき422が返る', function () {
     // Arrange
     $user = User::factory()->create();
     $horse = createHorseForHorseNoteStoreTest();

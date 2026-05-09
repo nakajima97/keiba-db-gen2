@@ -43,7 +43,7 @@ function createRaceEntryForEditTest(): RaceEntry
 
 // ===== GET /races/{uid}/entries/{entry}/edit =====
 
-test('unauthenticated user is redirected when accessing race entry edit', function () {
+test('未認証ユーザーが出馬登録編集画面にアクセスするとリダイレクトされる', function () {
     // Arrange
     $entry = createRaceEntryForEditTest();
 
@@ -54,7 +54,7 @@ test('unauthenticated user is redirected when accessing race entry edit', functi
     $response->assertRedirectToRoute('login');
 });
 
-test('authenticated user can access race entry edit and inertia component is rendered with race info and entry values', function () {
+test('認証済みユーザーは出馬登録編集画面にアクセスでき Inertia コンポーネントがレース情報と既存値付きで描画される', function () {
     // Arrange
     $user = User::factory()->create();
     $entry = createRaceEntryForEditTest();
@@ -89,7 +89,7 @@ test('authenticated user can access race entry edit and inertia component is ren
     );
 });
 
-test('non-existent entry id returns 404 on edit page', function () {
+test('編集画面で存在しないエントリIDを指定すると404が返る', function () {
     // Arrange
     $user = User::factory()->create();
     $entry = createRaceEntryForEditTest();
@@ -103,7 +103,7 @@ test('non-existent entry id returns 404 on edit page', function () {
     $response->assertNotFound();
 });
 
-test('non-existent race uid returns 404 on edit page', function () {
+test('編集画面で存在しないレースUIDを指定すると404が返る', function () {
     // Arrange
     $user = User::factory()->create();
     $entry = createRaceEntryForEditTest();

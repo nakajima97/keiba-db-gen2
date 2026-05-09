@@ -2,7 +2,7 @@
 
 use App\Models\User;
 
-test('profile page is displayed', function () {
+test('プロフィール画面が表示される', function () {
     // Arrange
     $user = User::factory()->create();
 
@@ -15,7 +15,7 @@ test('profile page is displayed', function () {
     $response->assertOk();
 });
 
-test('profile information can be updated', function () {
+test('プロフィール情報を更新できる', function () {
     // Arrange
     $user = User::factory()->create();
 
@@ -39,7 +39,7 @@ test('profile information can be updated', function () {
     expect($user->email_verified_at)->toBeNull();
 });
 
-test('email verification status is unchanged when the email address is unchanged', function () {
+test('メールアドレスが変わらないときメール認証ステータスも変わらない', function () {
     // Arrange
     $user = User::factory()->create();
 
@@ -59,7 +59,7 @@ test('email verification status is unchanged when the email address is unchanged
     expect($user->refresh()->email_verified_at)->not->toBeNull();
 });
 
-test('user can delete their account', function () {
+test('ユーザーは自分のアカウントを削除できる', function () {
     // Arrange
     $user = User::factory()->create();
 
@@ -79,7 +79,7 @@ test('user can delete their account', function () {
     expect($user->fresh())->toBeNull();
 });
 
-test('correct password must be provided to delete account', function () {
+test('アカウント削除には正しいパスワードが必要', function () {
     // Arrange
     $user = User::factory()->create();
 

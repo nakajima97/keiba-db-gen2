@@ -77,7 +77,7 @@ function insertRaceMarkMemoForDestroy(int $columnId, int $raceEntryId, string $c
 
 // ===== DELETE /api/races/{uid}/mark-columns/{column_id}/entries/{race_entry_id}/memo =====
 
-test('unauthenticated user cannot delete race mark memo', function () {
+test('未認証ユーザーはレース印メモを削除できない', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForMarkMemoDestroyTest();
@@ -99,7 +99,7 @@ test('unauthenticated user cannot delete race mark memo', function () {
     $response->assertUnauthorized();
 });
 
-test('authenticated user can delete race mark memo', function () {
+test('認証済みユーザーはレース印メモを削除できる', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForMarkMemoDestroyTest();
@@ -125,7 +125,7 @@ test('authenticated user can delete race mark memo', function () {
     ]);
 });
 
-test('deleting memo on own column returns 422', function () {
+test('自分カテゴリのカラムのメモを削除しようとすると422が返る', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForMarkMemoDestroyTest();
@@ -144,7 +144,7 @@ test('deleting memo on own column returns 422', function () {
     $response->assertUnprocessable();
 });
 
-test('deleting memo on other users column returns 403', function () {
+test('他ユーザーのカラムのメモを削除しようとすると403が返る', function () {
     // Arrange
     $user = User::factory()->create();
     $otherUser = User::factory()->create();
@@ -167,7 +167,7 @@ test('deleting memo on other users column returns 403', function () {
     $response->assertForbidden();
 });
 
-test('deleting non-existent memo returns 404', function () {
+test('存在しないメモを削除しようとすると404が返る', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForMarkMemoDestroyTest();
@@ -188,7 +188,7 @@ test('deleting non-existent memo returns 404', function () {
     $response->assertNotFound();
 });
 
-test('deleting memo on non-existent column id returns 404', function () {
+test('存在しないカラムIDのメモを削除しようとすると404が返る', function () {
     // Arrange
     $user = User::factory()->create();
     $race = createRaceForMarkMemoDestroyTest();

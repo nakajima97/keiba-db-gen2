@@ -4,7 +4,7 @@ use App\UseCases\TicketPurchase\ExpandSelectionsAction;
 
 // ===== unknown ticket type / buy type =====
 
-test('unknown ticket type returns empty array', function () {
+test('未知の券種は空配列を返す', function () {
     // Arrange
     $action = new ExpandSelectionsAction;
 
@@ -15,7 +15,7 @@ test('unknown ticket type returns empty array', function () {
     expect($result)->toBe([]);
 });
 
-test('unknown buy type returns empty array', function () {
+test('未知の買い方は空配列を返す', function () {
     // Arrange
     $action = new ExpandSelectionsAction;
 
@@ -28,8 +28,8 @@ test('unknown buy type returns empty array', function () {
 
 // ===== tanpuku (special case) =====
 
-describe('tanpuku', function () {
-    test('single: one horse returns same horse twice as two separate picks', function () {
+describe('tanpuku（単複）', function () {
+    test('single: 1頭選択は同じ馬が2つ別の購入として返る', function () {
         // Arrange
         $action = new ExpandSelectionsAction;
 
@@ -40,7 +40,7 @@ describe('tanpuku', function () {
         expect($result)->toBe([[5], [5]]);
     });
 
-    test('box: two horses returns each horse twice', function () {
+    test('box: 2頭選択は各馬が2つずつ返る', function () {
         // Arrange
         $action = new ExpandSelectionsAction;
 
@@ -54,8 +54,8 @@ describe('tanpuku', function () {
 
 // ===== single (tansho / fukusho: horseCount=1) =====
 
-describe('single with tansho', function () {
-    test('one horse selection returns single pick', function () {
+describe('single × tansho', function () {
+    test('1頭選択は1つの購入として返る', function () {
         // Arrange
         $action = new ExpandSelectionsAction;
 
@@ -66,7 +66,7 @@ describe('single with tansho', function () {
         expect($result)->toBe([[3]]);
     });
 
-    test('multiple horse selections each become individual picks', function () {
+    test('複数頭選択はそれぞれ独立した購入になる', function () {
         // Arrange
         $action = new ExpandSelectionsAction;
 
@@ -78,8 +78,8 @@ describe('single with tansho', function () {
     });
 });
 
-describe('single with fukusho', function () {
-    test('one horse selection returns single pick', function () {
+describe('single × fukusho', function () {
+    test('1頭選択は1つの購入として返る', function () {
         // Arrange
         $action = new ExpandSelectionsAction;
 
@@ -90,7 +90,7 @@ describe('single with fukusho', function () {
         expect($result)->toBe([[3]]);
     });
 
-    test('multiple horse selections each become individual picks', function () {
+    test('複数頭選択はそれぞれ独立した購入になる', function () {
         // Arrange
         $action = new ExpandSelectionsAction;
 
@@ -104,8 +104,8 @@ describe('single with fukusho', function () {
 
 // ===== single (umaren / wide: horseCount=2 unordered) =====
 
-describe('single with umaren', function () {
-    test('exactly two horses returns one normalized pick', function () {
+describe('single × umaren', function () {
+    test('ちょうど2頭選択で正規化された購入1つを返す', function () {
         // Arrange
         $action = new ExpandSelectionsAction;
 
@@ -116,7 +116,7 @@ describe('single with umaren', function () {
         expect($result)->toBe([[1, 3]]);
     });
 
-    test('insufficient horses returns empty array', function () {
+    test('頭数が足りないとき空配列を返す', function () {
         // Arrange
         $action = new ExpandSelectionsAction;
 
@@ -127,7 +127,7 @@ describe('single with umaren', function () {
         expect($result)->toBe([]);
     });
 
-    test('null selections returns empty array', function () {
+    test('selections が null のとき空配列を返す', function () {
         // Arrange
         $action = new ExpandSelectionsAction;
 
@@ -139,8 +139,8 @@ describe('single with umaren', function () {
     });
 });
 
-describe('single with wide', function () {
-    test('exactly two horses returns one normalized pick', function () {
+describe('single × wide', function () {
+    test('ちょうど2頭選択で正規化された購入1つを返す', function () {
         // Arrange
         $action = new ExpandSelectionsAction;
 
@@ -151,7 +151,7 @@ describe('single with wide', function () {
         expect($result)->toBe([[1, 3]]);
     });
 
-    test('insufficient horses returns empty array', function () {
+    test('頭数が足りないとき空配列を返す', function () {
         // Arrange
         $action = new ExpandSelectionsAction;
 
@@ -165,8 +165,8 @@ describe('single with wide', function () {
 
 // ===== single (umatan: horseCount=2 ordered) =====
 
-describe('single with umatan', function () {
-    test('exactly two horses returns one pick with order preserved', function () {
+describe('single × umatan', function () {
+    test('ちょうど2頭選択で順序保持の購入1つを返す', function () {
         // Arrange
         $action = new ExpandSelectionsAction;
 
@@ -180,8 +180,8 @@ describe('single with umatan', function () {
 
 // ===== single (sanrenpuku: horseCount=3 unordered) =====
 
-describe('single with sanrenpuku', function () {
-    test('exactly three horses returns one normalized pick', function () {
+describe('single × sanrenpuku', function () {
+    test('ちょうど3頭選択で正規化された購入1つを返す', function () {
         // Arrange
         $action = new ExpandSelectionsAction;
 
@@ -192,7 +192,7 @@ describe('single with sanrenpuku', function () {
         expect($result)->toBe([[1, 2, 3]]);
     });
 
-    test('insufficient horses returns empty array', function () {
+    test('頭数が足りないとき空配列を返す', function () {
         // Arrange
         $action = new ExpandSelectionsAction;
 
@@ -206,8 +206,8 @@ describe('single with sanrenpuku', function () {
 
 // ===== box (umaren: horseCount=2 unordered) =====
 
-describe('box with umaren', function () {
-    test('three horses produce C(3,2)=3 combinations', function () {
+describe('box × umaren', function () {
+    test('3頭選択で C(3,2)=3 通りの組み合わせを返す', function () {
         // Arrange
         $action = new ExpandSelectionsAction;
 
@@ -218,7 +218,7 @@ describe('box with umaren', function () {
         expect($result)->toBe([[1, 2], [1, 3], [2, 3]]);
     });
 
-    test('insufficient horses returns empty array', function () {
+    test('頭数が足りないとき空配列を返す', function () {
         // Arrange
         $action = new ExpandSelectionsAction;
 
@@ -232,8 +232,8 @@ describe('box with umaren', function () {
 
 // ===== box (umatan: horseCount=2 ordered) =====
 
-describe('box with umatan', function () {
-    test('three horses produce P(3,2)=6 permutations', function () {
+describe('box × umatan', function () {
+    test('3頭選択で P(3,2)=6 通りの順列を返す', function () {
         // Arrange
         $action = new ExpandSelectionsAction;
 
@@ -247,8 +247,8 @@ describe('box with umatan', function () {
 
 // ===== box (sanrenpuku: horseCount=3 unordered) =====
 
-describe('box with sanrenpuku', function () {
-    test('four horses produce C(4,3)=4 combinations', function () {
+describe('box × sanrenpuku', function () {
+    test('4頭選択で C(4,3)=4 通りの組み合わせを返す', function () {
         // Arrange
         $action = new ExpandSelectionsAction;
 
@@ -262,8 +262,8 @@ describe('box with sanrenpuku', function () {
 
 // ===== single / box (sanrentan: horseCount=3 ordered) =====
 
-describe('single with sanrentan', function () {
-    test('three horses returns one pick with order preserved', function () {
+describe('single × sanrentan', function () {
+    test('3頭選択で順序保持の購入1つを返す', function () {
         // Arrange
         $action = new ExpandSelectionsAction;
 
@@ -275,8 +275,8 @@ describe('single with sanrentan', function () {
     });
 });
 
-describe('box with sanrentan', function () {
-    test('three horses produce P(3,3)=6 permutations', function () {
+describe('box × sanrentan', function () {
+    test('3頭選択で P(3,3)=6 通りの順列を返す', function () {
         // Arrange
         $action = new ExpandSelectionsAction;
 
@@ -290,8 +290,8 @@ describe('box with sanrentan', function () {
 
 // ===== nagashi (umaren: horseCount=2) =====
 
-describe('nagashi with umaren', function () {
-    test('axis=[3] others=[1,5,7] returns three picks with axis included', function () {
+describe('nagashi × umaren', function () {
+    test('axis=[3] others=[1,5,7] のとき軸を含む3つの購入を返す', function () {
         // Arrange
         $action = new ExpandSelectionsAction;
 
@@ -302,7 +302,7 @@ describe('nagashi with umaren', function () {
         expect($result)->toBe([[1, 3], [3, 5], [3, 7]]);
     });
 
-    test('empty axis returns empty array', function () {
+    test('axis が空のとき空配列を返す', function () {
         // Arrange
         $action = new ExpandSelectionsAction;
 
@@ -313,7 +313,7 @@ describe('nagashi with umaren', function () {
         expect($result)->toBe([]);
     });
 
-    test('empty others returns empty array', function () {
+    test('others が空のとき空配列を返す', function () {
         // Arrange
         $action = new ExpandSelectionsAction;
 
@@ -327,8 +327,8 @@ describe('nagashi with umaren', function () {
 
 // ===== nagashi (sanrenpuku: horseCount=3) =====
 
-describe('nagashi with sanrenpuku', function () {
-    test('axis=[1] others=[2,3,4] returns C(3,2)=3 picks with axis', function () {
+describe('nagashi × sanrenpuku', function () {
+    test('axis=[1] others=[2,3,4] のとき軸を含む C(3,2)=3 通りを返す', function () {
         // Arrange
         $action = new ExpandSelectionsAction;
 
@@ -342,8 +342,8 @@ describe('nagashi with sanrenpuku', function () {
 
 // ===== nagashi (umatan: col1/col2 format) =====
 
-describe('nagashi with umatan col format', function () {
-    test('col1=[1] col2=[2,3] returns two ordered picks', function () {
+describe('nagashi × umatan（col1/col2 形式）', function () {
+    test('col1=[1] col2=[2,3] のとき順序保持の2つの購入を返す', function () {
         // Arrange
         $action = new ExpandSelectionsAction;
 
@@ -357,8 +357,8 @@ describe('nagashi with umatan col format', function () {
 
 // ===== formation (umaren: horseCount=2 unordered) =====
 
-describe('formation with umaren', function () {
-    test('two columns produce cartesian product', function () {
+describe('formation × umaren', function () {
+    test('2列の直積を返す', function () {
         // Arrange
         $action = new ExpandSelectionsAction;
 
@@ -369,7 +369,7 @@ describe('formation with umaren', function () {
         expect($result)->toBe([[1, 3], [1, 4], [2, 3], [2, 4]]);
     });
 
-    test('same horse in multiple columns is excluded from results', function () {
+    test('複数列に同じ馬がいる場合は重複馬の組み合わせを除外する', function () {
         // Arrange
         $action = new ExpandSelectionsAction;
 
@@ -380,7 +380,7 @@ describe('formation with umaren', function () {
         expect($result)->toBe([[1, 2], [1, 3], [2, 3]]);
     });
 
-    test('duplicate combinations are deduplicated for unordered ticket', function () {
+    test('順不同券種では重複した組み合わせを排除する', function () {
         // Arrange
         $action = new ExpandSelectionsAction;
 
@@ -391,7 +391,7 @@ describe('formation with umaren', function () {
         expect($result)->toBe([[1, 2]]);
     });
 
-    test('fewer columns than horse count returns empty array', function () {
+    test('列数が必要頭数より少ないとき空配列を返す', function () {
         // Arrange
         $action = new ExpandSelectionsAction;
 
@@ -402,7 +402,7 @@ describe('formation with umaren', function () {
         expect($result)->toBe([]);
     });
 
-    test('empty column returns empty array', function () {
+    test('空の列があるとき空配列を返す', function () {
         // Arrange
         $action = new ExpandSelectionsAction;
 
@@ -416,8 +416,8 @@ describe('formation with umaren', function () {
 
 // ===== formation (sanrenpuku: horseCount=3 unordered) =====
 
-describe('formation with sanrenpuku', function () {
-    test('three columns produce correct cartesian product', function () {
+describe('formation × sanrenpuku', function () {
+    test('3列の直積が正しく計算される', function () {
         // Arrange
         $action = new ExpandSelectionsAction;
 
@@ -431,8 +431,8 @@ describe('formation with sanrenpuku', function () {
 
 // ===== null / empty selections edge cases =====
 
-describe('null and empty selections edge cases', function () {
-    test('null selections with tansho single returns empty array', function () {
+describe('null・空 selections のエッジケース', function () {
+    test('単勝 single で selections が null のとき空配列を返す', function () {
         // Arrange
         $action = new ExpandSelectionsAction;
 
@@ -443,7 +443,7 @@ describe('null and empty selections edge cases', function () {
         expect($result)->toBe([]);
     });
 
-    test('null selections with umaren nagashi returns empty array', function () {
+    test('馬連 nagashi で selections が null のとき空配列を返す', function () {
         // Arrange
         $action = new ExpandSelectionsAction;
 
@@ -454,7 +454,7 @@ describe('null and empty selections edge cases', function () {
         expect($result)->toBe([]);
     });
 
-    test('string horse numbers are cast to integers', function () {
+    test('文字列の馬番が整数にキャストされる', function () {
         // Arrange
         $action = new ExpandSelectionsAction;
 
