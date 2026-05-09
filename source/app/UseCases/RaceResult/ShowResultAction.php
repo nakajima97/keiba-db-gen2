@@ -58,7 +58,7 @@ class ShowResultAction
                 'raceResultHorses' => function ($query) {
                     $query->orderBy('finishing_order');
                 },
-                'raceResultHorses.horse:id,uid',
+                'raceResultHorses.horse',
             ])
             ->firstOrFail();
 
