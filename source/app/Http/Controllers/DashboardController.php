@@ -14,13 +14,17 @@ class DashboardController extends Controller
         $year = $request->query('year');
         $year = $year !== null ? (int) $year : null;
 
-        $data = $action->execute($request->user()->id, $year);
+        $cursor = $request->query('cursor');
+        $cursor = $cursor !== null ? (string) $cursor : null;
+
+        $data = $action->execute($request->user()->id, $year, $cursor);
 
         return Inertia::render('dashboard', [
             'selected_year' => $data['selected_year'],
             'available_years' => $data['available_years'],
             'summary' => $data['summary'],
-            'daily_balances' => $data['daily_balances'],
+            'daily_balances' => Inertia::merge(fn () => $data['daily_balances']),
+            'next_cursor' => $data['next_cursor'],
         ]);
     }
 }
