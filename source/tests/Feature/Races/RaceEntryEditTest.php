@@ -48,7 +48,7 @@ test('未認証ユーザーが出馬登録編集画面にアクセスすると�
     $entry = createRaceEntryForEditTest();
 
     // Act
-    $response = $this->get(route('races.entries.edit', ['race' => $entry->race->uid, 'entry' => $entry->id]));
+    $response = $this->get(route('races.entries.edit', ['race' => $entry->race->uid, 'entry' => $entry->uid]));
 
     // Assert
     $response->assertRedirectToRoute('login');
@@ -62,7 +62,7 @@ test('認証済みユーザーは出馬登録編集画面にアクセスでき I
 
     // Act
     $response = $this->actingAs($user)->get(
-        route('races.entries.edit', ['race' => $entry->race->uid, 'entry' => $entry->id]),
+        route('races.entries.edit', ['race' => $entry->race->uid, 'entry' => $entry->uid]),
     );
 
     // Assert
@@ -70,7 +70,7 @@ test('認証済みユーザーは出馬登録編集画面にアクセスでき I
     $response->assertInertia(fn (Assert $page) => $page
         ->component('races/entries/edit')
         ->where('race_uid', $entry->race->uid)
-        ->where('entry_id', $entry->id)
+        ->where('entry_uid', $entry->uid)
         ->has('race_info', fn (Assert $raceInfo) => $raceInfo
             ->where('race_date', '2026-04-18')
             ->where('venue_name', '東京')
@@ -89,14 +89,14 @@ test('認証済みユーザーは出馬登録編集画面にアクセスでき I
     );
 });
 
-test('編集画面で存在しないエントリIDを指定すると404が返る', function () {
+test('編集画面で存在しないエントリUIDを指定すると404が返る', function () {
     // Arrange
     $user = User::factory()->create();
     $entry = createRaceEntryForEditTest();
 
     // Act
     $response = $this->actingAs($user)->get(
-        route('races.entries.edit', ['race' => $entry->race->uid, 'entry' => 9999999]),
+        route('races.entries.edit', ['race' => $entry->race->uid, 'entry' => 'non-existent-uid']),
     );
 
     // Assert
@@ -110,7 +110,7 @@ test('編集画面で存在しないレースUIDを指定すると404が返る',
 
     // Act
     $response = $this->actingAs($user)->get(
-        route('races.entries.edit', ['race' => 'non-existent-uid', 'entry' => $entry->id]),
+        route('races.entries.edit', ['race' => 'non-existent-uid-2', 'entry' => $entry->uid]),
     );
 
     // Assert

@@ -25,6 +25,7 @@ const baseProps = {
 
 const sampleFinishingHorse = {
 	horse_id: 7,
+	horse_uid: "horse-uid-7",
 	finishing_order: 1,
 	frame_number: 2,
 	horse_number: 3,
@@ -88,7 +89,7 @@ describe("RaceResultDetail", () => {
 
 		// Assert
 		const link = screen.getByRole("link", { name: "テスト馬A" });
-		expect(link).toHaveAttribute("href", "/horses/7");
+		expect(link).toHaveAttribute("href", "/horses/horse-uid-7");
 	});
 
 	describe("戻るボタン", () => {

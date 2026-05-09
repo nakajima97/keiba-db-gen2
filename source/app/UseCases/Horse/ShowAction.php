@@ -17,6 +17,7 @@ class ShowAction
     /**
      * @return array{
      *     id: int,
+     *     uid: string,
      *     name: string,
      *     birth_year: int|null,
      *     race_histories: list<array{
@@ -82,6 +83,7 @@ class ShowAction
 
         return [
             'id' => $horse->id,
+            'uid' => $horse->uid,
             'name' => $horse->name,
             'birth_year' => $horse->birth_year !== null ? (int) $horse->birth_year : null,
             'race_histories' => $raceHistories,

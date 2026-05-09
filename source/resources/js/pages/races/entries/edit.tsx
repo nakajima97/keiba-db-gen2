@@ -7,13 +7,13 @@ import type {
 
 type RacesEntriesEditProps = {
 	race_uid: string;
-	entry_id: number;
+	entry_uid: string;
 	race_info: RaceInfo;
 	initial_values: RaceEntryEditFormValues;
 };
 
 const RacesEntriesEdit = () => {
-	const { race_uid, entry_id, race_info, initial_values } =
+	const { race_uid, entry_uid, race_info, initial_values } =
 		usePage<RacesEntriesEditProps>().props;
 
 	return (
@@ -21,7 +21,7 @@ const RacesEntriesEdit = () => {
 			<Head title="出走馬編集" />
 			<RaceEntryEditFormContainer
 				raceUid={race_uid}
-				entryId={entry_id}
+				entryUid={entry_uid}
 				raceInfo={race_info}
 				initialValues={initial_values}
 			/>

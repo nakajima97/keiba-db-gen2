@@ -31,9 +31,11 @@ class ShowAction
      *     race_name: string|null,
      *     entries: array<int, array{
      *         id: int,
+     *         uid: string,
      *         frame_number: int,
      *         horse_number: int,
      *         horse_id: int,
+     *         horse_uid: string,
      *         horse_name: string,
      *         jockey_name: string,
      *         weight: int|null,
@@ -104,9 +106,11 @@ class ShowAction
             'race_name' => $race->race_name,
             'entries' => $race->raceEntries->map(fn ($entry) => [
                 'id' => (int) $entry->id,
+                'uid' => (string) $entry->uid,
                 'frame_number' => (int) $entry->frame_number,
                 'horse_number' => (int) $entry->horse_number,
                 'horse_id' => (int) $entry->horse->id,
+                'horse_uid' => (string) $entry->horse->uid,
                 'horse_name' => $entry->horse->name,
                 'jockey_name' => $entry->jockey->name,
                 'weight' => $entry->horse_weight !== null ? (int) $entry->horse_weight : null,

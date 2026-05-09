@@ -23,7 +23,9 @@ const baseRace: RaceDetailItem = {
 	entries: [
 		{
 			id: 1,
+			uid: "entry-uid-1",
 			horse_id: 42,
+			horse_uid: "horse-uid-42",
 			frame_number: 2,
 			horse_number: 1,
 			horse_name: "テストホース",
@@ -125,7 +127,7 @@ describe("RaceDetail", () => {
 
 			// Assert
 			const link = screen.getByRole("link", { name: "テストホース" });
-			expect(link).toHaveAttribute("href", "/horses/42");
+			expect(link).toHaveAttribute("href", "/horses/horse-uid-42");
 		});
 	});
 

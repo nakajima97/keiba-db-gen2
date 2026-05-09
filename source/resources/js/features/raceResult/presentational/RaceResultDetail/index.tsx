@@ -97,9 +97,9 @@ const RaceResultDetail = ({
 										{horse.horse_number}
 									</td>
 									<td className="px-4 py-3">
-										{horse.horse_id !== null ? (
+										{horse.horse_uid !== null ? (
 											<Link
-												href={`/horses/${horse.horse_id}`}
+												href={`/horses/${horse.horse_uid}`}
 												className="text-primary hover:underline"
 											>
 												{horse.horse_name}

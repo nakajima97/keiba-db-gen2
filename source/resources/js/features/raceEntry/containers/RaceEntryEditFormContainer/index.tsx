@@ -9,14 +9,14 @@ import { update as raceEntryUpdate } from "@/routes/races/entries";
 
 export type RaceEntryEditFormContainerProps = {
 	raceUid: string;
-	entryId: number;
+	entryUid: string;
 	raceInfo: RaceInfo;
 	initialValues: RaceEntryEditFormValues;
 };
 
 const RaceEntryEditFormContainer = ({
 	raceUid,
-	entryId,
+	entryUid,
 	raceInfo,
 	initialValues,
 }: RaceEntryEditFormContainerProps) => {
@@ -34,7 +34,7 @@ const RaceEntryEditFormContainer = ({
 	};
 
 	const handleSubmit = () => {
-		form.put(raceEntryUpdate.url({ race: raceUid, entry: entryId }), {
+		form.put(raceEntryUpdate.url({ race: raceUid, entry: entryUid }), {
 			onSuccess: () => {
 				toast.success("出走馬を更新しました");
 			},

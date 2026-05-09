@@ -2,6 +2,7 @@
 
 namespace App\UseCases\RaceResult;
 
+use App\Models\Horse;
 use App\Models\Race;
 use App\Models\User;
 use App\UseCases\HorseNote\LoadNotesByHorseId;
@@ -33,6 +34,7 @@ class ShowResultAction
      *         frame_number: int,
      *         horse_number: int,
      *         horse_id: int|null,
+     *         horse_uid: string|null,
      *         horse_name: string,
      *         jockey_name: string,
      *         race_time: string,
@@ -85,7 +87,9 @@ class ShowResultAction
 
         $notesByHorseId = $this->loadNotesByHorseId->execute($user, $horseIds, (int) $race->id);
 
-        $finishingHorses = $race->raceResultHorses->map(function ($horse) use ($notesByHorseId) {
+        $horseUidById = Horse::whereIn('id', $horseIds)->pluck('uid', 'id')->all();
+
+        $finishingHorses = $race->raceResultHorses->map(function ($horse) use ($notesByHorseId, $horseUidById) {
             $horseId = $horse->horse_id !== null ? (int) $horse->horse_id : null;
 
             return [
@@ -93,6 +97,7 @@ class ShowResultAction
                 'frame_number' => $horse->frame_number,
                 'horse_number' => $horse->horse_number,
                 'horse_id' => $horseId,
+                'horse_uid' => $horseId !== null ? ($horseUidById[$horseId] ?? null) : null,
                 'horse_name' => $horse->horse_name,
                 'jockey_name' => $horse->jockey_name,
                 'race_time' => $horse->race_time,

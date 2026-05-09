@@ -86,7 +86,7 @@ test('未認証ユーザーが出馬登録を更新しようとするとリダ�
 
     // Act
     $response = $this->put(
-        route('races.entries.update', ['race' => $entry->race->uid, 'entry' => $entry->id]),
+        route('races.entries.update', ['race' => $entry->race->uid, 'entry' => $entry->uid]),
         validRaceEntryUpdatePayload(),
     );
 
@@ -102,7 +102,7 @@ test('認証済みユーザーは正常データで出馬登録を更新でき�
 
     // Act
     $this->actingAs($user)->putJson(
-        route('races.entries.update', ['race' => $entry->race->uid, 'entry' => $entry->id]),
+        route('races.entries.update', ['race' => $entry->race->uid, 'entry' => $entry->uid]),
         validRaceEntryUpdatePayload(),
     );
 
@@ -125,7 +125,7 @@ test('既存の馬名で更新すると新規作成せず既存の馬を再利�
 
     // Act
     $this->actingAs($user)->putJson(
-        route('races.entries.update', ['race' => $entry->race->uid, 'entry' => $entry->id]),
+        route('races.entries.update', ['race' => $entry->race->uid, 'entry' => $entry->uid]),
         validRaceEntryUpdatePayload(['horse_name' => 'コントレイル']),
     );
 
@@ -145,7 +145,7 @@ test('新しい馬名で更新すると新規の馬レコードが作成され�
 
     // Act
     $this->actingAs($user)->putJson(
-        route('races.entries.update', ['race' => $entry->race->uid, 'entry' => $entry->id]),
+        route('races.entries.update', ['race' => $entry->race->uid, 'entry' => $entry->uid]),
         validRaceEntryUpdatePayload(['horse_name' => 'まったく新しい馬名']),
     );
 
@@ -168,7 +168,7 @@ test('既存の騎手名で更新すると新規作成せず既存の騎手を�
 
     // Act
     $this->actingAs($user)->putJson(
-        route('races.entries.update', ['race' => $entry->race->uid, 'entry' => $entry->id]),
+        route('races.entries.update', ['race' => $entry->race->uid, 'entry' => $entry->uid]),
         validRaceEntryUpdatePayload(['jockey_name' => 'ルメール']),
     );
 
@@ -188,7 +188,7 @@ test('新しい騎手名で更新すると新規の騎手レコードが作成�
 
     // Act
     $this->actingAs($user)->putJson(
-        route('races.entries.update', ['race' => $entry->race->uid, 'entry' => $entry->id]),
+        route('races.entries.update', ['race' => $entry->race->uid, 'entry' => $entry->uid]),
         validRaceEntryUpdatePayload(['jockey_name' => 'まったく新しい騎手名']),
     );
 
@@ -209,7 +209,7 @@ test('horse_weight は省略可能で null として保存できる', function (
 
     // Act
     $this->actingAs($user)->putJson(
-        route('races.entries.update', ['race' => $entry->race->uid, 'entry' => $entry->id]),
+        route('races.entries.update', ['race' => $entry->race->uid, 'entry' => $entry->uid]),
         validRaceEntryUpdatePayload(['horse_weight' => '']),
     );
 
@@ -227,7 +227,7 @@ test('horse_name が空のとき422が返る', function () {
 
     // Act
     $response = $this->actingAs($user)->putJson(
-        route('races.entries.update', ['race' => $entry->race->uid, 'entry' => $entry->id]),
+        route('races.entries.update', ['race' => $entry->race->uid, 'entry' => $entry->uid]),
         validRaceEntryUpdatePayload(['horse_name' => '']),
     );
 
@@ -243,7 +243,7 @@ test('jockey_name が空のとき422が返る', function () {
 
     // Act
     $response = $this->actingAs($user)->putJson(
-        route('races.entries.update', ['race' => $entry->race->uid, 'entry' => $entry->id]),
+        route('races.entries.update', ['race' => $entry->race->uid, 'entry' => $entry->uid]),
         validRaceEntryUpdatePayload(['jockey_name' => '']),
     );
 
@@ -259,7 +259,7 @@ test('frame_number が範囲外のとき422が返る', function () {
 
     // Act
     $response = $this->actingAs($user)->putJson(
-        route('races.entries.update', ['race' => $entry->race->uid, 'entry' => $entry->id]),
+        route('races.entries.update', ['race' => $entry->race->uid, 'entry' => $entry->uid]),
         validRaceEntryUpdatePayload(['frame_number' => 9]),
     );
 
@@ -275,7 +275,7 @@ test('horse_number が範囲外のとき422が返る', function () {
 
     // Act
     $response = $this->actingAs($user)->putJson(
-        route('races.entries.update', ['race' => $entry->race->uid, 'entry' => $entry->id]),
+        route('races.entries.update', ['race' => $entry->race->uid, 'entry' => $entry->uid]),
         validRaceEntryUpdatePayload(['horse_number' => 19]),
     );
 
@@ -291,7 +291,7 @@ test('weight が空のとき422が返る', function () {
 
     // Act
     $response = $this->actingAs($user)->putJson(
-        route('races.entries.update', ['race' => $entry->race->uid, 'entry' => $entry->id]),
+        route('races.entries.update', ['race' => $entry->race->uid, 'entry' => $entry->uid]),
         validRaceEntryUpdatePayload(['weight' => '']),
     );
 
@@ -323,7 +323,7 @@ test('同じレース内の他エントリと horse_number が衝突するとき
 
     // Act
     $response = $this->actingAs($user)->putJson(
-        route('races.entries.update', ['race' => $entry->race->uid, 'entry' => $entry->id]),
+        route('races.entries.update', ['race' => $entry->race->uid, 'entry' => $entry->uid]),
         validRaceEntryUpdatePayload(['horse_number' => 7]),
     );
 
@@ -334,14 +334,14 @@ test('同じレース内の他エントリと horse_number が衝突するとき
     ]);
 });
 
-test('存在しないエントリIDを指定すると404が返る', function () {
+test('存在しないエントリUIDを指定すると404が返る', function () {
     // Arrange
     $user = User::factory()->create();
     $entry = createRaceEntryForUpdateTest();
 
     // Act
     $response = $this->actingAs($user)->putJson(
-        route('races.entries.update', ['race' => $entry->race->uid, 'entry' => 9999999]),
+        route('races.entries.update', ['race' => $entry->race->uid, 'entry' => 'non-existent-uid']),
         validRaceEntryUpdatePayload(),
     );
 
@@ -356,7 +356,7 @@ test('存在しないレースUIDを指定すると404が返る', function () {
 
     // Act
     $response = $this->actingAs($user)->putJson(
-        route('races.entries.update', ['race' => 'non-existent-uid', 'entry' => $entry->id]),
+        route('races.entries.update', ['race' => 'non-existent-race-uid', 'entry' => $entry->uid]),
         validRaceEntryUpdatePayload(),
     );
 
