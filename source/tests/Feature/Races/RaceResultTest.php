@@ -1,7 +1,10 @@
 <?php
 
+use App\Models\BuyType;
 use App\Models\Horse;
 use App\Models\Jockey;
+use App\Models\TicketPurchase;
+use App\Models\TicketType;
 use App\Models\User;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Facades\DB;
@@ -1368,5 +1371,237 @@ test('finishing_horses are sorted by finishing_order ascending', function () {
         ->where('race.finishing_horses.0.finishing_order', 1)
         ->where('race.finishing_horses.1.finishing_order', 2)
         ->where('race.finishing_horses.2.finishing_order', 3)
+    );
+});
+
+// ===== GET /races/{uid}/result/edit — tickets =====
+
+test('race result edit page response includes tickets prop when user has tickets for the race', function () {
+    // Arrange
+    $user = User::factory()->create();
+    ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
+    ['raceId' => $raceId, 'raceUid' => $raceUid] = createRaceWithUid($venueId, $now);
+    createBuyTypes($now);
+
+    $ticketType = TicketType::where('name', 'umaren')->first();
+    $buyType = BuyType::where('name', 'box')->first();
+
+    TicketPurchase::factory()->create([
+        'user_id' => $user->id,
+        'race_id' => $raceId,
+        'ticket_type_id' => $ticketType->id,
+        'buy_type_id' => $buyType->id,
+    ]);
+
+    // Act
+    $response = $this->actingAs($user)->get(route('races.result.edit', ['uid' => $raceUid]));
+
+    // Assert
+    $response->assertInertia(fn (Assert $page) => $page
+        ->component('races/result/edit')
+        ->has('tickets', 1)
+    );
+});
+
+test('tickets in race result edit page response have required fields', function () {
+    // Arrange
+    $user = User::factory()->create();
+    ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
+    ['raceId' => $raceId, 'raceUid' => $raceUid] = createRaceWithUid($venueId, $now);
+    createBuyTypes($now);
+
+    $ticketType = TicketType::where('name', 'umaren')->first();
+    $buyType = BuyType::where('name', 'box')->first();
+
+    TicketPurchase::factory()->create([
+        'user_id' => $user->id,
+        'race_id' => $raceId,
+        'ticket_type_id' => $ticketType->id,
+        'buy_type_id' => $buyType->id,
+        'selections' => ['axis' => [1], 'others' => [2, 3]],
+        'unit_stake' => 1000,
+        'payout_amount' => null,
+    ]);
+
+    // Act
+    $response = $this->actingAs($user)->get(route('races.result.edit', ['uid' => $raceUid]));
+
+    // Assert
+    $response->assertInertia(fn (Assert $page) => $page
+        ->component('races/result/edit')
+        ->has('tickets.0', fn (Assert $ticket) => $ticket
+            ->has('id')
+            ->has('ticket_type_label')
+            ->has('buy_type_name')
+            ->has('buy_type_label')
+            ->has('selections')
+            ->has('purchase_amount')
+            ->has('payout_amount')
+            ->etc()
+        )
+    );
+});
+
+test('tickets in race result edit page response only includes tickets owned by the authenticated user', function () {
+    // Arrange
+    $user = User::factory()->create();
+    $otherUser = User::factory()->create();
+    ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
+    ['raceId' => $raceId, 'raceUid' => $raceUid] = createRaceWithUid($venueId, $now);
+    createBuyTypes($now);
+
+    $ticketType = TicketType::where('name', 'umaren')->first();
+    $buyType = BuyType::where('name', 'box')->first();
+
+    TicketPurchase::factory()->create([
+        'user_id' => $user->id,
+        'race_id' => $raceId,
+        'ticket_type_id' => $ticketType->id,
+        'buy_type_id' => $buyType->id,
+    ]);
+    TicketPurchase::factory()->create([
+        'user_id' => $otherUser->id,
+        'race_id' => $raceId,
+        'ticket_type_id' => $ticketType->id,
+        'buy_type_id' => $buyType->id,
+    ]);
+
+    // Act
+    $response = $this->actingAs($user)->get(route('races.result.edit', ['uid' => $raceUid]));
+
+    // Assert
+    $response->assertInertia(fn (Assert $page) => $page
+        ->component('races/result/edit')
+        ->has('tickets', 1)
+    );
+});
+
+test('tickets in race result edit page response is empty when user has no tickets for the race', function () {
+    // Arrange
+    $user = User::factory()->create();
+    ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
+    ['raceUid' => $raceUid] = createRaceWithUid($venueId, $now);
+
+    // Act
+    $response = $this->actingAs($user)->get(route('races.result.edit', ['uid' => $raceUid]));
+
+    // Assert
+    $response->assertInertia(fn (Assert $page) => $page
+        ->component('races/result/edit')
+        ->where('tickets', [])
+    );
+});
+
+test('tickets purchase_amount is calculated as unit_stake multiplied by num_combinations', function () {
+    // Arrange
+    // umaren box with 3 horses → 3 combinations × unit_stake 1000 = 3000
+    $user = User::factory()->create();
+    ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
+    ['raceId' => $raceId, 'raceUid' => $raceUid] = createRaceWithUid($venueId, $now);
+    createBuyTypes($now);
+
+    $ticketType = TicketType::where('name', 'umaren')->first();
+    $buyType = BuyType::where('name', 'box')->first();
+
+    TicketPurchase::factory()->create([
+        'user_id' => $user->id,
+        'race_id' => $raceId,
+        'ticket_type_id' => $ticketType->id,
+        'buy_type_id' => $buyType->id,
+        'selections' => ['horses' => [1, 3, 5]],
+        'unit_stake' => 1000,
+    ]);
+
+    // Act
+    $response = $this->actingAs($user)->get(route('races.result.edit', ['uid' => $raceUid]));
+
+    // Assert
+    $response->assertInertia(fn (Assert $page) => $page
+        ->component('races/result/edit')
+        ->where('tickets.0.purchase_amount', 3000)
+    );
+});
+
+test('tickets buy_type_label reflects the BuyType model label', function () {
+    // Arrange
+    $user = User::factory()->create();
+    ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
+    ['raceId' => $raceId, 'raceUid' => $raceUid] = createRaceWithUid($venueId, $now);
+    createBuyTypes($now);
+
+    $ticketType = TicketType::where('name', 'umaren')->first();
+    $buyType = BuyType::where('name', 'box')->first();
+
+    TicketPurchase::factory()->create([
+        'user_id' => $user->id,
+        'race_id' => $raceId,
+        'ticket_type_id' => $ticketType->id,
+        'buy_type_id' => $buyType->id,
+    ]);
+
+    // Act
+    $response = $this->actingAs($user)->get(route('races.result.edit', ['uid' => $raceUid]));
+
+    // Assert
+    $response->assertInertia(fn (Assert $page) => $page
+        ->component('races/result/edit')
+        ->where('tickets.0.buy_type_name', 'box')
+        ->where('tickets.0.buy_type_label', 'ボックス')
+    );
+});
+
+test('tickets selections in col1/col2/col3 form is normalized to columns form', function () {
+    // Arrange
+    $user = User::factory()->create();
+    ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
+    ['raceId' => $raceId, 'raceUid' => $raceUid] = createRaceWithUid($venueId, $now);
+    createBuyTypes($now);
+
+    $ticketType = TicketType::where('name', 'sanrentan')->first();
+    $buyType = BuyType::where('name', 'formation')->first();
+
+    TicketPurchase::factory()->create([
+        'user_id' => $user->id,
+        'race_id' => $raceId,
+        'ticket_type_id' => $ticketType->id,
+        'buy_type_id' => $buyType->id,
+        'selections' => ['col1' => [1, 2], 'col2' => [3, 4], 'col3' => [5, 6, 7]],
+    ]);
+
+    // Act
+    $response = $this->actingAs($user)->get(route('races.result.edit', ['uid' => $raceUid]));
+
+    // Assert
+    $response->assertInertia(fn (Assert $page) => $page
+        ->component('races/result/edit')
+        ->where('tickets.0.selections', ['columns' => [[1, 2], [3, 4], [5, 6, 7]]])
+    );
+});
+
+test('tickets selections in axis1/axis2/others form is normalized to axis/others form', function () {
+    // Arrange
+    $user = User::factory()->create();
+    ['venueId' => $venueId, 'now' => $now] = createRaceResultMasterData();
+    ['raceId' => $raceId, 'raceUid' => $raceUid] = createRaceWithUid($venueId, $now);
+    createBuyTypes($now);
+
+    $ticketType = TicketType::where('name', 'sanrenpuku')->first();
+    $buyType = BuyType::where('name', 'nagashi')->first();
+
+    TicketPurchase::factory()->create([
+        'user_id' => $user->id,
+        'race_id' => $raceId,
+        'ticket_type_id' => $ticketType->id,
+        'buy_type_id' => $buyType->id,
+        'selections' => ['axis1' => [3], 'axis2' => [5], 'others' => [1, 7, 9]],
+    ]);
+
+    // Act
+    $response = $this->actingAs($user)->get(route('races.result.edit', ['uid' => $raceUid]));
+
+    // Assert
+    $response->assertInertia(fn (Assert $page) => $page
+        ->component('races/result/edit')
+        ->where('tickets.0.selections', ['axis' => [3, 5], 'others' => [1, 7, 9]])
     );
 });

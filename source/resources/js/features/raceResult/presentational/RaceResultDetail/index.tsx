@@ -3,12 +3,18 @@ import BackButton from "@/components/presentational/BackButton";
 import ScrollableTable from "@/components/presentational/ScrollableTable";
 import { Button } from "@/components/shadcn/ui/button";
 import HorseNoteCell from "@/features/horseNote/presentational/HorseNoteCell";
+import RaceMyTicketSection from "@/features/raceResult/presentational/RaceMyTicketSection";
 import { index as ticketsIndex } from "@/routes/tickets";
 import { formatDateDisplay } from "@/utils/date";
 import type { RaceResultDetailProps } from "./types";
 import { formatHorseNumbers } from "./utils";
 
-const RaceResultDetail = ({ race, onNoteClick, onDeleteClick }: RaceResultDetailProps) => {
+const RaceResultDetail = ({
+	race,
+	tickets = [],
+	onNoteClick,
+	onDeleteClick,
+}: RaceResultDetailProps) => {
 	return (
 		<div className="flex flex-col gap-4 p-4">
 			<div>
@@ -167,6 +173,8 @@ const RaceResultDetail = ({ race, onNoteClick, onDeleteClick }: RaceResultDetail
 					))}
 				</tbody>
 			</ScrollableTable>
+
+			<RaceMyTicketSection tickets={tickets} />
 		</div>
 	);
 };

@@ -3,6 +3,7 @@ import { useState } from "react";
 import HorseNoteModalContainer from "@/features/horseNote/containers/HorseNoteModalContainer";
 import type { HorseNote } from "@/features/horseNote/types/horseNote";
 import DeleteResultModal from "@/features/raceResult/components/DeleteResultModal";
+import type { RaceMyTicket } from "@/features/raceResult/presentational/RaceMyTicketSection";
 import RaceResultDetail from "@/features/raceResult/presentational/RaceResultDetail";
 import type {
 	FinishingHorse,
@@ -18,6 +19,7 @@ type RaceProps = RaceResultDetailProps["race"] & {
 
 type Props = {
 	race: RaceProps;
+	tickets?: RaceMyTicket[];
 };
 
 const buildRaceLabel = (race: RaceProps): string => {
@@ -30,7 +32,7 @@ const buildRaceLabel = (race: RaceProps): string => {
  * メモセルのクリックでモーダルを開き、API 成功時に finishing_horses の note を更新する。
  * 「レース結果を削除」ボタンで削除確認モーダルを表示し、確定時に DELETE API を呼んで結果入力画面に遷移する。
  */
-const RaceResultDetailContainer = ({ race }: Props) => {
+const RaceResultDetailContainer = ({ race, tickets = [] }: Props) => {
 	const [finishingHorses, setFinishingHorses] = useState<FinishingHorse[]>(
 		race.finishing_horses,
 	);
@@ -120,6 +122,7 @@ const RaceResultDetailContainer = ({ race }: Props) => {
 		<>
 			<RaceResultDetail
 				race={localRace}
+				tickets={tickets}
 				onNoteClick={handleNoteClick}
 				onDeleteClick={handleDeleteClick}
 			/>
