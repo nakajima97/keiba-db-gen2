@@ -3,6 +3,7 @@
 use App\Models\Race;
 use App\Models\User;
 use App\Models\Venue;
+use App\Support\NanoId;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -100,6 +101,7 @@ test('出馬登録 store 時に既存の馬は再利用され重複登録され�
     $now = now();
 
     DB::table('horses')->insert([
+        'uid' => NanoId::generate(),
         'name' => 'エビスディアーナ',
         'birth_year' => 2023,
         'created_at' => $now,

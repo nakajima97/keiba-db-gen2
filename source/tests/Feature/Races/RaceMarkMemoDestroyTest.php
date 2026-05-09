@@ -4,6 +4,7 @@ use App\Models\Race;
 use App\Models\RaceMarkColumn;
 use App\Models\User;
 use App\Models\Venue;
+use App\Support\NanoId;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -27,6 +28,7 @@ function insertRaceEntryForMarkMemoDestroy(int $raceId): int
 {
     $now = now();
     $horseId = DB::table('horses')->insertGetId([
+        'uid' => NanoId::generate(),
         'name' => 'メモ削除用ホース'.uniqid(),
         'birth_year' => 2022,
         'created_at' => $now,
@@ -39,6 +41,7 @@ function insertRaceEntryForMarkMemoDestroy(int $raceId): int
     ]);
 
     return DB::table('race_entries')->insertGetId([
+        'uid' => NanoId::generate(),
         'race_id' => $raceId,
         'horse_id' => $horseId,
         'jockey_id' => $jockeyId,

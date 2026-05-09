@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use App\Support\NanoId;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -112,6 +113,7 @@ test('既存の馬と騎手は再利用され重複登録されない', function
     $now = now();
 
     DB::table('horses')->insert([
+        'uid' => NanoId::generate(),
         'name' => 'エビスディアーナ',
         'birth_year' => 2023,
         'created_at' => $now,
