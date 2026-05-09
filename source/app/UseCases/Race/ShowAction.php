@@ -51,9 +51,9 @@ class ShowAction
     {
         $race->load([
             'venue',
-            'raceEntries' => fn ($query) => $query->orderBy('horse_number'),
-            'raceEntries.horse',
-            'raceEntries.jockey',
+            'entries' => fn ($query) => $query->orderBy('horse_number'),
+            'entries.horse',
+            'entries.jockey',
         ]);
 
         $this->ensureOwnColumnExistsAction->execute($race, $user);
@@ -87,7 +87,7 @@ class ShowAction
             ])
             ->all();
 
-        $horseIds = $race->raceEntries
+        $horseIds = $race->entries
             ->map(fn ($entry) => (int) $entry->horse->id)
             ->unique()
             ->values()
@@ -104,7 +104,7 @@ class ShowAction
             'venue_name' => $race->venue->name,
             'race_number' => (int) $race->race_number,
             'race_name' => $race->race_name,
-            'entries' => $race->raceEntries->map(fn ($entry) => [
+            'entries' => $race->entries->map(fn ($entry) => [
                 'id' => (int) $entry->id,
                 'uid' => (string) $entry->uid,
                 'frame_number' => (int) $entry->frame_number,

@@ -42,7 +42,7 @@ class Race extends Model
     }
 
     /** @return HasMany<RaceEntry, $this> */
-    public function raceEntries(): HasMany
+    public function entries(): HasMany
     {
         return $this->hasMany(RaceEntry::class);
     }
