@@ -64,7 +64,7 @@ beforeEach(function () {
     Spectator::using('openapi.yaml');
 });
 
-test('contract: <operationId> matches OpenAPI spec', function () {
+test('契約: <operationId> が OpenAPI 仕様と一致する', function () {
     // Arrange
     $user = User::factory()->create();
     // ... エンドポイントが要求する最小構成のデータを用意
