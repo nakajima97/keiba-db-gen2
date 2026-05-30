@@ -20,7 +20,7 @@ const RaceList = ({
 	});
 
 	return (
-		<div className="flex flex-col gap-4 p-4">
+		<div className="flex flex-col gap-4">
 			<div className="flex items-center justify-between">
 				<h1 className="text-xl font-semibold">レース一覧</h1>
 				<Link href={createRaceUrl}>レース情報入力</Link>

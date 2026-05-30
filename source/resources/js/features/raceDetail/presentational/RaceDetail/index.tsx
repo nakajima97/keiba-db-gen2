@@ -53,7 +53,7 @@ const RaceDetail = ({
 	const sortedColumns = sortColumns(race.mark_columns);
 
 	return (
-		<div className="flex flex-col gap-4 p-4">
+		<div className="flex flex-col gap-4">
 			<h1 className="text-xl font-semibold">レース詳細</h1>
 
 			<ScrollableTable>
@@ -121,26 +121,26 @@ const RaceDetail = ({
 
 			<ScrollableTable>
 				<thead>
-					<tr className="border-b bg-muted/50">
-						<th className="px-4 py-3 text-left font-medium text-muted-foreground">
+					<tr className="border-b">
+						<th className="bg-[color-mix(in_srgb,var(--color-muted)_50%,var(--color-background))] px-4 py-3 text-left font-medium text-muted-foreground">
 							枠番
 						</th>
-						<th className="px-4 py-3 text-left font-medium text-muted-foreground">
+						<th className="bg-[color-mix(in_srgb,var(--color-muted)_50%,var(--color-background))] px-4 py-3 text-left font-medium text-muted-foreground">
 							馬番
 						</th>
-						<th className="px-4 py-3 text-left font-medium text-muted-foreground">
+						<th className="sticky left-0 z-10 border-r bg-[color-mix(in_srgb,var(--color-muted)_50%,var(--color-background))] px-4 py-3 text-left font-medium text-muted-foreground">
 							馬名
 						</th>
-						<th className="px-4 py-3 text-left font-medium text-muted-foreground">
+						<th className="bg-[color-mix(in_srgb,var(--color-muted)_50%,var(--color-background))] px-4 py-3 text-left font-medium text-muted-foreground">
 							騎手名
 						</th>
-						<th className="px-4 py-3 text-left font-medium text-muted-foreground">
+						<th className="bg-[color-mix(in_srgb,var(--color-muted)_50%,var(--color-background))] px-4 py-3 text-left font-medium text-muted-foreground">
 							馬体重
 						</th>
 						{sortedColumns.map((column) => (
 							<th
 								key={column.id}
-								className="px-4 py-3 text-left font-medium text-muted-foreground"
+								className="bg-[color-mix(in_srgb,var(--color-muted)_50%,var(--color-background))] px-4 py-3 text-left font-medium text-muted-foreground"
 							>
 								<RaceMarkColumnHeader
 									column={column}
@@ -151,7 +151,7 @@ const RaceDetail = ({
 								/>
 							</th>
 						))}
-						<th className="px-4 py-3 text-left font-medium text-muted-foreground">
+						<th className="bg-[color-mix(in_srgb,var(--color-muted)_50%,var(--color-background))] px-4 py-3 text-left font-medium text-muted-foreground">
 							操作
 						</th>
 					</tr>
@@ -161,19 +161,21 @@ const RaceDetail = ({
 						<tr key={entry.horse_number} className="border-b last:border-0">
 							<td className="px-4 py-3">{entry.frame_number}</td>
 							<td className="px-4 py-3">{entry.horse_number}</td>
-							<td className="px-4 py-3">
-								<div className="flex items-center gap-1">
+							<td className="sticky left-0 z-10 border-r bg-background px-4 py-3">
+								<div className="flex max-w-[10rem] items-center gap-1 overflow-hidden">
 									<Link
 										href={`/horses/${entry.horse_uid}`}
-										className="text-primary hover:underline"
+										className="min-w-0 flex-1 truncate text-primary hover:underline"
 									>
 										{entry.horse_name}
 									</Link>
-									<HorseNoteIconButton
-										hasNote={entry.note != null}
-										ariaLabel={`${entry.horse_name}のメモ`}
-										onClick={() => onNoteClick?.(entry.horse_id)}
-									/>
+									<span className="shrink-0">
+										<HorseNoteIconButton
+											hasNote={entry.note != null}
+											ariaLabel={`${entry.horse_name}のメモ`}
+											onClick={() => onNoteClick?.(entry.horse_id)}
+										/>
+									</span>
 								</div>
 							</td>
 							<td className="px-4 py-3">{entry.jockey_name}</td>

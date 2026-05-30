@@ -19,7 +19,7 @@ const RaceResultForm = ({
 	disabled,
 }: RaceResultFormProps) => {
 	return (
-		<div className="flex flex-col gap-6 p-4">
+		<div className="flex flex-col gap-6">
 			<div>
 				<BackButton label="戻る" />
 			</div>

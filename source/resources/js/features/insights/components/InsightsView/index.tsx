@@ -80,7 +80,7 @@ const InsightsView = ({
 	const hasData = summary !== null && summary.total_tickets > 0;
 
 	return (
-		<div className="flex flex-col gap-6 p-4">
+		<div className="flex flex-col gap-6">
 			<div className="flex items-center justify-between gap-4">
 				<div className="flex flex-col gap-1">
 					<h1 className="text-xl font-semibold">振り返り（馬連流し）</h1>

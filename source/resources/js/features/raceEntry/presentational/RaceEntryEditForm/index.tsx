@@ -40,7 +40,7 @@ const RaceEntryEditForm = ({
 		};
 
 	return (
-		<div className="space-y-8 p-4">
+		<div className="space-y-8">
 			<div>
 				<BackButton
 					label="レース詳細へ戻る"
