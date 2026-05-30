@@ -13,7 +13,7 @@ const AppSidebarLayout = ({
 			<AppSidebar />
 			<AppContent variant="sidebar" className="overflow-x-hidden">
 				<AppSidebarHeader breadcrumbs={breadcrumbs} />
-				{children}
+				<div className="p-2 sm:p-4">{children}</div>
 			</AppContent>
 		</AppShell>
 	);

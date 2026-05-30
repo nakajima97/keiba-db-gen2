@@ -16,7 +16,7 @@ const RaceEntryRegistrationForm = ({
 	onSubmit,
 }: RaceEntryRegistrationFormProps) => {
 	return (
-		<div className="mx-auto max-w-2xl space-y-8 p-4 lg:max-w-4xl lg:p-6">
+		<div className="mx-auto max-w-2xl space-y-8 lg:max-w-4xl">
 			<div>
 				<BackButton
 					label="レース詳細へ戻る"

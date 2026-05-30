@@ -36,7 +36,7 @@ const TicketPurchaseForm = ({
 	onUnitStakeChange,
 }: TicketPurchaseFormProps) => {
 	return (
-		<div className="mx-auto max-w-2xl space-y-8 p-4">
+		<div className="mx-auto max-w-2xl space-y-8">
 			<div>
 				<BackButton label="戻る" />
 			</div>

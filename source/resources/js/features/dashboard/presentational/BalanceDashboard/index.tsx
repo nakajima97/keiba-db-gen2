@@ -28,7 +28,7 @@ const BalanceDashboard = ({
 	onLoadMore,
 }: BalanceDashboardProps) => {
 	return (
-		<div className="flex flex-col gap-6 p-4">
+		<div className="flex flex-col gap-6">
 			<div className="flex items-center justify-between">
 				<h1 className="text-xl font-semibold">収支ダッシュボード</h1>
 				<Select

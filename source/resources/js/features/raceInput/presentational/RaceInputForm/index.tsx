@@ -70,7 +70,7 @@ const RaceInputForm = ({
 		pasteText.trim() !== "";
 
 	return (
-		<div className="flex flex-col gap-6 p-4">
+		<div className="flex flex-col gap-6">
 			<div>
 				<BackButton label="レース一覧へ戻る" href={racesIndex.url()} />
 			</div>

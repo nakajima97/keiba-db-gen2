@@ -15,7 +15,7 @@ const TicketPurchaseList = ({
 	onDelete,
 }: TicketPurchaseListProps) => {
 	return (
-		<div className="flex flex-col gap-4 p-4">
+		<div className="flex flex-col gap-4">
 			<div className="flex items-center justify-between">
 				<h1 className="text-xl font-semibold">購入馬券一覧</h1>
 				{purchases.length > 0 && (

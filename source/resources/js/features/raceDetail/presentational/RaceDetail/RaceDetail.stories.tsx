@@ -285,6 +285,68 @@ export const WithMarkMemos: Story = {
 	},
 };
 
+const entriesWithLongNames: RaceDetailProps["race"]["entries"] = [
+	{
+		id: 1,
+		uid: "entry-uid-1",
+		horse_id: 1,
+		horse_uid: "horse-uid-1",
+		frame_number: 1,
+		horse_number: 1,
+		horse_name: "サンプルホース壱",
+		jockey_name: "騎手 一郎",
+		weight: 480,
+	},
+	{
+		id: 2,
+		uid: "entry-uid-2",
+		horse_id: 2,
+		horse_uid: "horse-uid-2",
+		frame_number: 1,
+		horse_number: 2,
+		horse_name: "アブソリュートリーロングフォーリンホースネーム",
+		jockey_name: "騎手 二郎",
+		weight: 462,
+	},
+	{
+		id: 3,
+		uid: "entry-uid-3",
+		horse_id: 3,
+		horse_uid: "horse-uid-3",
+		frame_number: 2,
+		horse_number: 3,
+		horse_name: "テンキャラクター",
+		jockey_name: "騎手 三郎",
+		weight: null,
+	},
+];
+
+const manyColumns: RaceDetailProps["race"]["mark_columns"] = [
+	{ id: 100, type: "own", label: null, display_order: 0 },
+	{ id: 101, type: "other", label: "予想家A", display_order: 1 },
+	{ id: 102, type: "other", label: "予想家B", display_order: 2 },
+	{ id: 103, type: "other", label: "予想家C", display_order: 3 },
+	{ id: 104, type: "other", label: "予想家D", display_order: 4 },
+];
+
+export const StickyHorseNameColumn: Story = {
+	name: "馬名列固定（多数の印列で横スクロール時の確認用）",
+	globals: {
+		viewport: { value: "mobile1", isRotated: false },
+	},
+	args: {
+		race: {
+			...emptyMarksRace,
+			entries: entriesWithLongNames,
+			mark_columns: manyColumns,
+			marks: [
+				{ column_id: 100, race_entry_id: 1, mark_value: "◎" },
+				{ column_id: 101, race_entry_id: 2, mark_value: "○" },
+			],
+		},
+	},
+};
+
 export const WithMarkMemosMobile: Story = {
 	name: "印メモアイコンあり（モバイル）",
 	globals: {
