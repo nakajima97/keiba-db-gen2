@@ -31,16 +31,8 @@
       "Bash(pnpm tc*)",
       "Bash(pnpm run tc*)",
       "Bash(vendor/bin/sail bin pint*)",
-      "Write(.claude/skills/**)",
-      "Write(**/*.tsx)",
-      "Write(**/*.ts)",
-      "Write(**/*.php)",
-      "Write(**/*.css)",
-      "Write(**/*.blade.php)",
-      "Write(**/*.json)",
-      "Write(**/*.md)",
       "Read(**/*.md)",
-      "Edit(/.claude/skills/**)",
+      "Edit(.claude/skills/**)",
       "Edit(**/*.tsx)",
       "Edit(**/*.ts)",
       "Edit(**/*.php)",
@@ -51,7 +43,6 @@
       "Bash(mkdir -p *)"
     ],
     "ask": [
-      "Write(**/CLAUDE.md)",
       "Edit(**/CLAUDE.md)"
     ],
     "deny": [
@@ -61,11 +52,8 @@
       "Read(./secrets/**)",
       "Bash(grep *.env)",
       "Bash(grep *.env.*)",
-      "Write(**/package.json)",
       "Edit(**/package.json)",
-      "Write(**/composer.json)",
       "Edit(**/composer.json)",
-      "Write(**/.claude/settings*.json)",
       "Edit(**/.claude/settings*.json)"
     ]
   },
