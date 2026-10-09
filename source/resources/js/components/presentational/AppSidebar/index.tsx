@@ -5,6 +5,7 @@ import {
 	Flag,
 	FolderGit2,
 	LayoutGrid,
+	Search,
 } from "lucide-react";
 import AppLogo from "@/components/presentational/AppLogo";
 import { NavFooter } from "@/components/presentational/NavFooter";
@@ -20,6 +21,7 @@ import {
 	SidebarMenuItem,
 } from "@/components/shadcn/ui/sidebar";
 import { dashboard, insights } from "@/routes";
+import { index as horsesIndex } from "@/routes/horses";
 import { index as racesIndex } from "@/routes/races";
 import { index } from "@/routes/tickets";
 import type { NavItem } from "@/types";
@@ -39,6 +41,11 @@ const mainNavItems: NavItem[] = [
 		title: "Races",
 		href: racesIndex(),
 		icon: Flag,
+	},
+	{
+		title: "Horses",
+		href: horsesIndex(),
+		icon: Search,
 	},
 	{
 		title: "Insights",

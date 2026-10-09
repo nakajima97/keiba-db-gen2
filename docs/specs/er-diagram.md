@@ -92,7 +92,7 @@ erDiagram
     horses {
         bigint id PK
         string uid UK "URL用nanoid"
-        string name "競走馬名"
+        string name "競走馬名（INDEX）"
         smallint birth_year "生年"
         timestamp created_at
         timestamp updated_at

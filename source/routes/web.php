@@ -43,6 +43,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/races/{uid}/result/edit', [RaceResultController::class, 'edit'])->name('races.result.edit');
     Route::delete('/races/{uid}/result', [RaceResultController::class, 'destroy'])->name('races.result.destroy');
 
+    Route::get('/horses', [HorseController::class, 'index'])->name('horses.index');
     Route::get('/horses/{horse:uid}', [HorseController::class, 'show'])->name('horses.show');
 
     Route::prefix('api')->group(function () {
