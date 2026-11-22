@@ -13,6 +13,8 @@ import type {
 } from "@/features/raceDetail/presentational/RaceDetail/types";
 import { deleteColumn } from "@/features/raceDetail/requests/raceMarkColumns";
 import RaceMarkMemoModalContainer from "@/features/raceMarkMemo/containers/RaceMarkMemoModalContainer";
+import RaceNominationSectionContainer from "@/features/raceNomination/containers/RaceNominationSectionContainer";
+import { useRaceNominations } from "@/features/raceNomination/hooks/useRaceNominations";
 import { formatDateDisplay } from "@/utils/date";
 
 type Props = {
@@ -32,11 +34,13 @@ const RaceDetailContainer = ({ race }: Props) => {
 	const columnsHook = useRaceMarkColumns(race.uid, race.mark_columns);
 	const marksHook = useRaceMarks(race.uid, race.marks);
 	const memosHook = useRaceMarkMemos(race.mark_memos ?? []);
+	const nominationsHook = useRaceNominations(race.uid, race.nominations ?? []);
 	const modals = useRaceDetailModals({
 		entries,
 		markColumns: columnsHook.markColumns,
 		marks: marksHook.marks,
 		markMemos: memosHook.markMemos,
+		nominations: nominationsHook.nominations,
 	});
 
 	const handleRemoveOtherColumn = async (columnId: number) => {
@@ -55,6 +59,11 @@ const RaceDetailContainer = ({ race }: Props) => {
 	};
 
 	const handleNoteSuccess = (note: HorseNote) => {
+		nominationsHook.applyNote(note.horse_id, {
+			id: note.id,
+			content: note.content,
+			source: note.race_id != null ? "race" : "horse",
+		});
 		setEntries((current) =>
 			current.map((entry) => {
 				if (entry.horse_id !== note.horse_id) {
@@ -78,12 +87,14 @@ const RaceDetailContainer = ({ race }: Props) => {
 		mark_columns: columnsHook.markColumns,
 		marks: marksHook.marks,
 		mark_memos: memosHook.markMemos,
+		nominations: nominationsHook.nominations,
 	};
 
 	return (
 		<>
 			<RaceDetail
 				race={localRace}
+				nominationStatusByHorseId={nominationsHook.statusByHorseId}
 				onMarkChange={marksHook.handleMarkChange}
 				onAddOtherColumn={columnsHook.handleAddOtherColumn}
 				onRemoveOtherColumn={handleRemoveOtherColumn}
@@ -91,6 +102,15 @@ const RaceDetailContainer = ({ race }: Props) => {
 				onNoteClick={modals.handleNoteClick}
 				onMarkMemoClick={modals.handleMarkMemoClick}
 			/>
+			<div className="mt-6">
+				<RaceNominationSectionContainer
+					nominations={nominationsHook.nominations}
+					onAdd={nominationsHook.addNomination}
+					onRemove={nominationsHook.removeNomination}
+					onStatusChange={nominationsHook.changeStatus}
+					onNoteClick={modals.handleNoteClick}
+				/>
+			</div>
 			{modals.noteModal.horseId != null && (
 				<HorseNoteModalContainer
 					open={modals.noteModal.open}

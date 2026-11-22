@@ -201,6 +201,28 @@ erDiagram
     users ||--o{ horse_notes : "owns"
     horses ||--o{ horse_notes : "has"
     races ||--o{ horse_notes : "linked to"
+
+    race_nominations {
+        bigint id PK
+        bigint race_id FK
+        bigint horse_id FK
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    race_nomination_marks {
+        bigint id PK
+        bigint race_nomination_id FK
+        bigint user_id FK
+        enum status "check/excluded"
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    races ||--o{ race_nominations : "has"
+    horses ||--o{ race_nominations : "nominated in"
+    race_nominations ||--o{ race_nomination_marks : "has"
+    users ||--o{ race_nomination_marks : "owns"
 ```
 
 ## selectionsカラムのJSONフォーマット
