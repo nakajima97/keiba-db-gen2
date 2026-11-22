@@ -2,6 +2,7 @@ import { Link } from "@inertiajs/react";
 import BackButton from "@/components/presentational/BackButton";
 import ScrollableTable from "@/components/presentational/ScrollableTable";
 import { Button } from "@/components/shadcn/ui/button";
+import CommentOutcomeList from "@/features/entryComment/presentational/CommentOutcomeList";
 import HorseNoteCell from "@/features/horseNote/presentational/HorseNoteCell";
 import RaceMyTicketSection from "@/features/raceResult/presentational/RaceMyTicketSection";
 import { index as ticketsIndex } from "@/routes/tickets";
@@ -14,6 +15,8 @@ const RaceResultDetail = ({
 	tickets = [],
 	onNoteClick,
 	onDeleteClick,
+	pendingCommentKeys = [],
+	onCommentOutcomeChange,
 }: RaceResultDetailProps) => {
 	return (
 		<div className="flex flex-col gap-4">
@@ -77,6 +80,9 @@ const RaceResultDetail = ({
 									タイム
 								</th>
 								<th className="px-4 py-3 text-left font-medium text-muted-foreground">
+									コメント当否
+								</th>
+								<th className="px-4 py-3 text-left font-medium text-muted-foreground">
 									メモ
 								</th>
 							</tr>
@@ -113,6 +119,21 @@ const RaceResultDetail = ({
 									</td>
 									<td className="px-4 py-3 text-right">
 										{horse.race_time}
+									</td>
+									<td className="px-4 py-3">
+										<CommentOutcomeList
+											comments={horse.comments ?? null}
+											pendingKeys={pendingCommentKeys}
+											onOutcomeChange={(comment, outcome) => {
+												if (horse.race_entry_id != null) {
+													onCommentOutcomeChange?.({
+														raceEntryId: horse.race_entry_id,
+														comment,
+														outcome,
+													});
+												}
+											}}
+										/>
 									</td>
 									<td className="px-4 py-3">
 										{horse.horse_id !== null ? (

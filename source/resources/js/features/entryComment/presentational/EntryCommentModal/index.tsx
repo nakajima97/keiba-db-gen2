@@ -11,6 +11,7 @@ import {
 } from "@/components/shadcn/ui/dialog";
 import { ToggleGroup, ToggleGroupItem } from "@/components/shadcn/ui/toggle-group";
 import CommentOutcomeSelect from "../CommentOutcomeSelect";
+import { commentKey } from "../../utils/commentKey";
 import type { CommentSentiment, CommentSpeakerType } from "../../types";
 import {
 	SENTIMENT_LABELS,
@@ -64,7 +65,7 @@ const EntryCommentModal = ({
 					) : (
 						<ul className="flex flex-col divide-y rounded-md border">
 							{comments.map((comment) => {
-								const key = `${comment.speaker_type}-${comment.id}`;
+								const key = commentKey(comment);
 								const pending = pendingKeys.includes(key);
 								return (
 									<li

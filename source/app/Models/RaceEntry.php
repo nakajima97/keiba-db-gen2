@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Concerns\HasNanoIdUid;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class RaceEntry extends Model
 {
@@ -44,5 +45,17 @@ class RaceEntry extends Model
     public function trainer(): BelongsTo
     {
         return $this->belongsTo(Trainer::class);
+    }
+
+    /** @return HasMany<TrainerComment, $this> */
+    public function trainerComments(): HasMany
+    {
+        return $this->hasMany(TrainerComment::class);
+    }
+
+    /** @return HasMany<JockeyComment, $this> */
+    public function jockeyComments(): HasMany
+    {
+        return $this->hasMany(JockeyComment::class);
     }
 }

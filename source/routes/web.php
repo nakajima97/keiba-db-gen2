@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\EntryCommentController;
 use App\Http\Controllers\HorseController;
 use App\Http\Controllers\HorseNoteController;
 use App\Http\Controllers\InsightsController;
@@ -66,6 +67,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/horses/{horse}/notes', [HorseNoteController::class, 'store'])->name('api.horses.notes.store');
         Route::put('/horse-notes/{note}', [HorseNoteController::class, 'update'])->name('api.horse-notes.update');
         Route::delete('/horse-notes/{note}', [HorseNoteController::class, 'destroy'])->name('api.horse-notes.destroy');
+
+        Route::post('/races/{race:uid}/entries/{race_entry_id}/comments', [EntryCommentController::class, 'store'])->name('api.races.entries.comments.store');
+        Route::patch('/races/{race:uid}/entries/{race_entry_id}/comments/{speaker_type}/{comment_id}', [EntryCommentController::class, 'update'])->name('api.races.entries.comments.update');
+        Route::delete('/races/{race:uid}/entries/{race_entry_id}/comments/{speaker_type}/{comment_id}', [EntryCommentController::class, 'destroy'])->name('api.races.entries.comments.destroy');
 
         Route::put('/trainers/{trainer}/note', [TrainerNoteController::class, 'upsert'])->name('api.trainers.note.upsert');
         Route::delete('/trainers/{trainer}/note', [TrainerNoteController::class, 'destroy'])->name('api.trainers.note.destroy');

@@ -1,5 +1,6 @@
 import { Badge } from "@/components/shadcn/ui/badge";
 import CommentOutcomeSelect from "../CommentOutcomeSelect";
+import { commentKey } from "../../utils/commentKey";
 import { SENTIMENT_LABELS, SPEAKER_TYPE_LABELS } from "../../utils/labels";
 import type { CommentOutcomeListProps } from "./types";
 
@@ -19,7 +20,7 @@ const CommentOutcomeList = ({
 	return (
 		<ul className="flex flex-col gap-2">
 			{comments.map((comment) => {
-				const key = `${comment.speaker_type}-${comment.id}`;
+				const key = commentKey(comment);
 				return (
 					<li key={key} className="flex items-center gap-2">
 						<Badge variant="outline" className="shrink-0">

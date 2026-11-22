@@ -1,3 +1,7 @@
+import type {
+	CommentOutcome,
+	EntryComment,
+} from "@/features/entryComment/types";
 import type { RaceMyTicket } from "@/features/raceResult/presentational/RaceMyTicketSection";
 
 export type PayoutEntry = {
@@ -27,6 +31,10 @@ export type FinishingHorse = {
 	jockey_name: string;
 	race_time: string;
 	note?: FinishingHorseNote | null;
+	/** 馬番で対応付けた出走馬の ID。出馬表データがなければ null */
+	race_entry_id?: number | null;
+	/** 出走馬に対する自分の調教師・騎手コメント。出馬表データがなければ null */
+	comments?: EntryComment[] | null;
 };
 
 export type RaceResultDetailProps = {
@@ -41,4 +49,11 @@ export type RaceResultDetailProps = {
 	tickets?: RaceMyTicket[];
 	onNoteClick?: (horseId: number) => void;
 	onDeleteClick?: () => void;
+	/** 当否を保存中のコメント（commentKey） */
+	pendingCommentKeys?: string[];
+	onCommentOutcomeChange?: (params: {
+		raceEntryId: number;
+		comment: EntryComment;
+		outcome: CommentOutcome | null;
+	}) => void;
 };

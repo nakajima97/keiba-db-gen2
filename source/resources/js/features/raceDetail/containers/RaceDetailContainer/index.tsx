@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { toast } from "sonner";
+import EntryCommentModalContainer from "@/features/entryComment/containers/EntryCommentModalContainer";
 import HorseNoteModalContainer from "@/features/horseNote/containers/HorseNoteModalContainer";
 import type { HorseNote } from "@/features/horseNote/types/horseNote";
+import { useEntryComments } from "@/features/raceDetail/hooks/useEntryComments";
 import { useRaceDetailModals } from "@/features/raceDetail/hooks/useRaceDetailModals";
 import { useRaceMarkColumns } from "@/features/raceDetail/hooks/useRaceMarkColumns";
 import { useRaceMarkMemos } from "@/features/raceDetail/hooks/useRaceMarkMemos";
@@ -45,6 +47,7 @@ const RaceDetailContainer = ({ race }: Props) => {
 		nominations: nominationsHook.nominations,
 	});
 	const trainerNotes = useTrainerNotes(entries, setEntries);
+	const entryComments = useEntryComments(entries, setEntries);
 
 	const handleRemoveOtherColumn = async (columnId: number) => {
 		columnsHook.cancelLabelDebounce(columnId);
@@ -104,6 +107,7 @@ const RaceDetailContainer = ({ race }: Props) => {
 				onChangeColumnLabel={columnsHook.handleChangeColumnLabel}
 				onNoteClick={modals.handleNoteClick}
 				onTrainerNoteClick={trainerNotes.handleTrainerNoteClick}
+				onCommentClick={entryComments.handleCommentClick}
 				onMarkMemoClick={modals.handleMarkMemoClick}
 			/>
 			<div className="mt-6">
@@ -172,6 +176,24 @@ const RaceDetailContainer = ({ race }: Props) => {
 						onClose={trainerNotes.handleTrainerNoteClose}
 						onSaved={trainerNotes.handleTrainerNoteSaved}
 						onDeleted={trainerNotes.handleTrainerNoteDeleted}
+					/>
+				)}
+			{entryComments.commentModal.raceEntryId != null &&
+				entryComments.commentTargetEntry != null && (
+					<EntryCommentModalContainer
+						open={entryComments.commentModal.open}
+						raceUid={race.uid}
+						raceEntryId={entryComments.commentModal.raceEntryId}
+						horseName={entryComments.commentTargetEntry.horse_name}
+						trainerName={
+							entryComments.commentTargetEntry.trainer_id != null
+								? (entryComments.commentTargetEntry.trainer_name ?? null)
+								: null
+						}
+						jockeyName={entryComments.commentTargetEntry.jockey_name}
+						comments={entryComments.commentTargetEntry.comments ?? []}
+						onClose={entryComments.handleCommentClose}
+						onCommentsChange={entryComments.handleCommentsChange}
 					/>
 				)}
 		</>
