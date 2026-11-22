@@ -30,6 +30,8 @@ const baseRace: RaceDetailItem = {
 			horse_number: 1,
 			horse_name: "テストホース",
 			jockey_name: "テスト騎手",
+			trainer_name: "テスト調教師",
+			trainer_affiliation: "美浦",
 			weight: 480,
 		},
 	],
@@ -105,6 +107,36 @@ describe("RaceDetail", () => {
 			expect(screen.getByText("テストホース")).toBeInTheDocument();
 			expect(screen.getByText("テスト騎手")).toBeInTheDocument();
 			expect(screen.getByText("480kg")).toBeInTheDocument();
+		});
+
+		it("調教師名と所属が表示される", () => {
+			// Act
+			render(<RaceDetail race={baseRace} {...noopHandlers} />);
+
+			// Assert
+			expect(screen.getByText("調教師")).toBeInTheDocument();
+			expect(screen.getByText("テスト調教師")).toBeInTheDocument();
+			expect(screen.getByText("(美浦)")).toBeInTheDocument();
+		});
+
+		it("調教師が未登録（null）の場合「-」が表示される", () => {
+			// Arrange
+			const raceWithoutTrainer: RaceDetailItem = {
+				...baseRace,
+				entries: [
+					{
+						...baseRace.entries[0],
+						trainer_name: null,
+						trainer_affiliation: null,
+					},
+				],
+			};
+
+			// Act
+			render(<RaceDetail race={raceWithoutTrainer} {...noopHandlers} />);
+
+			// Assert
+			expect(screen.getByText("-")).toBeInTheDocument();
 		});
 
 		it("馬体重が null の場合「-」が表示される", () => {

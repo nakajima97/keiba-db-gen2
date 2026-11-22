@@ -62,6 +62,7 @@ class RaceEntryController extends Controller
         /** @var array{
          *     horse_name: string,
          *     jockey_name: string,
+         *     trainer_name?: string|null,
          *     frame_number: int,
          *     horse_number: int,
          *     weight: float|string,
@@ -80,7 +81,7 @@ class RaceEntryController extends Controller
         $this->ensureEntryBelongsToRace($entry, $race);
 
         $race->load('venue');
-        $entry->load(['horse', 'jockey']);
+        $entry->load(['horse', 'jockey', 'trainer']);
 
         return Inertia::render('races/entries/edit', [
             'race_uid' => $race->uid,
@@ -95,6 +96,7 @@ class RaceEntryController extends Controller
             'initial_values' => [
                 'horse_name' => $entry->horse->name,
                 'jockey_name' => $entry->jockey->name,
+                'trainer_name' => $entry->trainer->name ?? '',
                 'frame_number' => (int) $entry->frame_number,
                 'horse_number' => (int) $entry->horse_number,
                 'weight' => number_format((float) $entry->weight, 1, '.', ''),
@@ -114,6 +116,7 @@ class RaceEntryController extends Controller
         /** @var array{
          *     horse_name: string,
          *     jockey_name: string,
+         *     trainer_name?: string|null,
          *     frame_number: int,
          *     horse_number: int,
          *     weight: float|string,

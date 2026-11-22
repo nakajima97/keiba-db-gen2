@@ -23,6 +23,7 @@ const defaultProps = {
 	initialValues: {
 		horse_name: "コントレイル",
 		jockey_name: "福永祐一",
+		trainer_name: "矢作 芳人",
 		frame_number: 2,
 		horse_number: 3,
 		weight: "57.0",
@@ -54,6 +55,7 @@ describe("RaceEntryEditFormContainer", () => {
 			expect.objectContaining({
 				horse_name: "新しい馬名",
 				jockey_name: "福永祐一",
+				trainer_name: "矢作 芳人",
 				frame_number: 2,
 				horse_number: 3,
 				weight: "57.0",

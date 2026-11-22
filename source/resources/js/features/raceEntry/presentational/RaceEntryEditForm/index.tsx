@@ -114,6 +114,27 @@ const RaceEntryEditForm = ({
 					)}
 				</div>
 
+				<div className="space-y-2">
+					<label
+						htmlFor="trainer_name"
+						className="text-sm font-medium text-foreground"
+					>
+						調教師名（任意）
+					</label>
+					<Input
+						id="trainer_name"
+						type="text"
+						placeholder="例: 加藤 征弘(美浦)"
+						value={values.trainer_name}
+						disabled={isSubmitting}
+						aria-invalid={errors.trainer_name !== undefined}
+						onChange={handleChange("trainer_name")}
+					/>
+					{errors.trainer_name !== undefined && (
+						<p className="text-sm text-destructive">{errors.trainer_name}</p>
+					)}
+				</div>
+
 				<div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
 					<div className="space-y-2">
 						<label

@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Race;
+use App\Models\Trainer;
 use App\Models\User;
 use App\Models\Venue;
 use App\Support\NanoId;
@@ -180,4 +181,42 @@ test('出馬登録 store で paste_text のフォーマットが不正のとき�
 
     // Assert
     $response->assertSessionHasErrors();
+});
+
+test('出馬登録 store 時に調教師マスタが所属付きで作成され race_entries に紐づく', function () use ($entryStoreSampleText) {
+    // Arrange
+    $user = User::factory()->create();
+    $race = createRaceForEntryTest();
+
+    // Act
+    $this->actingAs($user)->post(route('races.entries.store', ['race' => $race->uid]), [
+        'paste_text' => $entryStoreSampleText,
+    ]);
+
+    // Assert
+    $this->assertDatabaseCount('trainers', 1);
+    $trainer = Trainer::query()->firstOrFail();
+    expect($trainer->name)->toBe('加藤 征弘')
+        ->and($trainer->affiliation)->toBe('美浦');
+    $this->assertDatabaseHas('race_entries', [
+        'race_id' => $race->id,
+        'trainer_id' => $trainer->id,
+    ]);
+});
+
+test('出馬登録 store 時に既存の調教師は再利用され重複登録されない', function () use ($entryStoreSampleText) {
+    // Arrange
+    $user = User::factory()->create();
+    $race = createRaceForEntryTest();
+    $trainer = Trainer::factory()->create(['name' => '加藤 征弘', 'affiliation' => null]);
+
+    // Act
+    $this->actingAs($user)->post(route('races.entries.store', ['race' => $race->uid]), [
+        'paste_text' => $entryStoreSampleText,
+    ]);
+
+    // Assert: 既存調教師を再利用し、未設定だった所属は更新される
+    $this->assertDatabaseCount('trainers', 1);
+    expect($trainer->refresh()->affiliation)->toBe('美浦');
+    $this->assertDatabaseHas('race_entries', ['trainer_id' => $trainer->id]);
 });

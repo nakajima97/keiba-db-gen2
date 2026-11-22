@@ -105,12 +105,21 @@ erDiagram
         timestamp updated_at
     }
 
+    trainers {
+        bigint id PK
+        string name UK "調教師名"
+        string affiliation "所属（美浦/栗東など） nullable"
+        timestamp created_at
+        timestamp updated_at
+    }
+
     race_entries {
         bigint id PK
         string uid UK "URL用nanoid"
         bigint race_id FK
         bigint horse_id FK
         bigint jockey_id FK
+        bigint trainer_id FK "nullable"
         tinyint frame_number "枠番 1〜8"
         tinyint horse_number "馬番 1〜18"
         decimal weight "負担重量(kg) 4,1"
@@ -122,6 +131,7 @@ erDiagram
     races ||--o{ race_entries : "has"
     horses ||--o{ race_entries : "participates in"
     jockeys ||--o{ race_entries : "rides in"
+    trainers |o--o{ race_entries : "trains"
 
     race_result_horses {
         bigint id PK

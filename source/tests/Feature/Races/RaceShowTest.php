@@ -1,8 +1,12 @@
 <?php
 
+use App\Models\Horse;
+use App\Models\Jockey;
 use App\Models\Race;
+use App\Models\RaceEntry;
 use App\Models\RacePayout;
 use App\Models\RaceResultHorse;
+use App\Models\Trainer;
 use App\Models\User;
 use App\Models\Venue;
 use App\Support\NanoId;
@@ -142,7 +146,44 @@ test('レース詳細は Inertia props として馬・騎手情報付きの出�
             ->where('horse_number', 1)
             ->where('horse_name', 'テストホース')
             ->where('jockey_name', 'テスト騎手')
+            ->where('trainer_name', null)
+            ->where('trainer_affiliation', null)
             ->where('weight', 480)
+            ->etc()
+        )
+    );
+});
+
+test('レース詳細は Inertia props として出馬登録に調教師名と所属を返す', function () {
+    // Arrange
+    $user = User::factory()->create();
+    $venue = Venue::firstOrCreate(['name' => '東京']);
+    $race = Race::create([
+        'venue_id' => $venue->id,
+        'race_date' => '2026-04-05',
+        'race_number' => 1,
+    ]);
+    $trainer = Trainer::factory()->create(['name' => 'テスト調教師', 'affiliation' => '栗東']);
+    $horse = Horse::create(['name' => 'テストホース', 'birth_year' => 2022]);
+    $jockey = Jockey::create(['name' => 'テスト騎手']);
+    RaceEntry::create([
+        'race_id' => $race->id,
+        'horse_id' => $horse->id,
+        'jockey_id' => $jockey->id,
+        'trainer_id' => $trainer->id,
+        'frame_number' => 1,
+        'horse_number' => 1,
+        'weight' => 55.0,
+    ]);
+
+    // Act
+    $response = $this->actingAs($user)->get(route('races.show', ['race' => $race->uid]));
+
+    // Assert
+    $response->assertInertia(fn (Assert $page) => $page
+        ->has('race.entries', 1, fn (Assert $entry) => $entry
+            ->where('trainer_name', 'テスト調教師')
+            ->where('trainer_affiliation', '栗東')
             ->etc()
         )
     );

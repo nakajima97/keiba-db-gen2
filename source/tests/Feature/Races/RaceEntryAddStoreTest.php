@@ -4,6 +4,7 @@ use App\Models\Horse;
 use App\Models\Jockey;
 use App\Models\Race;
 use App\Models\RaceEntry;
+use App\Models\Trainer;
 use App\Models\User;
 use App\Models\Venue;
 
@@ -94,6 +95,45 @@ test('認証済みユーザーは正常データで出馬登録を追加でき�
         'horse_number' => 5,
         'weight' => 57.0,
         'horse_weight' => 486,
+    ]);
+});
+
+test('調教師名を指定して追加すると調教師マスタが作成され trainer_id に紐づく', function () {
+    // Arrange
+    $user = User::factory()->create();
+    $race = createRaceForAddStoreTest();
+
+    // Act
+    $this->actingAs($user)->postJson(
+        "/races/{$race->uid}/entries/add",
+        validRaceEntryAddPayload(['trainer_name' => '友道 康夫(栗東)']),
+    );
+
+    // Assert
+    $trainer = Trainer::query()->where('name', '友道 康夫')->firstOrFail();
+    expect($trainer->affiliation)->toBe('栗東');
+    $this->assertDatabaseHas('race_entries', [
+        'race_id' => $race->id,
+        'trainer_id' => $trainer->id,
+    ]);
+});
+
+test('調教師名を省略して追加すると trainer_id は null で保存される', function () {
+    // Arrange
+    $user = User::factory()->create();
+    $race = createRaceForAddStoreTest();
+
+    // Act
+    $this->actingAs($user)->postJson(
+        "/races/{$race->uid}/entries/add",
+        validRaceEntryAddPayload(),
+    );
+
+    // Assert
+    $this->assertDatabaseCount('trainers', 0);
+    $this->assertDatabaseHas('race_entries', [
+        'race_id' => $race->id,
+        'trainer_id' => null,
     ]);
 });
 

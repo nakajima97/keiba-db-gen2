@@ -45,6 +45,8 @@ export type RaceEntry = {
 	horse_uid: string;
 	horse_name: string;
 	jockey_name: string;
+	trainer_name?: string | null;
+	trainer_affiliation?: string | null;
 	weight: number | null;
 	note?: RaceEntryNote | null;
 };

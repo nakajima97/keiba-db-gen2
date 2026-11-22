@@ -5,12 +5,14 @@ namespace App\UseCases\RaceEntry;
 use App\Models\Horse;
 use App\Models\Jockey;
 use App\Models\RaceEntry;
+use App\UseCases\Trainer\FindOrCreateTrainerAction;
 use Illuminate\Support\Facades\DB;
 
 /**
  * 既存の出走馬レコード（race_entries）を編集する。
  *
- * 馬名・騎手名は名前で firstOrCreate して race_entries の horse_id / jockey_id を差し替える。
+ * 馬名・騎手名・調教師名は名前で firstOrCreate して race_entries の horse_id / jockey_id / trainer_id を差し替える。
+ * 調教師名は任意項目で、未入力の場合は trainer_id を null にする。「調教師名(所属)」形式の入力も受け付ける。
  * 馬体重は任意項目で、null の場合は DB にも null で保存する。
  *
  * 注意: 馬の照合は name のみで行う（StoreAction は name + birth_year で照合）。
@@ -20,10 +22,15 @@ use Illuminate\Support\Facades\DB;
  */
 class UpdateAction
 {
+    public function __construct(
+        private readonly FindOrCreateTrainerAction $findOrCreateTrainerAction,
+    ) {}
+
     /**
      * @param  array{
      *     horse_name: string,
      *     jockey_name: string,
+     *     trainer_name?: string|null,
      *     frame_number: int,
      *     horse_number: int,
      *     weight: float|string,
@@ -41,9 +48,12 @@ class UpdateAction
                 'name' => $data['jockey_name'],
             ]);
 
+            $trainer = $this->findOrCreateTrainerAction->executeFromText($data['trainer_name'] ?? null);
+
             $entry->update([
                 'horse_id' => $horse->id,
                 'jockey_id' => $jockey->id,
+                'trainer_id' => $trainer?->id,
                 'frame_number' => $data['frame_number'],
                 'horse_number' => $data['horse_number'],
                 'weight' => $data['weight'],

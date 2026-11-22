@@ -4,6 +4,7 @@ use App\Models\Horse;
 use App\Models\Jockey;
 use App\Models\Race;
 use App\Models\RaceEntry;
+use App\Models\Trainer;
 use App\Models\User;
 use App\Models\Venue;
 
@@ -200,6 +201,57 @@ test('新しい騎手名で更新すると新規の騎手レコードが作成�
         'id' => $entry->id,
         'jockey_id' => $newJockey->id,
     ]);
+});
+
+test('調教師名を指定して更新すると調教師マスタが作成され trainer_id に紐づく', function () {
+    // Arrange
+    $user = User::factory()->create();
+    $entry = createRaceEntryForUpdateTest();
+
+    // Act
+    $this->actingAs($user)->putJson(
+        route('races.entries.update', ['race' => $entry->race->uid, 'entry' => $entry->uid]),
+        validRaceEntryUpdatePayload(['trainer_name' => '友道 康夫(栗東)']),
+    );
+
+    // Assert
+    $trainer = Trainer::query()->where('name', '友道 康夫')->firstOrFail();
+    expect($trainer->affiliation)->toBe('栗東')
+        ->and($entry->refresh()->trainer_id)->toBe($trainer->id);
+});
+
+test('既存の調教師名で更新すると新規作成せず既存の調教師を再利用し所属は維持される', function () {
+    // Arrange
+    $user = User::factory()->create();
+    $entry = createRaceEntryForUpdateTest();
+    $trainer = Trainer::factory()->create(['name' => '友道 康夫', 'affiliation' => '栗東']);
+
+    // Act
+    $this->actingAs($user)->putJson(
+        route('races.entries.update', ['race' => $entry->race->uid, 'entry' => $entry->uid]),
+        validRaceEntryUpdatePayload(['trainer_name' => '友道 康夫']),
+    );
+
+    // Assert
+    $this->assertDatabaseCount('trainers', 1);
+    expect($trainer->refresh()->affiliation)->toBe('栗東')
+        ->and($entry->refresh()->trainer_id)->toBe($trainer->id);
+});
+
+test('調教師名を空にして更新すると trainer_id が null になる', function () {
+    // Arrange
+    $user = User::factory()->create();
+    $entry = createRaceEntryForUpdateTest();
+    $entry->update(['trainer_id' => Trainer::factory()->create()->id]);
+
+    // Act
+    $this->actingAs($user)->putJson(
+        route('races.entries.update', ['race' => $entry->race->uid, 'entry' => $entry->uid]),
+        validRaceEntryUpdatePayload(['trainer_name' => '']),
+    );
+
+    // Assert
+    expect($entry->refresh()->trainer_id)->toBeNull();
 });
 
 test('horse_weight は省略可能で null として保存できる', function () {

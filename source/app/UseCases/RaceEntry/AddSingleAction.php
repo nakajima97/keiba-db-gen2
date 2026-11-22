@@ -6,12 +6,14 @@ use App\Models\Horse;
 use App\Models\Jockey;
 use App\Models\Race;
 use App\Models\RaceEntry;
+use App\UseCases\Trainer\FindOrCreateTrainerAction;
 use Illuminate\Support\Facades\DB;
 
 /**
  * 既存のレースに対して 1 頭の出走馬（race_entries）を個別に追加する。
  *
- * 馬名・騎手名は名前で firstOrCreate して race_entries の horse_id / jockey_id に紐付ける。
+ * 馬名・騎手名・調教師名は名前で firstOrCreate して race_entries の horse_id / jockey_id / trainer_id に紐付ける。
+ * 調教師名は任意項目で、未入力の場合は trainer_id を null にする。「調教師名(所属)」形式の入力も受け付ける。
  * 馬体重は任意項目で、空文字列または null の場合は DB にも null で保存する。
  *
  * 注意: 馬の照合は name のみで行う（StoreAction は name + birth_year で照合）。
@@ -21,10 +23,15 @@ use Illuminate\Support\Facades\DB;
  */
 class AddSingleAction
 {
+    public function __construct(
+        private readonly FindOrCreateTrainerAction $findOrCreateTrainerAction,
+    ) {}
+
     /**
      * @param  array{
      *     horse_name: string,
      *     jockey_name: string,
+     *     trainer_name?: string|null,
      *     frame_number: int,
      *     horse_number: int,
      *     weight: float|string,
@@ -42,10 +49,13 @@ class AddSingleAction
                 'name' => $data['jockey_name'],
             ]);
 
+            $trainer = $this->findOrCreateTrainerAction->executeFromText($data['trainer_name'] ?? null);
+
             RaceEntry::create([
                 'race_id' => $race->id,
                 'horse_id' => $horse->id,
                 'jockey_id' => $jockey->id,
+                'trainer_id' => $trainer?->id,
                 'frame_number' => $data['frame_number'],
                 'horse_number' => $data['horse_number'],
                 'weight' => $data['weight'],

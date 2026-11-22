@@ -11,7 +11,7 @@ use App\UseCases\RaceMarkColumn\EnsureOwnColumnExistsAction;
 use Carbon\CarbonInterface;
 
 /**
- * レースと出馬表（馬・騎手含む）に加え、認証ユーザーの印列・印データ・競走馬メモを取得し、
+ * レースと出馬表（馬・騎手・調教師含む）に加え、認証ユーザーの印列・印データ・競走馬メモを取得し、
  * レース詳細画面の表示用データを返す。
  */
 class ShowAction
@@ -38,6 +38,8 @@ class ShowAction
      *         horse_uid: string,
      *         horse_name: string,
      *         jockey_name: string,
+     *         trainer_name: string|null,
+     *         trainer_affiliation: string|null,
      *         weight: int|null,
      *         note: array{id: int, content: string, source: string}|null,
      *     }>,
@@ -54,6 +56,7 @@ class ShowAction
             'entries' => fn ($query) => $query->orderBy('horse_number'),
             'entries.horse',
             'entries.jockey',
+            'entries.trainer',
         ]);
 
         $this->ensureOwnColumnExistsAction->execute($race, $user);
@@ -113,6 +116,8 @@ class ShowAction
                 'horse_uid' => (string) $entry->horse->uid,
                 'horse_name' => $entry->horse->name,
                 'jockey_name' => $entry->jockey->name,
+                'trainer_name' => $entry->trainer?->name,
+                'trainer_affiliation' => $entry->trainer?->affiliation,
                 'weight' => $entry->horse_weight !== null ? (int) $entry->horse_weight : null,
                 'note' => $notesByHorseId[(int) $entry->horse->id] ?? null,
             ])->all(),

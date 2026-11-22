@@ -135,6 +135,9 @@ const RaceDetail = ({
 							騎手名
 						</th>
 						<th className="bg-[color-mix(in_srgb,var(--color-muted)_50%,var(--color-background))] px-4 py-3 text-left font-medium text-muted-foreground">
+							調教師
+						</th>
+						<th className="bg-[color-mix(in_srgb,var(--color-muted)_50%,var(--color-background))] px-4 py-3 text-left font-medium text-muted-foreground">
 							馬体重
 						</th>
 						{sortedColumns.map((column) => (
@@ -179,6 +182,20 @@ const RaceDetail = ({
 								</div>
 							</td>
 							<td className="px-4 py-3">{entry.jockey_name}</td>
+							<td className="px-4 py-3">
+								{entry.trainer_name != null ? (
+									<span className="whitespace-nowrap">
+										{entry.trainer_name}
+										{entry.trainer_affiliation != null && (
+											<span className="ml-1 text-xs text-muted-foreground">
+												({entry.trainer_affiliation})
+											</span>
+										)}
+									</span>
+								) : (
+									"-"
+								)}
+							</td>
 							<td className="px-4 py-3">
 								{entry.weight !== null ? `${entry.weight}kg` : "-"}
 							</td>

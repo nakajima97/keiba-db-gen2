@@ -29,6 +29,8 @@ const baseEntries: RaceDetailProps["race"]["entries"] = [
 		horse_number: 1,
 		horse_name: "サンプルホース1",
 		jockey_name: "騎手 一郎",
+		trainer_name: "調教 太郎",
+		trainer_affiliation: "美浦",
 		weight: 480,
 	},
 	{
@@ -40,6 +42,8 @@ const baseEntries: RaceDetailProps["race"]["entries"] = [
 		horse_number: 2,
 		horse_name: "サンプルホース2",
 		jockey_name: "騎手 二郎",
+		trainer_name: "調教 次郎",
+		trainer_affiliation: "栗東",
 		weight: 462,
 	},
 	{
@@ -295,6 +299,8 @@ const entriesWithLongNames: RaceDetailProps["race"]["entries"] = [
 		horse_number: 1,
 		horse_name: "サンプルホース壱",
 		jockey_name: "騎手 一郎",
+		trainer_name: "調教 太郎",
+		trainer_affiliation: "美浦",
 		weight: 480,
 	},
 	{
@@ -306,6 +312,8 @@ const entriesWithLongNames: RaceDetailProps["race"]["entries"] = [
 		horse_number: 2,
 		horse_name: "アブソリュートリーロングフォーリンホースネーム",
 		jockey_name: "騎手 二郎",
+		trainer_name: "調教 次郎",
+		trainer_affiliation: "栗東",
 		weight: 462,
 	},
 	{
