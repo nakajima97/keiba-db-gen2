@@ -1,9 +1,12 @@
 <?php
 
 use App\Models\Horse;
+use App\Models\HorseNote;
 use App\Models\Jockey;
 use App\Models\Race;
 use App\Models\RaceEntry;
+use App\Models\RaceNomination;
+use App\Models\RaceNominationMark;
 use App\Models\RacePayout;
 use App\Models\RaceResultHorse;
 use App\Models\Trainer;
@@ -344,5 +347,48 @@ test('race_payouts が存在する場合、has_result が true として返さ�
             ->where('has_result', true)
             ->etc()
         )
+    );
+});
+
+test('レース詳細は Inertia props として登録馬を登録順に自分のチェック／消し・メモ付きで返す', function () {
+    // Arrange
+    $user = User::factory()->create();
+    $otherUser = User::factory()->create();
+    $race = Race::factory()->create();
+    $firstNomination = RaceNomination::factory()->for($race)->create();
+    $secondNomination = RaceNomination::factory()->for($race)->create();
+    RaceNominationMark::factory()->excluded()->create([
+        'race_nomination_id' => $firstNomination->id,
+        'user_id' => $user->id,
+    ]);
+    RaceNominationMark::factory()->create([
+        'race_nomination_id' => $secondNomination->id,
+        'user_id' => $otherUser->id,
+    ]);
+    $note = HorseNote::factory()->create([
+        'user_id' => $user->id,
+        'horse_id' => $firstNomination->horse_id,
+        'race_id' => $race->id,
+        'content' => '噂レベル',
+    ]);
+
+    // Act
+    $response = $this->actingAs($user)->get(route('races.show', ['race' => $race->uid]));
+
+    // Assert
+    $response->assertInertia(fn (Assert $page) => $page
+        ->component('races/show')
+        ->has('race.nominations', 2)
+        ->where('race.nominations.0', [
+            'id' => $firstNomination->id,
+            'horse_id' => $firstNomination->horse_id,
+            'horse_uid' => $firstNomination->horse->uid,
+            'horse_name' => $firstNomination->horse->name,
+            'status' => 'excluded',
+            'note' => ['id' => $note->id, 'content' => '噂レベル', 'source' => 'race'],
+        ])
+        ->where('race.nominations.1.id', $secondNomination->id)
+        ->where('race.nominations.1.status', null)
+        ->where('race.nominations.1.note', null)
     );
 });

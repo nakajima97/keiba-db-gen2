@@ -5,6 +5,7 @@ use App\Models\HorseNote;
 use App\Models\Jockey;
 use App\Models\Race;
 use App\Models\RaceEntry;
+use App\Models\RaceNomination;
 use App\Models\User;
 use App\Models\Venue;
 
@@ -231,4 +232,20 @@ test('同じユーザー・馬で race_id が null の馬メモが既に存在�
 
     // Assert
     $response->assertUnprocessable();
+});
+
+test('登録馬として登録されているレースの race_id で馬メモを作成できる', function () {
+    // Arrange
+    $user = User::factory()->create();
+    $nomination = RaceNomination::factory()->create();
+
+    // Act
+    $response = $this->actingAs($user)->postJson('/api/horses/'.$nomination->horse_id.'/notes', [
+        'race_id' => $nomination->race_id,
+        'content' => '登録馬のメモ',
+    ]);
+
+    // Assert
+    $response->assertCreated();
+    $response->assertJsonPath('data.race_id', $nomination->race_id);
 });

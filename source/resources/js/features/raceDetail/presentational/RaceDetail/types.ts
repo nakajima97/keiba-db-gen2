@@ -1,3 +1,8 @@
+import type {
+	RaceNomination,
+	RaceNominationStatus,
+} from "@/features/raceNomination/types/raceNomination";
+
 export type MarkValue = "◎" | "○" | "▲" | "△" | "☆" | "✓";
 
 export const MARK_VALUES: readonly MarkValue[] = [
@@ -68,11 +73,14 @@ export type RaceDetailItem = {
 	mark_columns: RaceMarkColumn[];
 	marks: RaceMarkValue[];
 	mark_memos?: RaceMarkMemo[];
+	nominations?: RaceNomination[];
 	has_result: boolean;
 };
 
 export type RaceDetailProps = {
 	race: RaceDetailItem;
+	/** 登録馬で付けたチェック／消しを horse_id で引き継いで出馬表に表示する（表示のみ） */
+	nominationStatusByHorseId?: Record<number, RaceNominationStatus>;
 	onMarkChange: (params: {
 		columnId: number;
 		raceEntryId: number;

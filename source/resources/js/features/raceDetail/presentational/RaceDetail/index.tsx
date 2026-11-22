@@ -3,6 +3,7 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/shadcn/ui/button";
 import ScrollableTable from "@/components/presentational/ScrollableTable";
 import HorseNoteIconButton from "@/features/horseNote/presentational/HorseNoteIconButton";
+import RaceNominationStatusBadge from "@/features/raceNomination/presentational/RaceNominationStatusBadge";
 import { edit as raceEntryEdit } from "@/routes/races/entries";
 import { formatDateDisplay } from "@/utils/date";
 import RaceMarkSelect from "./RaceMarkSelect";
@@ -43,6 +44,7 @@ const sortColumns = (columns: RaceMarkColumn[]): RaceMarkColumn[] => {
 
 const RaceDetail = ({
 	race,
+	nominationStatusByHorseId = {},
 	onMarkChange,
 	onAddOtherColumn,
 	onRemoveOtherColumn,
@@ -173,6 +175,11 @@ const RaceDetail = ({
 									>
 										{entry.horse_name}
 									</Link>
+									{nominationStatusByHorseId[entry.horse_id] !== undefined && (
+										<RaceNominationStatusBadge
+											status={nominationStatusByHorseId[entry.horse_id]}
+										/>
+									)}
 									<span className="shrink-0">
 										<HorseNoteIconButton
 											hasNote={entry.note != null}

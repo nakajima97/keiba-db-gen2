@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import type { RaceNomination } from "@/features/raceNomination/types/raceNomination";
 import type {
 	RaceEntry,
 	RaceEntryNote,
@@ -24,6 +25,7 @@ type UseRaceDetailModalsParams = {
 	markColumns: ReadonlyArray<RaceMarkColumn>;
 	marks: ReadonlyArray<RaceMarkValue>;
 	markMemos: ReadonlyArray<RaceMarkMemo>;
+	nominations?: ReadonlyArray<RaceNomination>;
 };
 
 type UseRaceDetailModalsReturn = {
@@ -48,11 +50,12 @@ type UseRaceDetailModalsReturn = {
 /**
  * レース詳細画面の馬メモ・印メモモーダル開閉 state と、モーダル props 計算用の派生 state を管理する。
  * 派生 state は entries / markColumns / marks / markMemos から useMemo で導出するため、関係ない再レンダーで再計算されない。
+ * 馬メモは出走馬に加えて登録馬（nominations）からも開ける。同じ馬が両方にいる場合は出走馬のメモを優先する。
  */
 export const useRaceDetailModals = (
 	params: UseRaceDetailModalsParams,
 ): UseRaceDetailModalsReturn => {
-	const { entries, markColumns, marks, markMemos } = params;
+	const { entries, markColumns, marks, markMemos, nominations = [] } = params;
 
 	const [noteModal, setNoteModal] = useState<NoteModalState>({
 		open: false,
@@ -66,14 +69,16 @@ export const useRaceDetailModals = (
 	});
 
 	const handleNoteClick = (horseId: number) => {
-		const entry = entries.find((e) => e.horse_id === horseId);
-		if (entry == null) {
+		const target =
+			entries.find((e) => e.horse_id === horseId) ??
+			nominations.find((n) => n.horse_id === horseId);
+		if (target == null) {
 			return;
 		}
 		setNoteModal({
 			open: true,
-			horseId: entry.horse_id,
-			horseName: entry.horse_name,
+			horseId: target.horse_id,
+			horseName: target.horse_name,
 		});
 	};
 
@@ -103,7 +108,16 @@ export const useRaceDetailModals = (
 				: undefined,
 		[entries, noteModal.horseId],
 	);
-	const selectedNote: RaceEntryNote | null = selectedEntry?.note ?? null;
+	const selectedNominationNote = useMemo(
+		() =>
+			noteModal.horseId != null
+				? (nominations.find((n) => n.horse_id === noteModal.horseId)?.note ??
+					null)
+				: null,
+		[nominations, noteModal.horseId],
+	);
+	const selectedNote: RaceEntryNote | null =
+		selectedEntry?.note ?? selectedNominationNote;
 
 	const memoTargetColumn = useMemo(
 		() =>

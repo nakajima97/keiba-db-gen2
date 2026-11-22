@@ -31,7 +31,7 @@ class StoreHorseNoteRequest extends FormRequest
     }
 
     /**
-     * race_id が指定された場合、対象の競走馬がそのレースに出走（出走表 or 結果）していることを保証する。
+     * race_id が指定された場合、対象の競走馬がそのレースに出走（出走表 or 結果）または登録馬として登録されていることを保証する。
      */
     private function raceMatchesHorseRule(): \Closure
     {
@@ -55,7 +55,16 @@ class StoreHorseNoteRequest extends FormRequest
                 ->where('horse_id', $horse->id)
                 ->exists();
 
-            if (! $hasResult) {
+            if ($hasResult) {
+                return;
+            }
+
+            $hasNomination = DB::table('race_nominations')
+                ->where('race_id', $value)
+                ->where('horse_id', $horse->id)
+                ->exists();
+
+            if (! $hasNomination) {
                 $fail('指定したレースにこの競走馬の出走情報がありません。');
             }
         };

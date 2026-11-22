@@ -30,6 +30,13 @@ tags:
     description: |
       調教師ごとのメモ（issue #308）の管理。調教師コメントの信用度などの所感を残す。
       メモは認証ユーザー × 調教師で 1 件。
+  - name: race-nominations
+    description: |
+      特別登録・出走登録など、出走確定前の登録馬（issue #305）の管理。
+      登録馬リストは全ユーザー共通、チェック／消しはユーザーごと。
+      登録馬のテキストメモは horse-notes（レース紐づき）を利用する。
+  - name: horses
+    description: 競走馬の検索
 
 paths:
   /api/races/{uid}/mark-columns:
@@ -326,6 +333,169 @@ paths:
         "422":
           $ref: "#/components/responses/ValidationError"
 
+  /api/races/{uid}/nominations:
+    parameters:
+      - $ref: "#/components/parameters/RaceUid"
+    post:
+      tags: [race-nominations]
+      summary: 登録馬を追加
+      description: |
+        レースに登録馬を 1 頭追加する。
+        `horse_id` を指定するとその競走馬を、省略した場合は `horse_name` と名前が一致する競走馬を紐付ける。
+        名前が一致する競走馬が存在しなければ生年なしで新規作成する。
+        同じレースに同じ競走馬が既に登録されている場合は 422 を返す。
+      operationId: createRaceNomination
+      security:
+        - sessionAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                horse_id:
+                  type: [integer, "null"]
+                  format: int64
+                  description: 候補から選んだ競走馬 ID（horses.id）
+                horse_name:
+                  type: [string, "null"]
+                  maxLength: 255
+                  description: 馬名。horse_id 省略時は必須。前後の空白は除去される
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/RaceNomination"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+  /api/races/{uid}/nominations/{nomination_id}:
+    parameters:
+      - $ref: "#/components/parameters/RaceUid"
+      - $ref: "#/components/parameters/NominationId"
+    delete:
+      tags: [race-nominations]
+      summary: 登録馬を削除
+      description: |
+        登録馬を削除する。全ユーザーのチェック／消しも削除される。競走馬メモは削除されない。
+      operationId: deleteRaceNomination
+      security:
+        - sessionAuth: []
+      responses:
+        "204":
+          description: No Content
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /api/races/{uid}/nominations/{nomination_id}/mark:
+    parameters:
+      - $ref: "#/components/parameters/RaceUid"
+      - $ref: "#/components/parameters/NominationId"
+    put:
+      tags: [race-nominations]
+      summary: 登録馬のチェック／消しを設定（または解除）
+      description: |
+        認証ユーザーの登録馬に対するチェック／消しを upsert する。
+        `status` が空文字列の場合は解除（該当レコードを削除）し、204 を返す。
+      operationId: putRaceNominationMark
+      security:
+        - sessionAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  oneOf:
+                    - $ref: "#/components/schemas/RaceNominationStatus"
+                    - type: string
+                      enum: [""]
+                      description: 空文字列を渡すと解除する
+      responses:
+        "200":
+          description: チェック／消しを設定または更新した
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    required: [race_nomination_id, status]
+                    properties:
+                      race_nomination_id:
+                        type: integer
+                        format: int64
+                      status:
+                        $ref: "#/components/schemas/RaceNominationStatus"
+        "204":
+          description: 解除した（status が空文字列の場合）
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+  /api/horses/search:
+    get:
+      tags: [horses]
+      summary: 競走馬の候補検索
+      description: |
+        馬名の部分一致で競走馬を最大 10 件、馬名昇順で返す。登録馬の馬名入力欄の候補表示に使う。
+        keyword が未指定・空白のみの場合は空配列を返す。
+      operationId: searchHorses
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: keyword
+          in: query
+          required: false
+          schema:
+            type: string
+          description: 馬名の検索キーワード
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      required: [id, name, birth_year]
+                      properties:
+                        id:
+                          type: integer
+                          format: int64
+                        name:
+                          type: string
+                        birth_year:
+                          type: [integer, "null"]
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
   /api/horses/{horse}/notes:
     parameters:
       - $ref: "#/components/parameters/HorseId"
@@ -362,6 +532,7 @@ paths:
       description: |
         指定競走馬に対するメモを 1 件作成する。
         `race_id` を指定するとそのレースに紐づくメモになり、省略または null の場合はレースに紐づかないメモ（次走への備忘録など）になる。
+        `race_id` を指定する場合、対象の競走馬がそのレースの出走馬・結果・登録馬のいずれかに含まれている必要がある。
         同一ユーザー × 同一馬 × 同一 race_id（null 含む）の組み合わせで既にメモが存在する場合は 422 を返す。
       operationId: createHorseNote
       security:
@@ -561,6 +732,15 @@ components:
         format: int64
       description: 競走馬 ID（horses.id）
 
+    NominationId:
+      name: nomination_id
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+      description: 登録馬 ID（race_nominations.id）
+
   securitySchemes:
     sessionAuth:
       type: apiKey
@@ -719,6 +899,45 @@ components:
         updated_at:
           type: string
           format: date-time
+
+    RaceNominationStatus:
+      type: string
+      enum: [check, excluded]
+      description: 登録馬に対するチェック（check）／消し（excluded）
+
+    RaceNomination:
+      type: object
+      required: [id, horse_id, horse_uid, horse_name, status, note]
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: 登録馬 ID（race_nominations.id）
+        horse_id:
+          type: integer
+          format: int64
+        horse_uid:
+          type: string
+        horse_name:
+          type: string
+        status:
+          oneOf:
+            - $ref: "#/components/schemas/RaceNominationStatus"
+            - type: "null"
+          description: 認証ユーザーのチェック／消し。未設定は null
+        note:
+          type: [object, "null"]
+          description: 認証ユーザーの競走馬メモ（レース紐づきを優先）。なければ null
+          required: [id, content, source]
+          properties:
+            id:
+              type: integer
+              format: int64
+            content:
+              type: string
+            source:
+              type: string
+              enum: [race, horse]
 
     Error:
       type: object

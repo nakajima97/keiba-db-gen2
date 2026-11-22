@@ -8,11 +8,12 @@ use App\Models\RaceMarkMemo;
 use App\Models\User;
 use App\UseCases\HorseNote\LoadNotesByHorseId;
 use App\UseCases\RaceMarkColumn\EnsureOwnColumnExistsAction;
+use App\UseCases\RaceNomination\LoadNominationsAction;
 use App\UseCases\TrainerNote\LoadNotesByTrainerId;
 use Carbon\CarbonInterface;
 
 /**
- * レースと出馬表（馬・騎手・調教師含む）に加え、認証ユーザーの印列・印データ・競走馬メモ・調教師メモを取得し、
+ * レースと出馬表（馬・騎手・調教師含む）に加え、認証ユーザーの印列・印データ・競走馬メモ・調教師メモと登録馬を取得し、
  * レース詳細画面の表示用データを返す。
  */
 class ShowAction
@@ -21,6 +22,7 @@ class ShowAction
         private LoadNotesByHorseId $loadNotesByHorseId,
         private EnsureOwnColumnExistsAction $ensureOwnColumnExistsAction,
         private LoadNotesByTrainerId $loadNotesByTrainerId,
+        private LoadNominationsAction $loadNominationsAction,
     ) {}
 
     /**
@@ -50,6 +52,14 @@ class ShowAction
      *     mark_columns: array<int, array{id: int, type: string, label: string|null, display_order: int}>,
      *     marks: array<int, array{column_id: int, race_entry_id: int, mark_value: string}>,
      *     mark_memos: array<int, array{column_id: int, race_entry_id: int, content: string}>,
+     *     nominations: list<array{
+     *         id: int,
+     *         horse_id: int,
+     *         horse_uid: string,
+     *         horse_name: string,
+     *         status: string|null,
+     *         note: array{id: int, content: string, source: string}|null,
+     *     }>,
      *     has_result: bool
      * }
      */
@@ -147,6 +157,7 @@ class ShowAction
             ])->all(),
             'marks' => $marks,
             'mark_memos' => $markMemos,
+            'nominations' => $this->loadNominationsAction->execute($race, $user),
             'has_result' => $race->raceResultHorses()->exists() || $race->racePayouts()->exists(),
         ];
     }

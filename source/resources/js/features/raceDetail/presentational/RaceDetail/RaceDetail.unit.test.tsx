@@ -342,3 +342,28 @@ describe("RaceDetail", () => {
 		});
 	});
 });
+
+describe("登録馬のチェック／消しの引き継ぎ", () => {
+	it("nominationStatusByHorseId に含まれる馬は馬名の横にバッジが表示される", () => {
+		// Act
+		render(
+			<RaceDetail
+				race={baseRace}
+				nominationStatusByHorseId={{ 42: "excluded" }}
+				{...noopHandlers}
+			/>,
+		);
+
+		// Assert
+		expect(screen.getByLabelText("登録馬で消し")).toHaveTextContent("消");
+	});
+
+	it("nominationStatusByHorseId に含まれない馬にはバッジが表示されない", () => {
+		// Act
+		render(<RaceDetail race={baseRace} {...noopHandlers} />);
+
+		// Assert
+		expect(screen.queryByLabelText("登録馬で消し")).not.toBeInTheDocument();
+		expect(screen.queryByLabelText("登録馬でチェック済み")).not.toBeInTheDocument();
+	});
+});
