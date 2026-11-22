@@ -30,6 +30,12 @@ tags:
     description: |
       調教師ごとのメモ（issue #308）の管理。調教師コメントの信用度などの所感を残す。
       メモは認証ユーザー × 調教師で 1 件。
+  - name: entry-comments
+    description: |
+      出走馬ごとの調教師・騎手コメントとその当否（issue #316）の管理。
+      コメントは認証ユーザーごとに記録し、発言者種別（trainer / jockey）ごとに別テーブルで保持する。
+      発言者（調教師・騎手）は出走情報（race_entries.trainer_id / jockey_id）から自動で決まる。
+      更新系のレスポンスには、当該出走の調教師・騎手について集計し直した向き別の的中率（stats）を含める。
   - name: race-nominations
     description: |
       特別登録・出走登録など、出走確定前の登録馬（issue #305）の管理。
@@ -713,6 +719,152 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound"
 
+  /api/races/{uid}/entries/{race_entry_id}/comments:
+    parameters:
+      - $ref: "#/components/parameters/RaceUid"
+      - name: race_entry_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: 出走馬 ID（race_entries.id）。指定レースに属さない場合は 404。
+    post:
+      tags: [entry-comments]
+      summary: 調教師・騎手コメントを追加
+      description: |
+        出走馬に対する調教師または騎手のコメントを 1 件追加する。
+        発言者は `speaker_type` に応じて出走情報の調教師（trainer_id）または騎手（jockey_id）になる。
+        出走馬に調教師が未登録の状態で `speaker_type=trainer` を指定した場合は 422。
+      operationId: createEntryComment
+      security:
+        - sessionAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [speaker_type, sentiment, content]
+              properties:
+                speaker_type:
+                  $ref: "#/components/schemas/CommentSpeakerType"
+                sentiment:
+                  $ref: "#/components/schemas/CommentSentiment"
+                content:
+                  type: string
+                  minLength: 1
+                  maxLength: 1000
+                  description: コメント内容。プレーンテキスト、改行可。
+                outcome:
+                  oneOf:
+                    - $ref: "#/components/schemas/CommentOutcome"
+                    - type: "null"
+                  description: 当否。省略または null は未入力。
+      responses:
+        "201":
+          description: コメントを作成した
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EntryCommentMutationResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+  /api/races/{uid}/entries/{race_entry_id}/comments/{speaker_type}/{comment_id}:
+    parameters:
+      - $ref: "#/components/parameters/RaceUid"
+      - name: race_entry_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: 出走馬 ID（race_entries.id）。指定レースに属さない場合は 404。
+      - name: speaker_type
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/CommentSpeakerType"
+        description: 更新・削除対象コメントの現在の発言者種別（格納テーブルの判別に使う）
+      - name: comment_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: コメント ID（trainer_comments.id または jockey_comments.id）。他ユーザーのコメントは 404。
+    patch:
+      tags: [entry-comments]
+      summary: 調教師・騎手コメントを更新
+      description: |
+        コメントを部分更新する。送ったフィールドだけを更新する（結果画面からの当否のみの更新にも使う）。
+        `speaker_type` を変更した場合は格納テーブルが変わるため、コメントは別 ID で作り直される（`created_at` は引き継ぐ）。
+        出走馬に調教師が未登録の状態で `speaker_type=trainer` を指定した場合は 422。
+      operationId: updateEntryComment
+      security:
+        - sessionAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              minProperties: 1
+              properties:
+                speaker_type:
+                  $ref: "#/components/schemas/CommentSpeakerType"
+                sentiment:
+                  $ref: "#/components/schemas/CommentSentiment"
+                content:
+                  type: string
+                  minLength: 1
+                  maxLength: 1000
+                outcome:
+                  oneOf:
+                    - $ref: "#/components/schemas/CommentOutcome"
+                    - type: "null"
+                  description: 当否。null で未入力に戻す。
+      responses:
+        "200":
+          description: コメントを更新した
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EntryCommentMutationResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+    delete:
+      tags: [entry-comments]
+      summary: 調教師・騎手コメントを削除
+      description: コメントを物理削除し、集計し直した的中率を返す。
+      operationId: deleteEntryComment
+      security:
+        - sessionAuth: []
+      responses:
+        "200":
+          description: コメントを削除した
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [stats]
+                properties:
+                  stats:
+                    $ref: "#/components/schemas/EntryCommentStats"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
 components:
   parameters:
     RaceUid:
@@ -899,6 +1051,107 @@ components:
         updated_at:
           type: string
           format: date-time
+
+    CommentSpeakerType:
+      type: string
+      enum: [trainer, jockey]
+      description: 発言者種別（調教師 / 騎手）
+
+    CommentSentiment:
+      type: string
+      enum: [positive, conditional, negative]
+      description: コメントの向き（前向き / 条件付き / 弱気）
+
+    CommentOutcome:
+      type: string
+      enum: [hit, miss, undeterminable]
+      description: 当否（当たり / 外れ / 判定不能）
+
+    EntryComment:
+      type: object
+      required: [id, speaker_type, speaker_id, speaker_name, sentiment, content, outcome, created_at]
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: コメント ID（speaker_type に応じて trainer_comments.id / jockey_comments.id）
+        speaker_type:
+          $ref: "#/components/schemas/CommentSpeakerType"
+        speaker_id:
+          type: integer
+          format: int64
+          description: 発言者 ID（trainers.id または jockeys.id）
+        speaker_name:
+          type: string
+          description: 発言者名
+        sentiment:
+          $ref: "#/components/schemas/CommentSentiment"
+        content:
+          type: string
+          maxLength: 1000
+        outcome:
+          oneOf:
+            - $ref: "#/components/schemas/CommentOutcome"
+            - type: "null"
+          description: 当否。null は未入力
+        created_at:
+          type: string
+          format: date-time
+
+    CommentHitRate:
+      type: object
+      required: [hit, judged]
+      properties:
+        hit:
+          type: integer
+          minimum: 0
+          description: 当たりの件数
+        judged:
+          type: integer
+          minimum: 0
+          description: 当たり + 外れ の件数（判定不能・未入力は含めない）
+
+    CommentSentimentStats:
+      type: object
+      description: 発言者 1 人分の向き別の的中率。認証ユーザーのコメントのみを全レース分集計する。
+      required: [positive, conditional, negative]
+      properties:
+        positive:
+          $ref: "#/components/schemas/CommentHitRate"
+        conditional:
+          $ref: "#/components/schemas/CommentHitRate"
+        negative:
+          $ref: "#/components/schemas/CommentHitRate"
+
+    EntryCommentStats:
+      type: object
+      description: 当該出走の調教師・騎手それぞれの的中率
+      required: [trainer_id, trainer, jockey_id, jockey]
+      properties:
+        trainer_id:
+          type: [integer, "null"]
+          format: int64
+          description: 出走情報の調教師 ID。未登録は null
+        trainer:
+          oneOf:
+            - $ref: "#/components/schemas/CommentSentimentStats"
+            - type: "null"
+          description: 調教師の的中率。調教師が未登録の場合は null
+        jockey_id:
+          type: integer
+          format: int64
+          description: 出走情報の騎手 ID
+        jockey:
+          $ref: "#/components/schemas/CommentSentimentStats"
+
+    EntryCommentMutationResponse:
+      type: object
+      required: [data, stats]
+      properties:
+        data:
+          $ref: "#/components/schemas/EntryComment"
+        stats:
+          $ref: "#/components/schemas/EntryCommentStats"
 
     RaceNominationStatus:
       type: string

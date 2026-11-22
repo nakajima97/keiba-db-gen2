@@ -19,3 +19,6 @@
 | DELETE | `/api/horse-notes/{note}` | メモを物理削除する（自分のメモのみ削除可能、他ユーザー所有のメモは 403）。 | 必要 |
 | PUT | `/api/trainers/{trainer}/note` | 認証ユーザーの調教師メモを作成または更新する（ユーザー × 調教師で 1 件）。 | 必要 |
 | DELETE | `/api/trainers/{trainer}/note` | 認証ユーザーの調教師メモを削除する（存在しない場合も 204）。 | 必要 |
+| POST | `/api/races/{uid}/entries/{race_entry_id}/comments` | 出走馬に対する調教師・騎手コメントを追加する（発言者は出走情報の調教師・騎手。調教師未登録で trainer 指定は 422）。集計し直した的中率を返す。 | 必要 |
+| PATCH | `/api/races/{uid}/entries/{race_entry_id}/comments/{speaker_type}/{comment_id}` | コメントを部分更新する（当否のみの更新にも使用。発言者種別の変更時は別 ID で作り直す）。集計し直した的中率を返す。 | 必要 |
+| DELETE | `/api/races/{uid}/entries/{race_entry_id}/comments/{speaker_type}/{comment_id}` | コメントを物理削除する（他ユーザーのコメントは 404）。集計し直した的中率を返す。 | 必要 |
