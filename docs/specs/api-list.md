@@ -17,3 +17,5 @@
 | POST | `/api/horses/{horse}/notes` | 競走馬に対するメモを作成する（race_id は任意、null可）。 | 必要 |
 | PUT | `/api/horse-notes/{note}` | メモ本文を更新する（content のみ更新可能）。 | 必要 |
 | DELETE | `/api/horse-notes/{note}` | メモを物理削除する（自分のメモのみ削除可能、他ユーザー所有のメモは 403）。 | 必要 |
+| PUT | `/api/trainers/{trainer}/note` | 認証ユーザーの調教師メモを作成または更新する（ユーザー × 調教師で 1 件）。 | 必要 |
+| DELETE | `/api/trainers/{trainer}/note` | 認証ユーザーの調教師メモを削除する（存在しない場合も 204）。 | 必要 |

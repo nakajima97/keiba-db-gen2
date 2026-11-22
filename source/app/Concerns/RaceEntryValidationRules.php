@@ -28,6 +28,7 @@ trait RaceEntryValidationRules
         return [
             'horse_name' => ['required', 'string'],
             'jockey_name' => ['required', 'string'],
+            'trainer_name' => ['nullable', 'string', 'max:255'],
             'frame_number' => ['required', 'integer', 'between:1,'.RaceConstants::MAX_FRAME_NUMBER],
             'horse_number' => [
                 'required',

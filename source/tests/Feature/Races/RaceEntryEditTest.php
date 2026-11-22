@@ -4,6 +4,7 @@ use App\Models\Horse;
 use App\Models\Jockey;
 use App\Models\Race;
 use App\Models\RaceEntry;
+use App\Models\Trainer;
 use App\Models\User;
 use App\Models\Venue;
 use Inertia\Testing\AssertableInertia as Assert;
@@ -80,12 +81,32 @@ test('認証済みユーザーは出馬登録編集画面にアクセスでき I
         ->has('initial_values', fn (Assert $values) => $values
             ->where('horse_name', $entry->horse->name)
             ->where('jockey_name', $entry->jockey->name)
+            ->where('trainer_name', '')
             ->where('frame_number', 2)
             ->where('horse_number', 4)
             ->where('weight', '56.0')
             ->where('horse_weight', '478')
             ->etc()
         )
+    );
+});
+
+test('調教師が紐づくエントリの編集画面では initial_values に調教師名が含まれる', function () {
+    // Arrange
+    $user = User::factory()->create();
+    $entry = createRaceEntryForEditTest();
+    $trainer = Trainer::factory()->create(['name' => '加藤 征弘', 'affiliation' => '美浦']);
+    $entry->update(['trainer_id' => $trainer->id]);
+
+    // Act
+    $response = $this->actingAs($user)->get(
+        route('races.entries.edit', ['race' => $entry->race->uid, 'entry' => $entry->uid]),
+    );
+
+    // Assert
+    $response->assertOk();
+    $response->assertInertia(fn (Assert $page) => $page
+        ->where('initial_values.trainer_name', '加藤 征弘')
     );
 });
 

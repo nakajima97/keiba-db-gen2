@@ -6,6 +6,7 @@ import { useRaceDetailModals } from "@/features/raceDetail/hooks/useRaceDetailMo
 import { useRaceMarkColumns } from "@/features/raceDetail/hooks/useRaceMarkColumns";
 import { useRaceMarkMemos } from "@/features/raceDetail/hooks/useRaceMarkMemos";
 import { useRaceMarks } from "@/features/raceDetail/hooks/useRaceMarks";
+import { useTrainerNotes } from "@/features/raceDetail/hooks/useTrainerNotes";
 import RaceDetail from "@/features/raceDetail/presentational/RaceDetail";
 import type {
 	RaceDetailItem,
@@ -15,6 +16,7 @@ import { deleteColumn } from "@/features/raceDetail/requests/raceMarkColumns";
 import RaceMarkMemoModalContainer from "@/features/raceMarkMemo/containers/RaceMarkMemoModalContainer";
 import RaceNominationSectionContainer from "@/features/raceNomination/containers/RaceNominationSectionContainer";
 import { useRaceNominations } from "@/features/raceNomination/hooks/useRaceNominations";
+import TrainerNoteModalContainer from "@/features/trainerNote/containers/TrainerNoteModalContainer";
 import { formatDateDisplay } from "@/utils/date";
 
 type Props = {
@@ -42,6 +44,7 @@ const RaceDetailContainer = ({ race }: Props) => {
 		markMemos: memosHook.markMemos,
 		nominations: nominationsHook.nominations,
 	});
+	const trainerNotes = useTrainerNotes(entries, setEntries);
 
 	const handleRemoveOtherColumn = async (columnId: number) => {
 		columnsHook.cancelLabelDebounce(columnId);
@@ -100,6 +103,7 @@ const RaceDetailContainer = ({ race }: Props) => {
 				onRemoveOtherColumn={handleRemoveOtherColumn}
 				onChangeColumnLabel={columnsHook.handleChangeColumnLabel}
 				onNoteClick={modals.handleNoteClick}
+				onTrainerNoteClick={trainerNotes.handleTrainerNoteClick}
 				onMarkMemoClick={modals.handleMarkMemoClick}
 			/>
 			<div className="mt-6">
@@ -146,6 +150,28 @@ const RaceDetailContainer = ({ race }: Props) => {
 						onClose={modals.handleMemoClose}
 						onSaved={memosHook.handleMemoSaved}
 						onDeleted={memosHook.handleMemoDeleted}
+					/>
+				)}
+			{trainerNotes.trainerNoteModal.trainerId != null &&
+				trainerNotes.trainerNoteTargetEntry != null && (
+					<TrainerNoteModalContainer
+						open={trainerNotes.trainerNoteModal.open}
+						mode={
+							trainerNotes.trainerNoteTargetEntry.trainer_note != null
+								? "edit"
+								: "create"
+						}
+						trainerId={trainerNotes.trainerNoteModal.trainerId}
+						trainerName={trainerNotes.trainerNoteTargetEntry.trainer_name ?? ""}
+						trainerAffiliation={
+							trainerNotes.trainerNoteTargetEntry.trainer_affiliation ?? null
+						}
+						initialContent={
+							trainerNotes.trainerNoteTargetEntry.trainer_note?.content ?? ""
+						}
+						onClose={trainerNotes.handleTrainerNoteClose}
+						onSaved={trainerNotes.handleTrainerNoteSaved}
+						onDeleted={trainerNotes.handleTrainerNoteDeleted}
 					/>
 				)}
 		</>

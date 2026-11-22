@@ -50,6 +50,7 @@ const RaceDetail = ({
 	onRemoveOtherColumn,
 	onChangeColumnLabel,
 	onNoteClick,
+	onTrainerNoteClick,
 	onMarkMemoClick,
 }: RaceDetailProps) => {
 	const sortedColumns = sortColumns(race.mark_columns);
@@ -137,6 +138,9 @@ const RaceDetail = ({
 							騎手名
 						</th>
 						<th className="bg-[color-mix(in_srgb,var(--color-muted)_50%,var(--color-background))] px-4 py-3 text-left font-medium text-muted-foreground">
+							調教師
+						</th>
+						<th className="bg-[color-mix(in_srgb,var(--color-muted)_50%,var(--color-background))] px-4 py-3 text-left font-medium text-muted-foreground">
 							馬体重
 						</th>
 						{sortedColumns.map((column) => (
@@ -186,6 +190,35 @@ const RaceDetail = ({
 								</div>
 							</td>
 							<td className="px-4 py-3">{entry.jockey_name}</td>
+							<td className="px-4 py-3">
+								{entry.trainer_name != null ? (
+									<div className="flex items-center gap-1">
+										<span className="whitespace-nowrap">
+											{entry.trainer_name}
+											{entry.trainer_affiliation != null && (
+												<span className="ml-1 text-xs text-muted-foreground">
+													({entry.trainer_affiliation})
+												</span>
+											)}
+										</span>
+										{entry.trainer_id != null && (
+											<span className="shrink-0">
+												<HorseNoteIconButton
+													hasNote={entry.trainer_note != null}
+													ariaLabel={`${entry.trainer_name}の調教師メモ`}
+													onClick={() => {
+														if (entry.trainer_id != null) {
+															onTrainerNoteClick?.(entry.trainer_id);
+														}
+													}}
+												/>
+											</span>
+										)}
+									</div>
+								) : (
+									"-"
+								)}
+							</td>
 							<td className="px-4 py-3">
 								{entry.weight !== null ? `${entry.weight}kg` : "-"}
 							</td>

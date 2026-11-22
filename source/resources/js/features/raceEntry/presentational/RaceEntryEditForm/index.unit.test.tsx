@@ -21,6 +21,7 @@ vi.mock("@inertiajs/react", () => ({
 const defaultValues: RaceEntryEditFormValues = {
 	horse_name: "コントレイル",
 	jockey_name: "福永祐一",
+	trainer_name: "矢作 芳人",
 	frame_number: 2,
 	horse_number: 3,
 	weight: "57.0",
@@ -53,6 +54,7 @@ describe("RaceEntryEditForm", () => {
 		// Assert
 		expect(screen.getByLabelText("馬名")).toHaveValue("コントレイル");
 		expect(screen.getByLabelText("騎手名")).toHaveValue("福永祐一");
+		expect(screen.getByLabelText("調教師名（任意）")).toHaveValue("矢作 芳人");
 		expect(screen.getByLabelText("枠番（1〜8）")).toHaveValue(2);
 		expect(screen.getByLabelText("馬番（1〜18）")).toHaveValue(3);
 		expect(screen.getByLabelText("負担重量（kg）")).toHaveValue(57.0);

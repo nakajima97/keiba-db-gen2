@@ -240,3 +240,73 @@ test('馬名行に JRA 注記 prefix が含まれる場合は除去される', f
     // Assert
     expect($result[0]['horse_name'])->toBe('ユウファラオ');
 });
+
+test('調教師名と所属が分割して抽出される', function () use ($multipleEntriesText) {
+    // Arrange
+    $parser = new RaceEntryParser;
+    $raceDate = Carbon::create(2026, 4, 18);
+
+    // Act
+    $result = $parser->parse($multipleEntriesText, $raceDate);
+
+    // Assert
+    expect($result[0]['trainer_name'])->toBe('加藤 征弘')
+        ->and($result[0]['trainer_affiliation'])->toBe('美浦')
+        ->and($result[1]['trainer_name'])->toBe('田中 義人')
+        ->and($result[1]['trainer_affiliation'])->toBe('栗東');
+});
+
+test('調教師行がない場合は trainer_name・trainer_affiliation が null になり他の項目は抽出される', function () {
+    // Arrange
+    $parser = new RaceEntryParser;
+    $raceDate = Carbon::create(2026, 4, 18);
+    $textWithoutTrainer = implode("\n", [
+        '枠1白	1	',
+        'エビスディアーナ	',
+        '426kg(-2)',
+        '加藤 晃央',
+        '恵比寿牧場',
+        '牝3/黒鹿',
+        '55.0kg',
+        'M.ディー',
+    ]);
+
+    // Act
+    $result = $parser->parse($textWithoutTrainer, $raceDate);
+
+    // Assert
+    expect($result)->toHaveCount(1)
+        ->and($result[0]['horse_name'])->toBe('エビスディアーナ')
+        ->and($result[0]['trainer_name'])->toBeNull()
+        ->and($result[0]['trainer_affiliation'])->toBeNull();
+});
+
+test('馬主・生産者名や母名が括弧で終わる場合も調教師行が正しく抽出される', function () {
+    // Arrange
+    $parser = new RaceEntryParser;
+    $raceDate = Carbon::create(2026, 4, 18);
+    $text = implode("\n", [
+        '枠1白	1	',
+        'エビスディアーナ	',
+        '426kg(-2)',
+        'テストホールディングス(株)',
+        '',
+        'テスト牧場(有)',
+        '',
+        '加藤 征弘(美浦)',
+        '',
+        '父：マジェスティックウォリアー',
+        '母：エビスオール(IRE)',
+        '(母の父：Chief Seattle)',
+        '牝3/黒鹿',
+        '55.0kg',
+        'M.ディー',
+    ]);
+
+    // Act
+    $result = $parser->parse($text, $raceDate);
+
+    // Assert
+    expect($result[0]['trainer_name'])->toBe('加藤 征弘')
+        ->and($result[0]['trainer_affiliation'])->toBe('美浦');
+});
