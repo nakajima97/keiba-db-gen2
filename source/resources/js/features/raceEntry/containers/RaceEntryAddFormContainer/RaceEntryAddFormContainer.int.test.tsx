@@ -33,6 +33,10 @@ describe("RaceEntryAddFormContainer", () => {
 
 		await user.type(screen.getByLabelText("馬名"), "コントレイル");
 		await user.type(screen.getByLabelText("騎手名"), "ルメール");
+		await user.type(
+			screen.getByLabelText("調教師名（任意）"),
+			"友道 康夫(栗東)",
+		);
 		await user.type(screen.getByLabelText("枠番（1〜8）"), "3");
 		await user.type(screen.getByLabelText("馬番（1〜18）"), "5");
 		await user.type(screen.getByLabelText("負担重量（kg）"), "57.0");
@@ -48,6 +52,7 @@ describe("RaceEntryAddFormContainer", () => {
 			expect.objectContaining({
 				horse_name: "コントレイル",
 				jockey_name: "ルメール",
+				trainer_name: "友道 康夫(栗東)",
 				frame_number: 3,
 				horse_number: 5,
 				weight: "57.0",

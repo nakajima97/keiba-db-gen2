@@ -15,6 +15,7 @@ class RaceEntry extends Model
         'race_id',
         'horse_id',
         'jockey_id',
+        'trainer_id',
         'frame_number',
         'horse_number',
         'weight',
@@ -37,5 +38,11 @@ class RaceEntry extends Model
     public function jockey(): BelongsTo
     {
         return $this->belongsTo(Jockey::class);
+    }
+
+    /** @return BelongsTo<Trainer, $this> */
+    public function trainer(): BelongsTo
+    {
+        return $this->belongsTo(Trainer::class);
     }
 }

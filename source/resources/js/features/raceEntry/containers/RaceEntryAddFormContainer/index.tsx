@@ -15,6 +15,7 @@ export type RaceEntryAddFormContainerProps = {
 const initialValues: RaceEntryEditFormValues = {
 	horse_name: "",
 	jockey_name: "",
+	trainer_name: "",
 	frame_number: "",
 	horse_number: "",
 	weight: "",

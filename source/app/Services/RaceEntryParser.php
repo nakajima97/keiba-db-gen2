@@ -8,7 +8,7 @@ use Carbon\Carbon;
  * JRA出馬表テキストをパースし、各馬のレースエントリ情報を抽出する。
  *
  * 1頭ごとのブロックは「枠N色\tM(\t)?」の行で始まり、
- * 馬名・馬体重・性齢・負担重量・騎手名を含む複数行で構成される。
+ * 馬名・馬体重・調教師名・性齢・負担重量・騎手名を含む複数行で構成される。
  * ブリンカー着用行は馬名行の直前に挿入されうるためスキップする。
  */
 class RaceEntryParser
@@ -22,6 +22,9 @@ class RaceEntryParser
     /** 性齢（例: "牝3/黒鹿", "牡5/栗毛", "セ4/鹿毛") */
     private const SEX_AGE_PATTERN = '/^[牡牝セせん]\s*(\d+)\s*\//u';
 
+    /** 血統行（例: "父：ディープインパクト", "母：オーシャンウェーブ"） */
+    private const PEDIGREE_LINE_PATTERN = '/^[父母]：/u';
+
     /** 負担重量（例: "55.0kg"） */
     private const WEIGHT_PATTERN = '/^(\d+(?:\.\d+)?)kg\s*$/u';
 
@@ -32,6 +35,8 @@ class RaceEntryParser
      *     horse_name: string,
      *     birth_year: int,
      *     jockey_name: string,
+     *     trainer_name: string|null,
+     *     trainer_affiliation: string|null,
      *     frame_number: int,
      *     horse_number: int,
      *     weight: float,
@@ -91,6 +96,8 @@ class RaceEntryParser
      *     horse_name: string,
      *     birth_year: int,
      *     jockey_name: string,
+     *     trainer_name: string|null,
+     *     trainer_affiliation: string|null,
      *     frame_number: int,
      *     horse_number: int,
      *     weight: float,
@@ -106,6 +113,7 @@ class RaceEntryParser
         $birthYear = null;
         $weight = null;
         $jockeyName = null;
+        $trainerText = null;
 
         $weightLineIndex = null;
 
@@ -134,6 +142,22 @@ class RaceEntryParser
 
             if ($horseWeight === null && preg_match(self::HORSE_WEIGHT_PATTERN, $line, $matches)) {
                 $horseWeight = (int) $matches[1];
+
+                continue;
+            }
+
+            /*
+             * 調教師行（例: "加藤 征弘(美浦)"）は馬名と性齢の間に、馬主・生産者行の後に現れる。
+             * 馬主・生産者名が括弧書きで終わる場合に備え、区間内で最後に一致した行を調教師とする。
+             * 父・母行（例: "母：Xxx(IRE)"）は括弧を含みうるため除外する。
+             */
+            if (
+                $birthYear === null
+                && ! preg_match(self::PEDIGREE_LINE_PATTERN, $line)
+                && ! preg_match(self::HORSE_WEIGHT_PATTERN, $line)
+                && TrainerNameParser::hasAffiliation($line)
+            ) {
+                $trainerText = $line;
 
                 continue;
             }
@@ -170,10 +194,14 @@ class RaceEntryParser
             return null;
         }
 
+        $trainer = $trainerText !== null ? TrainerNameParser::parse($trainerText) : null;
+
         return [
             'horse_name' => $horseName,
             'birth_year' => $birthYear,
             'jockey_name' => $jockeyName,
+            'trainer_name' => $trainer['name'] ?? null,
+            'trainer_affiliation' => $trainer['affiliation'] ?? null,
             'frame_number' => $frameNumber,
             'horse_number' => $horseNumber,
             'weight' => $weight,

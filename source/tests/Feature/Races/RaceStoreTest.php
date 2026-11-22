@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Trainer;
 use App\Models\User;
 use App\Support\NanoId;
 use Illuminate\Support\Facades\DB;
@@ -104,6 +105,27 @@ test('正常POSTで race・horses・jockeys・race_entries が作成される', 
         'weight' => 55.0,
         'horse_weight' => 426,
     ]);
+});
+
+test('正常POSTで調教師マスタが作成され race_entries に紐づく', function () use ($sampleText) {
+    // Arrange
+    $user = User::factory()->create();
+    $venueId = createVenueForStoreTest();
+
+    // Act
+    $this->actingAs($user)->post(route('races.store'), [
+        'venue_id' => $venueId,
+        'race_date' => '2026-04-18',
+        'race_number' => 1,
+        'paste_text' => $sampleText,
+    ]);
+
+    // Assert
+    $this->assertDatabaseCount('trainers', 1);
+    $trainer = Trainer::query()->firstOrFail();
+    expect($trainer->name)->toBe('加藤 征弘')
+        ->and($trainer->affiliation)->toBe('美浦');
+    $this->assertDatabaseHas('race_entries', ['trainer_id' => $trainer->id]);
 });
 
 test('既存の馬と騎手は再利用され重複登録されない', function () use ($sampleText) {
