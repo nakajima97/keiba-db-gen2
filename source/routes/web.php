@@ -11,6 +11,7 @@ use App\Http\Controllers\RaceMarkController;
 use App\Http\Controllers\RaceMarkMemoController;
 use App\Http\Controllers\RaceResultController;
 use App\Http\Controllers\TicketPurchaseController;
+use App\Http\Controllers\TrainerNoteController;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 
@@ -59,6 +60,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/horses/{horse}/notes', [HorseNoteController::class, 'store'])->name('api.horses.notes.store');
         Route::put('/horse-notes/{note}', [HorseNoteController::class, 'update'])->name('api.horse-notes.update');
         Route::delete('/horse-notes/{note}', [HorseNoteController::class, 'destroy'])->name('api.horse-notes.destroy');
+
+        Route::put('/trainers/{trainer}/note', [TrainerNoteController::class, 'upsert'])->name('api.trainers.note.upsert');
+        Route::delete('/trainers/{trainer}/note', [TrainerNoteController::class, 'destroy'])->name('api.trainers.note.destroy');
     });
 });
 

@@ -30,6 +30,7 @@ const baseRace: RaceDetailItem = {
 			horse_number: 1,
 			horse_name: "テストホース",
 			jockey_name: "テスト騎手",
+			trainer_id: 10,
 			trainer_name: "テスト調教師",
 			trainer_affiliation: "美浦",
 			weight: 480,
@@ -119,6 +120,27 @@ describe("RaceDetail", () => {
 			expect(screen.getByText("(美浦)")).toBeInTheDocument();
 		});
 
+		it("調教師メモのアイコンをクリックすると onTrainerNoteClick が trainer_id で呼ばれる", async () => {
+			// Arrange
+			const user = userEvent.setup();
+			const onTrainerNoteClick = vi.fn();
+			render(
+				<RaceDetail
+					race={baseRace}
+					{...noopHandlers}
+					onTrainerNoteClick={onTrainerNoteClick}
+				/>,
+			);
+
+			// Act
+			await user.click(
+				screen.getByRole("button", { name: "テスト調教師の調教師メモ" }),
+			);
+
+			// Assert
+			expect(onTrainerNoteClick).toHaveBeenCalledWith(10);
+		});
+
 		it("調教師が未登録（null）の場合「-」が表示される", () => {
 			// Arrange
 			const raceWithoutTrainer: RaceDetailItem = {
@@ -126,6 +148,7 @@ describe("RaceDetail", () => {
 				entries: [
 					{
 						...baseRace.entries[0],
+						trainer_id: null,
 						trainer_name: null,
 						trainer_affiliation: null,
 					},

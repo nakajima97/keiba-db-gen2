@@ -36,6 +36,11 @@ export type RaceEntryNote = {
 	source: "race" | "horse";
 };
 
+export type RaceEntryTrainerNote = {
+	id?: number;
+	content: string;
+};
+
 export type RaceEntry = {
 	id: number;
 	uid: string;
@@ -45,8 +50,10 @@ export type RaceEntry = {
 	horse_uid: string;
 	horse_name: string;
 	jockey_name: string;
+	trainer_id?: number | null;
 	trainer_name?: string | null;
 	trainer_affiliation?: string | null;
+	trainer_note?: RaceEntryTrainerNote | null;
 	weight: number | null;
 	note?: RaceEntryNote | null;
 };
@@ -75,6 +82,7 @@ export type RaceDetailProps = {
 	onRemoveOtherColumn: (columnId: number) => void;
 	onChangeColumnLabel: (columnId: number, label: string) => void;
 	onNoteClick?: (horseId: number) => void;
+	onTrainerNoteClick?: (trainerId: number) => void;
 	onMarkMemoClick?: (params: {
 		columnId: number;
 		raceEntryId: number;

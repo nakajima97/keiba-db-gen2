@@ -7,6 +7,7 @@ use App\Models\RaceEntry;
 use App\Models\RacePayout;
 use App\Models\RaceResultHorse;
 use App\Models\Trainer;
+use App\Models\TrainerNote;
 use App\Models\User;
 use App\Models\Venue;
 use App\Support\NanoId;
@@ -182,10 +183,56 @@ test('レース詳細は Inertia props として出馬登録に調教師名と�
     // Assert
     $response->assertInertia(fn (Assert $page) => $page
         ->has('race.entries', 1, fn (Assert $entry) => $entry
+            ->where('trainer_id', $trainer->id)
             ->where('trainer_name', 'テスト調教師')
             ->where('trainer_affiliation', '栗東')
+            ->where('trainer_note', null)
             ->etc()
         )
+    );
+});
+
+test('レース詳細は Inertia props として出馬登録に認証ユーザーの調教師メモのみを返す', function () {
+    // Arrange
+    $user = User::factory()->create();
+    $otherUser = User::factory()->create();
+    $venue = Venue::firstOrCreate(['name' => '東京']);
+    $race = Race::create([
+        'venue_id' => $venue->id,
+        'race_date' => '2026-04-05',
+        'race_number' => 1,
+    ]);
+    $trainer = Trainer::factory()->create();
+    $note = TrainerNote::factory()->create([
+        'user_id' => $user->id,
+        'trainer_id' => $trainer->id,
+        'content' => '自分の調教師メモ',
+    ]);
+    TrainerNote::factory()->create([
+        'user_id' => $otherUser->id,
+        'trainer_id' => $trainer->id,
+        'content' => '他人の調教師メモ',
+    ]);
+    $jockey = Jockey::create(['name' => 'テスト騎手']);
+    foreach ([1, 2] as $horseNumber) {
+        RaceEntry::create([
+            'race_id' => $race->id,
+            'horse_id' => Horse::create(['name' => 'テストホース'.$horseNumber, 'birth_year' => 2022])->id,
+            'jockey_id' => $jockey->id,
+            'trainer_id' => $trainer->id,
+            'frame_number' => 1,
+            'horse_number' => $horseNumber,
+            'weight' => 55.0,
+        ]);
+    }
+
+    // Act
+    $response = $this->actingAs($user)->get(route('races.show', ['race' => $race->uid]));
+
+    // Assert: 同じ調教師の管理馬すべてに自分のメモが付与される
+    $response->assertInertia(fn (Assert $page) => $page
+        ->where('race.entries.0.trainer_note', ['id' => $note->id, 'content' => '自分の調教師メモ'])
+        ->where('race.entries.1.trainer_note', ['id' => $note->id, 'content' => '自分の調教師メモ'])
     );
 });
 

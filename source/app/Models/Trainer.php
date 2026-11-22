@@ -22,4 +22,10 @@ class Trainer extends Model
     {
         return $this->hasMany(RaceEntry::class);
     }
+
+    /** @return HasMany<TrainerNote, $this> */
+    public function notes(): HasMany
+    {
+        return $this->hasMany(TrainerNote::class);
+    }
 }

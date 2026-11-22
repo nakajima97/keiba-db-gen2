@@ -8,10 +8,11 @@ use App\Models\RaceMarkMemo;
 use App\Models\User;
 use App\UseCases\HorseNote\LoadNotesByHorseId;
 use App\UseCases\RaceMarkColumn\EnsureOwnColumnExistsAction;
+use App\UseCases\TrainerNote\LoadNotesByTrainerId;
 use Carbon\CarbonInterface;
 
 /**
- * レースと出馬表（馬・騎手・調教師含む）に加え、認証ユーザーの印列・印データ・競走馬メモを取得し、
+ * レースと出馬表（馬・騎手・調教師含む）に加え、認証ユーザーの印列・印データ・競走馬メモ・調教師メモを取得し、
  * レース詳細画面の表示用データを返す。
  */
 class ShowAction
@@ -19,6 +20,7 @@ class ShowAction
     public function __construct(
         private LoadNotesByHorseId $loadNotesByHorseId,
         private EnsureOwnColumnExistsAction $ensureOwnColumnExistsAction,
+        private LoadNotesByTrainerId $loadNotesByTrainerId,
     ) {}
 
     /**
@@ -38,8 +40,10 @@ class ShowAction
      *         horse_uid: string,
      *         horse_name: string,
      *         jockey_name: string,
+     *         trainer_id: int|null,
      *         trainer_name: string|null,
      *         trainer_affiliation: string|null,
+     *         trainer_note: array{id: int, content: string}|null,
      *         weight: int|null,
      *         note: array{id: int, content: string, source: string}|null,
      *     }>,
@@ -98,6 +102,16 @@ class ShowAction
 
         $notesByHorseId = $this->loadNotesByHorseId->execute($user, $horseIds, (int) $race->id);
 
+        $trainerIds = $race->entries
+            ->pluck('trainer_id')
+            ->filter()
+            ->map(fn ($trainerId): int => (int) $trainerId)
+            ->unique()
+            ->values()
+            ->all();
+
+        $notesByTrainerId = $this->loadNotesByTrainerId->execute($user, $trainerIds);
+
         return [
             'id' => (int) $race->id,
             'uid' => $race->uid,
@@ -116,8 +130,12 @@ class ShowAction
                 'horse_uid' => (string) $entry->horse->uid,
                 'horse_name' => $entry->horse->name,
                 'jockey_name' => $entry->jockey->name,
+                'trainer_id' => $entry->trainer_id !== null ? (int) $entry->trainer_id : null,
                 'trainer_name' => $entry->trainer?->name,
                 'trainer_affiliation' => $entry->trainer?->affiliation,
+                'trainer_note' => $entry->trainer_id !== null
+                    ? ($notesByTrainerId[(int) $entry->trainer_id] ?? null)
+                    : null,
                 'weight' => $entry->horse_weight !== null ? (int) $entry->horse_weight : null,
                 'note' => $notesByHorseId[(int) $entry->horse->id] ?? null,
             ])->all(),

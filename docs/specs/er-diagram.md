@@ -211,6 +211,18 @@ erDiagram
     users ||--o{ horse_notes : "owns"
     horses ||--o{ horse_notes : "has"
     races ||--o{ horse_notes : "linked to"
+
+    trainer_notes {
+        bigint id PK
+        bigint user_id FK
+        bigint trainer_id FK
+        string content "メモ本文 1000字以内 プレーンテキスト"
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    users ||--o{ trainer_notes : "owns"
+    trainers ||--o{ trainer_notes : "has"
 ```
 
 ## selectionsカラムのJSONフォーマット
