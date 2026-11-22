@@ -7,6 +7,7 @@ use App\Models\Race;
 use App\Models\RaceNomination;
 use App\Models\User;
 use App\UseCases\HorseNote\LoadNotesByHorseId;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -47,15 +48,18 @@ class StoreAction
                 ->where('horse_id', $horse->id)
                 ->exists();
             if ($alreadyNominated) {
-                throw ValidationException::withMessages([
-                    'horse_name' => 'この馬は既に登録馬に追加されています。',
-                ]);
+                throw $this->duplicateException();
             }
 
-            return RaceNomination::create([
-                'race_id' => $race->id,
-                'horse_id' => $horse->id,
-            ]);
+            try {
+                return RaceNomination::create([
+                    'race_id' => $race->id,
+                    'horse_id' => $horse->id,
+                ]);
+            } catch (UniqueConstraintViolationException) {
+                // exists() と create() の間に他リクエストが先に登録した場合のフォールバック
+                throw $this->duplicateException();
+            }
         });
 
         $nomination->load('horse');
@@ -66,5 +70,12 @@ class StoreAction
             null,
             $notesByHorseId[(int) $nomination->horse_id] ?? null,
         );
+    }
+
+    private function duplicateException(): ValidationException
+    {
+        return ValidationException::withMessages([
+            'horse_name' => 'この馬は既に登録馬に追加されています。',
+        ]);
     }
 }

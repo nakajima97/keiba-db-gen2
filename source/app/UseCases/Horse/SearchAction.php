@@ -19,7 +19,7 @@ class SearchAction
      */
     public function execute(?string $keyword): array
     {
-        $keyword = $keyword !== null ? trim($keyword) : '';
+        $keyword = $keyword !== null ? (string) preg_replace('/^[\s　]+|[\s　]+$/u', '', $keyword) : '';
         if ($keyword === '') {
             return [];
         }

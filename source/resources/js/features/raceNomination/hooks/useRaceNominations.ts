@@ -77,7 +77,9 @@ export const useRaceNominations = (
 		nominationId: number,
 		status: RaceNominationStatus | null,
 	) => {
-		const previous = nominations;
+		const previousStatus =
+			nominations.find((nomination) => nomination.id === nominationId)
+				?.status ?? null;
 		setNominations((current) =>
 			current.map((nomination) =>
 				nomination.id === nominationId ? { ...nomination, status } : nomination,
@@ -86,7 +88,14 @@ export const useRaceNominations = (
 		try {
 			await upsertNominationMark(raceUid, nominationId, status);
 		} catch (_e) {
-			setNominations(previous);
+			// 失敗した登録馬のみ、その後に別の値へ変更されていない場合に限り元に戻す（他の登録馬の追加・削除・変更は保持する）
+			setNominations((current) =>
+				current.map((nomination) =>
+					nomination.id === nominationId && nomination.status === status
+						? { ...nomination, status: previousStatus }
+						: nomination,
+				),
+			);
 			toast.error("チェック／消しの更新に失敗しました");
 		}
 	};
