@@ -57,7 +57,7 @@ describe("applyEntryCommentsChange", () => {
 		// Act
 		const result = applyEntryCommentsChange(entries, {
 			raceEntryId: 1,
-			comments: [comment],
+			updateComments: (current) => [...current, comment],
 			stats: { trainer_id: 200, trainer: newStats, jockey_id: 100, jockey: newStats },
 		});
 
@@ -84,7 +84,7 @@ describe("applyEntryCommentsChange", () => {
 		// Act
 		const result = applyEntryCommentsChange(entries, {
 			raceEntryId: 1,
-			comments: [comment],
+			updateComments: (current) => [...current, comment],
 			stats: { trainer_id: null, trainer: null, jockey_id: 100, jockey: newStats },
 		});
 

@@ -60,12 +60,12 @@ describe("EntryCommentModalContainer", () => {
 
 		// Assert
 		await waitFor(() => {
-			expect(onCommentsChange).toHaveBeenCalledWith({
-				raceEntryId: 3,
-				comments: [created],
-				stats,
-			});
+			expect(onCommentsChange).toHaveBeenCalledTimes(1);
 		});
+		const [change] = onCommentsChange.mock.calls[0];
+		expect(change.raceEntryId).toBe(3);
+		expect(change.stats).toEqual(stats);
+		expect(change.updateComments([])).toEqual([created]);
 		const [url, init] = (global.fetch as ReturnType<typeof vi.fn>).mock
 			.calls[0] as [string, RequestInit];
 		expect(url).toBe("/api/races/race-uid/entries/3/comments");

@@ -36,10 +36,11 @@ function createEntryForCommentPropsTest(Race $race, int $horseNumber, Jockey $jo
     ]);
 }
 
-function createResultHorseForCommentPropsTest(Race $race, int $finishingOrder, int $horseNumber): void
+function createResultHorseForCommentPropsTest(Race $race, int $finishingOrder, int $horseNumber, ?int $horseId = null): void
 {
     RaceResultHorse::create([
         'race_id' => $race->id,
+        'horse_id' => $horseId,
         'finishing_order' => $finishingOrder,
         'frame_number' => 1,
         'horse_number' => $horseNumber,
@@ -126,20 +127,23 @@ test('調教師が未登録の出走馬は trainer_comment_stats が null でコ
     );
 });
 
-test('レース結果編集画面の着順には馬番で対応付けた出走馬のコメントが含まれ対応する出走馬がなければ null になる', function () {
+test('レース結果編集画面の着順には馬番で対応付けた出走馬のコメントが含まれ対応する出走馬がないか別の馬なら null になる', function () {
     // Arrange
     $user = User::factory()->create();
     $jockey = Jockey::create(['name' => 'テスト騎手']);
     $race = createRaceForCommentPropsTest(1);
     $entry = createEntryForCommentPropsTest($race, 5, $jockey, null);
-    createEntryForCommentPropsTest($race, 3, $jockey, null);
+    $entryNumber3 = createEntryForCommentPropsTest($race, 3, $jockey, null);
+    createEntryForCommentPropsTest($race, 7, $jockey, null);
+    $otherHorse = Horse::create(['name' => '別の馬', 'birth_year' => 2022]);
     JockeyComment::create([
         'user_id' => $user->id, 'race_entry_id' => $entry->id, 'jockey_id' => $jockey->id,
         'sentiment' => 'positive', 'content' => '好感触', 'outcome' => null,
     ]);
-    createResultHorseForCommentPropsTest($race, 1, 5);
-    createResultHorseForCommentPropsTest($race, 2, 3);
+    createResultHorseForCommentPropsTest($race, 1, 5, $entry->horse_id);
+    createResultHorseForCommentPropsTest($race, 2, 3, $entryNumber3->horse_id);
     createResultHorseForCommentPropsTest($race, 3, 9);
+    createResultHorseForCommentPropsTest($race, 4, 7, $otherHorse->id);
 
     // Act
     $response = $this->actingAs($user)->get(route('races.result.edit', ['uid' => $race->uid]));
@@ -152,5 +156,7 @@ test('レース結果編集画面の着順には馬番で対応付けた出走�
         ->where('race.finishing_horses.1.comments', [])
         ->where('race.finishing_horses.2.race_entry_id', null)
         ->where('race.finishing_horses.2.comments', null)
+        ->where('race.finishing_horses.3.race_entry_id', null)
+        ->where('race.finishing_horses.3.comments', null)
     );
 });

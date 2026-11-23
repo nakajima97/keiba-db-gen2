@@ -4,21 +4,21 @@ import type { RaceEntry } from "@/features/raceDetail/presentational/RaceDetail/
 
 /**
  * コメント変更の結果を出馬表の出走馬一覧に反映する。
- * - comments は対象の出走馬（raceEntryId）だけを置き換える
+ * - comments は対象の出走馬（raceEntryId）だけ、updateComments を現在の一覧に適用して更新する
  * - 的中率は全レース分の集計なので、同じ調教師・騎手の出走馬すべてに stats を反映する
  */
 export const applyEntryCommentsChange = (
 	entries: RaceEntry[],
 	params: {
 		raceEntryId: number;
-		comments: EntryComment[];
+		updateComments: (current: EntryComment[]) => EntryComment[];
 		stats: EntryCommentStats;
 	},
 ): RaceEntry[] =>
 	entries.map((entry) => {
 		let next = entry;
 		if (entry.id === params.raceEntryId) {
-			next = { ...next, comments: params.comments };
+			next = { ...next, comments: params.updateComments(entry.comments ?? []) };
 		}
 		if (
 			params.stats.trainer_id !== null &&

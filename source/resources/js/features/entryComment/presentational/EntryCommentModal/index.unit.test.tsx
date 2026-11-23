@@ -112,6 +112,7 @@ describe("EntryCommentModal", () => {
 		expect(screen.getByRole("heading", { name: "コメントを編集" })).toBeInTheDocument();
 		expect(screen.getByRole("button", { name: "保存" })).toBeEnabled();
 		expect(screen.getByRole("button", { name: "編集をやめる" })).toBeInTheDocument();
+		expect(screen.getByRole("combobox", { name: "ルメールのコメントの当否" })).toBeDisabled();
 	});
 
 	it("編集・削除ボタンを押すと対象のコメントを渡してハンドラが呼ばれる", async () => {

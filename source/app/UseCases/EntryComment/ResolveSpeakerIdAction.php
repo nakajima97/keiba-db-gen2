@@ -20,8 +20,10 @@ class ResolveSpeakerIdAction
         $speakerId = $entry->getAttribute($type->foreignKey());
 
         if ($speakerId === null) {
+            $label = $type === CommentSpeakerType::Trainer ? '調教師' : '騎手';
+
             throw ValidationException::withMessages([
-                'speaker_type' => '調教師が未登録の出走馬には調教師コメントを登録できません。',
+                'speaker_type' => "{$label}が未登録の出走馬には{$label}コメントを登録できません。",
             ]);
         }
 

@@ -67,10 +67,11 @@ const EntryCommentModal = ({
 							{comments.map((comment) => {
 								const key = commentKey(comment);
 								const pending = pendingKeys.includes(key);
+								const isEditingThis = editingKey === key;
 								return (
 									<li
 										key={key}
-										className={`flex flex-col gap-2 p-3 ${editingKey === key ? "bg-muted/50" : ""}`}
+										className={`flex flex-col gap-2 p-3 ${isEditingThis ? "bg-muted/50" : ""}`}
 									>
 										<div className="flex flex-wrap items-center gap-2">
 											<Badge variant="outline">
@@ -84,7 +85,7 @@ const EntryCommentModal = ({
 												<CommentOutcomeSelect
 													value={comment.outcome}
 													ariaLabel={`${comment.speaker_name}のコメントの当否`}
-													disabled={pending || submitting}
+													disabled={pending || submitting || isEditingThis}
 													onChange={(outcome) =>
 														onOutcomeChange(comment, outcome)
 													}

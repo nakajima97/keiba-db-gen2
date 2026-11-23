@@ -29,9 +29,10 @@ type Props = {
 	jockeyName: string;
 	comments: EntryComment[];
 	onClose: () => void;
+	/** 並行する操作で結果を取りこぼさないよう、コメント一覧は最新の一覧に適用する関数で渡す */
 	onCommentsChange: (params: {
 		raceEntryId: number;
-		comments: EntryComment[];
+		updateComments: (current: EntryComment[]) => EntryComment[];
 		stats: EntryCommentStats;
 	}) => void;
 };
@@ -129,14 +130,15 @@ const EntryCommentModalContainer = ({
 				);
 				onCommentsChange({
 					raceEntryId,
-					comments: replaceComment(comments, editingKey, result.data),
+					updateComments: (current) =>
+						replaceComment(current, editingKey, result.data),
 					stats: result.stats,
 				});
 			} else {
 				const result = await createEntryComment(raceUid, raceEntryId, payload);
 				onCommentsChange({
 					raceEntryId,
-					comments: [...comments, result.data],
+					updateComments: (current) => [...current, result.data],
 					stats: result.stats,
 				});
 			}
@@ -178,7 +180,8 @@ const EntryCommentModalContainer = ({
 				});
 				onCommentsChange({
 					raceEntryId,
-					comments: replaceComment(comments, commentKey(comment), result.data),
+					updateComments: (current) =>
+						replaceComment(current, commentKey(comment), result.data),
 					stats: result.stats,
 				});
 			},
@@ -193,7 +196,8 @@ const EntryCommentModalContainer = ({
 				const key = commentKey(comment);
 				onCommentsChange({
 					raceEntryId,
-					comments: comments.filter((c) => commentKey(c) !== key),
+					updateComments: (current) =>
+						current.filter((c) => commentKey(c) !== key),
 					stats,
 				});
 				if (editingKey === key) {

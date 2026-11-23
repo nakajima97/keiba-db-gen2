@@ -9,7 +9,7 @@ use App\UseCases\HorseNote\LoadNotesByHorseId;
 
 /**
  * uid でレースを取得し、レース結果確認・編集画面の表示用データ（払戻情報・競走馬メモ・調教師/騎手コメントを含む）を返す。
- * コメントは着順の馬番で出走馬と対応付ける。対応する出走馬がない場合は race_entry_id / comments を null にする。
+ * コメントは着順の馬番で出走馬と対応付ける（着順側に horse_id があれば一致も確認する）。対応する出走馬がない場合は race_entry_id / comments を null にする。
  */
 class ShowResultAction
 {
@@ -94,15 +94,21 @@ class ShowResultAction
 
         $notesByHorseId = $this->loadNotesByHorseId->execute($user, $horseIds, (int) $race->id);
 
-        $entryIdByHorseNumber = $race->entries()
-            ->pluck('id', 'horse_number')
-            ->mapWithKeys(fn ($id, $horseNumber): array => [(int) $horseNumber => (int) $id])
-            ->all();
-        $commentsByEntryId = $this->loadCommentsByEntryId->execute($user, array_values($entryIdByHorseNumber));
+        $entriesByHorseNumber = $race->entries()
+            ->get(['id', 'horse_number', 'horse_id'])
+            ->keyBy(fn ($entry): int => (int) $entry->horse_number);
+        $commentsByEntryId = $this->loadCommentsByEntryId->execute(
+            $user,
+            $entriesByHorseNumber->map(fn ($entry): int => (int) $entry->id)->values()->all(),
+        );
 
-        $finishingHorses = $race->raceResultHorses->map(function ($horse) use ($notesByHorseId, $entryIdByHorseNumber, $commentsByEntryId) {
+        $finishingHorses = $race->raceResultHorses->map(function ($horse) use ($notesByHorseId, $entriesByHorseNumber, $commentsByEntryId) {
             $horseId = $horse->horse_id !== null ? (int) $horse->horse_id : null;
-            $raceEntryId = $entryIdByHorseNumber[(int) $horse->horse_number] ?? null;
+            $entry = $entriesByHorseNumber->get((int) $horse->horse_number);
+            // 馬番が一致しても別の馬（出馬表と結果で馬番がずれた等）なら対応付けない。
+            $raceEntryId = $entry !== null && ($horseId === null || (int) $entry->horse_id === $horseId)
+                ? (int) $entry->id
+                : null;
 
             return [
                 'finishing_order' => $horse->finishing_order,

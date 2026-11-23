@@ -16,7 +16,7 @@ type UseEntryCommentsReturn = {
 	handleCommentClose: () => void;
 	handleCommentsChange: (params: {
 		raceEntryId: number;
-		comments: EntryComment[];
+		updateComments: (current: EntryComment[]) => EntryComment[];
 		stats: EntryCommentStats;
 	}) => void;
 };
@@ -43,18 +43,12 @@ export const useEntryComments = (
 		setCommentModal((current) => ({ ...current, open: false }));
 	};
 
-	const handleCommentsChange = ({
-		raceEntryId,
-		comments,
-		stats,
-	}: {
+	const handleCommentsChange = (params: {
 		raceEntryId: number;
-		comments: EntryComment[];
+		updateComments: (current: EntryComment[]) => EntryComment[];
 		stats: EntryCommentStats;
 	}) => {
-		setEntries((current) =>
-			applyEntryCommentsChange(current, { raceEntryId, comments, stats }),
-		);
+		setEntries((current) => applyEntryCommentsChange(current, params));
 	};
 
 	const commentTargetEntry = useMemo(
