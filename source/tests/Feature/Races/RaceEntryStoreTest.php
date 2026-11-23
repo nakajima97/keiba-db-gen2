@@ -1,6 +1,9 @@
 <?php
 
+use App\Models\Horse;
+use App\Models\Jockey;
 use App\Models\Race;
+use App\Models\RaceEntry;
 use App\Models\Trainer;
 use App\Models\User;
 use App\Models\Venue;
@@ -219,4 +222,115 @@ test('出馬登録 store 時に既存の調教師は再利用され重複登録�
     $this->assertDatabaseCount('trainers', 1);
     expect($trainer->refresh()->affiliation)->toBe('美浦');
     $this->assertDatabaseHas('race_entries', ['trainer_id' => $trainer->id]);
+});
+
+test('出馬登録 store 時に生年未設定の同名馬がいれば新規作成せず生年を補完して再利用する', function () use ($entryStoreSampleText) {
+    // Arrange
+    $user = User::factory()->create();
+    $race = createRaceForEntryTest();
+    $horseId = DB::table('horses')->insertGetId([
+        'uid' => NanoId::generate(),
+        'name' => 'エビスディアーナ',
+        'birth_year' => null,
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
+    // Act
+    $this->actingAs($user)->post(route('races.entries.store', ['race' => $race->uid]), [
+        'paste_text' => $entryStoreSampleText,
+    ]);
+
+    // Assert
+    $this->assertDatabaseCount('horses', 1);
+    $this->assertDatabaseHas('horses', ['id' => $horseId, 'birth_year' => 2023]);
+    $this->assertDatabaseHas('race_entries', ['race_id' => $race->id, 'horse_id' => $horseId]);
+});
+
+test('出馬登録 store 時に生年の異なる同名馬しかいなければ別の馬として新規作成する', function () use ($entryStoreSampleText) {
+    // Arrange
+    $user = User::factory()->create();
+    $race = createRaceForEntryTest();
+    $otherHorseId = DB::table('horses')->insertGetId([
+        'uid' => NanoId::generate(),
+        'name' => 'エビスディアーナ',
+        'birth_year' => 2010,
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
+    // Act
+    $this->actingAs($user)->post(route('races.entries.store', ['race' => $race->uid]), [
+        'paste_text' => $entryStoreSampleText,
+    ]);
+
+    // Assert
+    $this->assertDatabaseCount('horses', 2);
+    $this->assertDatabaseHas('horses', ['id' => $otherHorseId, 'birth_year' => 2010]);
+    $this->assertDatabaseMissing('race_entries', ['horse_id' => $otherHorseId]);
+});
+
+test('出馬登録 store 時に生年未設定でも出走記録のある同名馬は再利用せず新規作成する', function () use ($entryStoreSampleText) {
+    // Arrange
+    $user = User::factory()->create();
+    $race = createRaceForEntryTest();
+    $pastRace = Race::create([
+        'venue_id' => $race->venue_id,
+        'race_date' => '2010-04-18',
+        'race_number' => 1,
+    ]);
+    $pastHorse = Horse::create(['name' => 'エビスディアーナ']);
+    $pastEntry = RaceEntry::create([
+        'race_id' => $pastRace->id,
+        'horse_id' => $pastHorse->id,
+        'jockey_id' => Jockey::create(['name' => '過去 騎手'])->id,
+        'frame_number' => 1,
+        'horse_number' => 1,
+        'weight' => 55.0,
+    ]);
+
+    // Act
+    $this->actingAs($user)->post(route('races.entries.store', ['race' => $race->uid]), [
+        'paste_text' => $entryStoreSampleText,
+    ]);
+
+    // Assert
+    $this->assertDatabaseHas('horses', ['id' => $pastEntry->horse_id, 'birth_year' => null]);
+    $this->assertDatabaseMissing('race_entries', ['race_id' => $race->id, 'horse_id' => $pastEntry->horse_id]);
+});
+
+test('出馬表なしで作成したレースに登録馬を追加し後から出馬表を登録すると登録馬と出走馬が同じ競走馬に紐づく', function () use ($entryStoreSampleText) {
+    // Arrange
+    $user = User::factory()->create();
+    $venue = Venue::firstOrCreate(['name' => '東京']);
+    $this->actingAs($user)->post(route('races.store'), [
+        'venue_id' => $venue->id,
+        'race_date' => '2026-04-18',
+        'race_number' => 1,
+    ]);
+    $race = Race::query()->firstOrFail();
+    $nominationId = $this->actingAs($user)
+        ->postJson('/api/races/'.$race->uid.'/nominations', ['horse_name' => 'エビスディアーナ'])
+        ->json('data.id');
+    $this->actingAs($user)->putJson(
+        '/api/races/'.$race->uid.'/nominations/'.$nominationId.'/mark',
+        ['status' => 'check'],
+    );
+
+    // Act
+    $response = $this->actingAs($user)->post(route('races.entries.store', ['race' => $race->uid]), [
+        'paste_text' => $entryStoreSampleText,
+    ]);
+
+    // Assert
+    $response->assertRedirect(route('races.show', ['race' => $race->uid]));
+    $nominatedHorseId = (int) DB::table('race_nominations')->where('id', $nominationId)->value('horse_id');
+    $this->assertDatabaseCount('horses', 1);
+    $this->assertDatabaseHas('race_entries', ['race_id' => $race->id, 'horse_id' => $nominatedHorseId]);
+    $this->actingAs($user)->get(route('races.show', ['race' => $race->uid]))
+        ->assertInertia(fn ($page) => $page
+            ->where('race.entries.0.horse_id', $nominatedHorseId)
+            ->where('race.nominations.0.horse_id', $nominatedHorseId)
+            ->where('race.nominations.0.status', 'check')
+        );
 });

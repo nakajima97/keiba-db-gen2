@@ -35,7 +35,7 @@ describe("RaceInputFormContainer", () => {
 		});
 		render(<RaceInputFormContainer {...defaultProps} />);
 
-		const textarea = screen.getByLabelText("出馬表をペースト");
+		const textarea = screen.getByLabelText("出馬表をペースト（任意）");
 		await user.type(textarea, "sample paste text");
 
 		// Act
@@ -65,7 +65,7 @@ describe("RaceInputFormContainer", () => {
 		});
 		render(<RaceInputFormContainer {...defaultProps} initialRaceName="天皇賞（春）" />);
 
-		const textarea = screen.getByLabelText("出馬表をペースト");
+		const textarea = screen.getByLabelText("出馬表をペースト（任意）");
 		await user.type(textarea, "sample paste text");
 
 		// Act

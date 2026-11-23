@@ -169,6 +169,16 @@ const RaceDetail = ({
 					</tr>
 				</thead>
 				<tbody>
+					{race.entries.length === 0 && (
+						<tr>
+							<td
+								colSpan={8 + sortedColumns.length}
+								className="px-4 py-6 text-center text-muted-foreground"
+							>
+								出走馬が登録されていません
+							</td>
+						</tr>
+					)}
 					{race.entries.map((entry) => (
 						<tr key={entry.horse_number} className="border-b last:border-0">
 							<td className="px-4 py-3">{entry.frame_number}</td>

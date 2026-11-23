@@ -80,7 +80,7 @@ describe("RaceInputForm", () => {
 			expect(screen.getByText("競馬場")).toBeInTheDocument();
 			expect(screen.getByLabelText("レース日")).toBeInTheDocument();
 			expect(screen.getByText("レース番号")).toBeInTheDocument();
-			expect(screen.getByLabelText("出馬表をペースト")).toBeInTheDocument();
+			expect(screen.getByLabelText("出馬表をペースト（任意）")).toBeInTheDocument();
 		});
 
 		it("「レース名」入力フィールドが表示される", () => {
@@ -120,7 +120,7 @@ describe("RaceInputForm", () => {
 
 			// テキストエリアに入力
 			await user.type(
-				screen.getByLabelText("出馬表をペースト"),
+				screen.getByLabelText("出馬表をペースト（任意）"),
 				"出馬表テキスト",
 			);
 
@@ -128,6 +128,41 @@ describe("RaceInputForm", () => {
 			expect(
 				screen.getByRole("button", { name: "保存する" }),
 			).not.toBeDisabled();
+		});
+
+		it("出馬表が空でも競馬場・レース日・レース番号を入力すれば「保存する」ボタンが enabled になる", async () => {
+			// Arrange
+			const user = userEvent.setup();
+			render(<RaceInputForm {...baseProps} />);
+			const selectButtons = screen.getAllByRole("button", { name: "セレクト" });
+
+			// Act
+			await user.click(selectButtons[0]);
+			await user.type(screen.getByLabelText("レース日"), "2026-04-18");
+			await user.click(selectButtons[1]);
+
+			// Assert
+			expect(
+				screen.getByRole("button", { name: "保存する" }),
+			).not.toBeDisabled();
+		});
+
+		it("出馬表だけ入力してもレース番号が未選択なら「保存する」ボタンは disabled のまま", async () => {
+			// Arrange
+			const user = userEvent.setup();
+			render(<RaceInputForm {...baseProps} />);
+			const selectButtons = screen.getAllByRole("button", { name: "セレクト" });
+
+			// Act
+			await user.click(selectButtons[0]);
+			await user.type(screen.getByLabelText("レース日"), "2026-04-18");
+			await user.type(
+				screen.getByLabelText("出馬表をペースト（任意）"),
+				"出馬表テキスト",
+			);
+
+			// Assert
+			expect(screen.getByRole("button", { name: "保存する" })).toBeDisabled();
 		});
 	});
 
@@ -152,7 +187,7 @@ describe("RaceInputForm", () => {
 
 			// テキストエリアに入力
 			await user.type(
-				screen.getByLabelText("出馬表をペースト"),
+				screen.getByLabelText("出馬表をペースト（任意）"),
 				"出馬表テキスト",
 			);
 
@@ -186,7 +221,7 @@ describe("RaceInputForm", () => {
 			await user.type(screen.getByLabelText("レース日"), "2026-04-18");
 			await user.click(selectButtons[1]);
 			await user.type(
-				screen.getByLabelText("出馬表をペースト"),
+				screen.getByLabelText("出馬表をペースト（任意）"),
 				"出馬表テキスト",
 			);
 			await user.click(screen.getByRole("button", { name: "保存する" }));
@@ -198,7 +233,7 @@ describe("RaceInputForm", () => {
 			});
 
 			// Assert
-			expect(screen.getByLabelText("出馬表をペースト")).toHaveValue("");
+			expect(screen.getByLabelText("出馬表をペースト（任意）")).toHaveValue("");
 		});
 
 		it("onSubmit の第2引数を呼んでもレース名は保持される", async () => {
@@ -218,7 +253,7 @@ describe("RaceInputForm", () => {
 			await user.type(screen.getByLabelText("レース日"), "2026-04-18");
 			await user.click(selectButtons[1]);
 			await user.type(
-				screen.getByLabelText("出馬表をペースト"),
+				screen.getByLabelText("出馬表をペースト（任意）"),
 				"出馬表テキスト",
 			);
 			await user.click(screen.getByRole("button", { name: "保存する" }));

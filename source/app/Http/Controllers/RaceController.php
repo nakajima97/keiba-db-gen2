@@ -45,7 +45,11 @@ class RaceController extends Controller
 
     public function store(StoreRaceRequest $request, StoreAction $action): RedirectResponse
     {
-        $action->execute($request->validated());
+        $race = $action->execute($request->validated());
+
+        if (! $race->entries()->exists()) {
+            return redirect()->route('races.show', ['race' => $race->uid]);
+        }
 
         $raceNumber = (int) $request->validated('race_number');
 

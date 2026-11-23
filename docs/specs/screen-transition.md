@@ -13,7 +13,8 @@ flowchart TD
     Nav[ナビゲーションメニュー] -->|レース一覧| RacesIndex[レース一覧画面\n/races]
     RacesIndex -->|行クリック| RaceDetail[レース詳細画面\n/races/uid]
     RacesIndex -->|レース情報入力ボタン| RacesNew[レース情報入力画面\n/races/new]
-    RacesNew -->|保存ボタン押下（競馬場・日付・番号引き継ぎ）| RacesNew
+    RacesNew -->|保存ボタン押下・出馬表あり（競馬場・日付・番号引き継ぎ）| RacesNew
+    RacesNew -->|保存ボタン押下・出馬表なし| RaceDetail
     RaceDetail -->|出走馬登録ボタン| RaceEntriesNew[出走馬登録画面\n/races/uid/entries/new]
     RaceEntriesNew -->|登録ボタン押下| RaceDetail
     RaceDetail -->|出走馬を1頭追加ボタン| RaceEntriesAdd[出走馬個別追加画面\n/races/uid/entries/add]
