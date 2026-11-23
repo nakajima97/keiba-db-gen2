@@ -6,19 +6,15 @@ namespace App\Services;
  * JRA公式サイトの着順テキストをパースし、各馬のレース結果データを抽出する。
  *
  * ヘッダー行（列名）は自動的にスキップされる。
- * 1頭ごとのデータは以下の2形式に対応:
+ * 1頭分のデータは「数字\t」で始まる行から次の同様の行までで、論理的には以下の列を持つ:
+ *   着順, 枠（枠N色）, 馬番, 馬名, 性齢, 負担重量, 騎手名, タイム, 着差, コーナー通過順位,
+ *   推定上り, 馬体重（増減）, 調教師名, 単勝人気, [Rt]
  *
- * 通常形式（3行）:
- *   行1: 着順\t枠（枠N色）\t馬番\t馬名\t性齢\t負担重量\t騎手名\tタイム\t着差\t
- *   行2: コーナー通過順位（スペース区切り）
- *   行3: 推定上り\t馬体重（増減）\t調教師名\t単勝人気
- *
- * 注記あり形式（5行、ブリンカー着用等）:
- *   行1: 着順\t枠（枠N色）\t馬番\t
- *   行2: 馬名（注記を含む）
- *   行3: 性齢\t負担重量\t騎手名\tタイム\t着差\t
- *   行4: コーナー通過順位（スペース区切り）
- *   行5: 推定上り\t馬体重（増減）\t調教師名\t単勝人気
+ * コピー時の改行の入り方により1〜6行程度に分かれる。例:
+ *   通常（3行）:     "…タイム\t着差\t" / "コーナー通過順位" / "推定上り\t馬体重\t調教師名\t単勝人気"
+ *   注記あり（5行）: "着順\t枠\t馬番\t" / "馬名ブリンカー着用" / "性齢\t…\t着差\t" / "コーナー" / "推定上り…"
+ *   直線コース（1行）: コーナー通過順位が空のため全列が1行に並ぶ
+ *   レコード:        着差セルの「レコード」が独立した行になる
  *
  * @throws \InvalidArgumentException パースに失敗した場合
  */
@@ -26,6 +22,15 @@ class RaceResultHorseParser
 {
     /** 馬体重と増減（例: "500", "500(+2)", "490(初出走)", "510(0)", "480(-4)") */
     private const HORSE_WEIGHT_PATTERN = '/^(\d+)(?:\(([^)]*)\))?$/u';
+
+    /** コーナー通過順位（例: "2 2 2 1", "3", "2-2-1"） */
+    private const CORNER_ORDER_PATTERN = '/^[0-9]+(?:[ \-][0-9]+)*$/';
+
+    /** 着順〜タイムまでの先頭セル数 */
+    private const HEAD_CELL_COUNT = 8;
+
+    /** 馬名セルの末尾に連結される注記 */
+    private const BLINKER_SUFFIX = 'ブリンカー着用';
 
     /**
      * 着順テキストをパースし、各馬のデータを配列で返す。
@@ -102,6 +107,12 @@ class RaceResultHorseParser
     /**
      * 馬1頭分のブロック（行の配列）をパースする。
      *
+     * JRA 公式サイトからのコピーは、ブロック要素を含むセル（馬名の注記・着差の「レコード」・
+     * コーナー通過順位など）の前後で改行が入り、空セルが消えることがあるため行数が一定しない。
+     * そこでブロックの全行をセルの並びに平坦化し、先頭8セル（着順〜タイム）と
+     * 末尾4〜5セル（推定上り〜単勝人気、Rt）を固定位置として読み、
+     * 間に残ったセルを着差・コーナー通過順位として解釈する。
+     *
      * @param  array<int, string>  $block
      * @return array{
      *     finishing_order: int,
@@ -125,171 +136,98 @@ class RaceResultHorseParser
      */
     private function parseBlock(array $block, int $horseIndex): array
     {
-        return match (count($block)) {
-            2 => $this->parseTwoLineBlock($block, $horseIndex),
-            3 => $this->parseThreeLineBlock($block, $horseIndex),
-            5 => $this->parseFiveLineBlock($block, $horseIndex),
-            default => throw new \InvalidArgumentException(
-                sprintf('%d頭目: 行数が不正です（%d行）。', $horseIndex, count($block))
-            ),
-        };
-    }
+        $cells = [];
+        foreach ($block as $line) {
+            foreach (explode("\t", $line) as $cell) {
+                $cells[] = trim($cell);
+            }
+        }
 
-    /**
-     * 2行形式（旧フォーマット）: 行1に全データ10列、行2に上り等。
-     *
-     * @param  array<int, string>  $block
-     *
-     * @throws \InvalidArgumentException
-     */
-    private function parseTwoLineBlock(array $block, int $horseIndex): array
-    {
-        $cols1 = explode("\t", $block[0]);
-        $cols2 = explode("\t", $block[1]);
+        // 末尾が「単勝人気\tRt」なら Rt 列あり（調教師名は数字のみにならない）
+        $count = count($cells);
+        $hasRating = $count >= 2
+            && ctype_digit($cells[$count - 1])
+            && ctype_digit($cells[$count - 2]);
+        $tailLength = $hasRating ? 5 : 4;
 
-        if (count($cols1) < 10) {
+        $middleLength = $count - self::HEAD_CELL_COUNT - $tailLength;
+        if ($middleLength < 0 || $middleLength > 2) {
             throw new \InvalidArgumentException(
-                sprintf('%d頭目の1行目: 列数が不足しています（期待: 10列以上、実際: %d列）。', $horseIndex, count($cols1))
+                sprintf('%d頭目: 列数が不正です（%d列）。', $horseIndex, $count)
             );
         }
 
-        if (count($cols2) < 4) {
-            throw new \InvalidArgumentException(
-                sprintf('%d頭目の2行目: 列数が不足しています（期待: 4列以上、実際: %d列）。', $horseIndex, count($cols2))
-            );
-        }
+        $head = array_slice($cells, 0, self::HEAD_CELL_COUNT);
+        $middle = array_slice($cells, self::HEAD_CELL_COUNT, $middleLength);
+        $tail = array_slice($cells, self::HEAD_CELL_COUNT + $middleLength, 4);
 
-        $horseName = HorseNameNormalizer::stripJraAnnotationPrefix(trim($cols1[3]));
+        [$timeDifference, $cornerOrder] = $this->parseMiddleCells($middle);
+
+        $horseName = $this->normalizeHorseName($head[3]);
         if ($horseName === '') {
             throw new \InvalidArgumentException(sprintf('%d頭目: 馬名が空です。', $horseIndex));
         }
 
-        [$horseWeight, $horseWeightChange] = $this->parseHorseWeight(trim($cols2[1]), $horseIndex);
+        [$horseWeight, $horseWeightChange] = $this->parseHorseWeight($tail[1], $horseIndex);
 
         return $this->buildEntry(
-            finishingOrder: $this->parseIntColumn($cols1[0], $horseIndex, '着順'),
-            frameNumber: $this->parseFrameNumber($cols1[1], $horseIndex),
-            horseNumber: $this->parseIntColumn($cols1[2], $horseIndex, '馬番'),
+            finishingOrder: $this->parseIntColumn($head[0], $horseIndex, '着順'),
+            frameNumber: $this->parseFrameNumber($head[1], $horseIndex),
+            horseNumber: $this->parseIntColumn($head[2], $horseIndex, '馬番'),
             horseName: $horseName,
-            sexAge: trim($cols1[4]),
-            weight: $this->parseFloatColumn($cols1[5], $horseIndex, '負担重量'),
-            jockeyName: trim($cols1[6]),
-            raceTime: trim($cols1[7]),
-            timeDifference: $this->parseNullableString(trim($cols1[8])),
-            cornerOrder: $this->parseNullableString(trim($cols1[9])),
-            estimatedPace: $this->parseNullableFloat(trim($cols2[0])),
+            sexAge: $head[4],
+            weight: $this->parseFloatColumn($head[5], $horseIndex, '負担重量'),
+            jockeyName: $head[6],
+            raceTime: $head[7],
+            timeDifference: $timeDifference,
+            cornerOrder: $cornerOrder,
+            estimatedPace: $this->parseNullableFloat($tail[0]),
             horseWeight: $horseWeight,
             horseWeightChange: $horseWeightChange,
-            trainerName: trim($cols2[2]),
-            popularity: $this->parseIntColumn($cols2[3], $horseIndex, '単勝人気'),
+            trainerName: $tail[2],
+            popularity: $this->parseIntColumn($tail[3], $horseIndex, '単勝人気'),
         );
     }
 
     /**
-     * 3行形式（通常JRAフォーマット）: 行1=主データ、行2=コーナー通過、行3=上り等。
+     * タイムと推定上りの間に残ったセル（0〜2個）を着差・コーナー通過順位に振り分ける。
      *
-     * @param  array<int, string>  $block
+     * 2個なら順に着差・コーナー通過順位。1個の場合はコピー時に片方の空セルが消えているため、
+     * コーナー通過順位の形式（例: "2 2 2 1", "3", "2-2-1"）に一致すればコーナー通過順位、
+     * それ以外（例: "クビ", "0.3", "レコード"）は着差とみなす。
      *
-     * @throws \InvalidArgumentException
+     * @param  array<int, string>  $middle
+     * @return array{0: string|null, 1: string|null}
      */
-    private function parseThreeLineBlock(array $block, int $horseIndex): array
+    private function parseMiddleCells(array $middle): array
     {
-        $cols1 = explode("\t", $block[0]);
-        $cols3 = explode("\t", $block[2]);
-
-        if (count($cols1) < 8) {
-            throw new \InvalidArgumentException(
-                sprintf('%d頭目の1行目: 列数が不足しています（期待: 8列以上、実際: %d列）。', $horseIndex, count($cols1))
-            );
+        if (count($middle) === 2) {
+            return [$this->parseNullableString($middle[0]), $this->parseNullableString($middle[1])];
         }
 
-        if (count($cols3) < 4) {
-            throw new \InvalidArgumentException(
-                sprintf('%d頭目の3行目: 列数が不足しています（期待: 4列以上、実際: %d列）。', $horseIndex, count($cols3))
-            );
+        if (count($middle) === 1) {
+            $value = $middle[0];
+            if (preg_match(self::CORNER_ORDER_PATTERN, $value)) {
+                return [null, $value];
+            }
+
+            return [$this->parseNullableString($value), null];
         }
 
-        $horseName = HorseNameNormalizer::stripJraAnnotationPrefix(trim($cols1[3]));
-        if ($horseName === '') {
-            throw new \InvalidArgumentException(sprintf('%d頭目: 馬名が空です。', $horseIndex));
-        }
-
-        [$horseWeight, $horseWeightChange] = $this->parseHorseWeight(trim($cols3[1]), $horseIndex);
-
-        return $this->buildEntry(
-            finishingOrder: $this->parseIntColumn($cols1[0], $horseIndex, '着順'),
-            frameNumber: $this->parseFrameNumber($cols1[1], $horseIndex),
-            horseNumber: $this->parseIntColumn($cols1[2], $horseIndex, '馬番'),
-            horseName: $horseName,
-            sexAge: trim($cols1[4]),
-            weight: $this->parseFloatColumn($cols1[5], $horseIndex, '負担重量'),
-            jockeyName: trim($cols1[6]),
-            raceTime: trim($cols1[7]),
-            timeDifference: $this->parseNullableString(trim($cols1[8] ?? '')),
-            cornerOrder: $this->parseNullableString(trim($block[1])),
-            estimatedPace: $this->parseNullableFloat(trim($cols3[0])),
-            horseWeight: $horseWeight,
-            horseWeightChange: $horseWeightChange,
-            trainerName: trim($cols3[2]),
-            popularity: $this->parseIntColumn($cols3[3], $horseIndex, '単勝人気'),
-        );
+        return [null, null];
     }
 
     /**
-     * 5行形式（注記あり馬）: 行1=着順/枠/馬番、行2=馬名、行3=性齢以降、行4=コーナー、行5=上り等。
-     *
-     * @param  array<int, string>  $block
-     *
-     * @throws \InvalidArgumentException
+     * 馬名から JRA 注記 prefix（マルガイ等）と末尾の「ブリンカー着用」を除去する。
      */
-    private function parseFiveLineBlock(array $block, int $horseIndex): array
+    private function normalizeHorseName(string $name): string
     {
-        $cols1 = explode("\t", $block[0]);
-        $cols3 = explode("\t", $block[2]);
-        $cols5 = explode("\t", $block[4]);
-
-        if (count($cols1) < 3) {
-            throw new \InvalidArgumentException(
-                sprintf('%d頭目の1行目: 列数が不足しています（期待: 3列以上、実際: %d列）。', $horseIndex, count($cols1))
-            );
+        $name = trim($name);
+        if (str_ends_with($name, self::BLINKER_SUFFIX) && $name !== self::BLINKER_SUFFIX) {
+            $name = trim(mb_substr($name, 0, mb_strlen($name) - mb_strlen(self::BLINKER_SUFFIX)));
         }
 
-        if (count($cols3) < 4) {
-            throw new \InvalidArgumentException(
-                sprintf('%d頭目の3行目: 列数が不足しています（期待: 4列以上、実際: %d列）。', $horseIndex, count($cols3))
-            );
-        }
-
-        if (count($cols5) < 4) {
-            throw new \InvalidArgumentException(
-                sprintf('%d頭目の5行目: 列数が不足しています（期待: 4列以上、実際: %d列）。', $horseIndex, count($cols5))
-            );
-        }
-
-        $horseName = HorseNameNormalizer::stripJraAnnotationPrefix(trim($block[1]));
-        if ($horseName === '') {
-            throw new \InvalidArgumentException(sprintf('%d頭目: 馬名が空です。', $horseIndex));
-        }
-
-        [$horseWeight, $horseWeightChange] = $this->parseHorseWeight(trim($cols5[1]), $horseIndex);
-
-        return $this->buildEntry(
-            finishingOrder: $this->parseIntColumn($cols1[0], $horseIndex, '着順'),
-            frameNumber: $this->parseFrameNumber($cols1[1], $horseIndex),
-            horseNumber: $this->parseIntColumn($cols1[2], $horseIndex, '馬番'),
-            horseName: $horseName,
-            sexAge: trim($cols3[0]),
-            weight: $this->parseFloatColumn($cols3[1], $horseIndex, '負担重量'),
-            jockeyName: trim($cols3[2]),
-            raceTime: trim($cols3[3]),
-            timeDifference: $this->parseNullableString(trim($cols3[4] ?? '')),
-            cornerOrder: $this->parseNullableString(trim($block[3])),
-            estimatedPace: $this->parseNullableFloat(trim($cols5[0])),
-            horseWeight: $horseWeight,
-            horseWeightChange: $horseWeightChange,
-            trainerName: trim($cols5[2]),
-            popularity: $this->parseIntColumn($cols5[3], $horseIndex, '単勝人気'),
-        );
+        return HorseNameNormalizer::stripJraAnnotationPrefix($name);
     }
 
     /**
