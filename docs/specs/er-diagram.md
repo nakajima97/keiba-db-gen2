@@ -224,6 +224,38 @@ erDiagram
     users ||--o{ trainer_notes : "owns"
     trainers ||--o{ trainer_notes : "has"
 
+    trainer_comments {
+        bigint id PK
+        bigint user_id FK
+        bigint race_entry_id FK
+        bigint trainer_id FK "発言した調教師"
+        enum sentiment "positive/conditional/negative"
+        string content "コメント内容 1000字以内 プレーンテキスト"
+        enum outcome "nullable hit/miss/undeterminable 未入力=null"
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    users ||--o{ trainer_comments : "owns"
+    race_entries ||--o{ trainer_comments : "has"
+    trainers ||--o{ trainer_comments : "said"
+
+    jockey_comments {
+        bigint id PK
+        bigint user_id FK
+        bigint race_entry_id FK
+        bigint jockey_id FK "発言した騎手"
+        enum sentiment "positive/conditional/negative"
+        string content "コメント内容 1000字以内 プレーンテキスト"
+        enum outcome "nullable hit/miss/undeterminable 未入力=null"
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    users ||--o{ jockey_comments : "owns"
+    race_entries ||--o{ jockey_comments : "has"
+    jockeys ||--o{ jockey_comments : "said"
+
     race_nominations {
         bigint id PK
         bigint race_id FK

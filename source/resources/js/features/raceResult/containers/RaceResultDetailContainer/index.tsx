@@ -1,5 +1,18 @@
 import { router } from "@inertiajs/react";
 import { useState } from "react";
+import { toast } from "sonner";
+import {
+	EntryCommentRequestError,
+	updateEntryComment,
+} from "@/features/entryComment/requests/entryComments";
+import type {
+	CommentOutcome,
+	EntryComment,
+} from "@/features/entryComment/types";
+import {
+	commentKey,
+	replaceComment,
+} from "@/features/entryComment/utils/commentKey";
 import HorseNoteModalContainer from "@/features/horseNote/containers/HorseNoteModalContainer";
 import type { HorseNote } from "@/features/horseNote/types/horseNote";
 import DeleteResultModal from "@/features/raceResult/components/DeleteResultModal";
@@ -31,6 +44,7 @@ const buildRaceLabel = (race: RaceProps): string => {
  * レース結果画面のコンテナ。
  * メモセルのクリックでモーダルを開き、API 成功時に finishing_horses の note を更新する。
  * 「レース結果を削除」ボタンで削除確認モーダルを表示し、確定時に DELETE API を呼んで結果入力画面に遷移する。
+ * コメント当否列のセレクト変更で当否を即時に保存し、成功時に finishing_horses の comments を更新する。
  */
 const RaceResultDetailContainer = ({ race, tickets = [] }: Props) => {
 	const [finishingHorses, setFinishingHorses] = useState<FinishingHorse[]>(
@@ -81,6 +95,44 @@ const RaceResultDetailContainer = ({ race, tickets = [] }: Props) => {
 		);
 	};
 
+	const [pendingCommentKeys, setPendingCommentKeys] = useState<string[]>([]);
+
+	const handleCommentOutcomeChange = async ({
+		raceEntryId,
+		comment,
+		outcome,
+	}: {
+		raceEntryId: number;
+		comment: EntryComment;
+		outcome: CommentOutcome | null;
+	}) => {
+		const key = commentKey(comment);
+		setPendingCommentKeys((current) => [...current, key]);
+		try {
+			const result = await updateEntryComment(race.uid, raceEntryId, comment, {
+				outcome,
+			});
+			setFinishingHorses((current) =>
+				current.map((horse) =>
+					horse.race_entry_id === raceEntryId && horse.comments != null
+						? {
+								...horse,
+								comments: replaceComment(horse.comments, key, result.data),
+							}
+						: horse,
+				),
+			);
+		} catch (e) {
+			toast.error(
+				e instanceof EntryCommentRequestError && e.status === 422
+					? e.message
+					: "当否の保存に失敗しました",
+			);
+		} finally {
+			setPendingCommentKeys((current) => current.filter((k) => k !== key));
+		}
+	};
+
 	const handleDeleteClick = () => {
 		setDeleteModal({ open: true, isLoading: false, errorMessage: null });
 	};
@@ -125,6 +177,8 @@ const RaceResultDetailContainer = ({ race, tickets = [] }: Props) => {
 				tickets={tickets}
 				onNoteClick={handleNoteClick}
 				onDeleteClick={handleDeleteClick}
+				pendingCommentKeys={pendingCommentKeys}
+				onCommentOutcomeChange={handleCommentOutcomeChange}
 			/>
 			{noteModal.horseId != null && (
 				<HorseNoteModalContainer

@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi } from "vitest";
 import RaceResultDetail from "./index";
 
@@ -110,6 +111,67 @@ describe("RaceResultDetail", () => {
 			// Assert
 			const link = screen.getByRole("link", { name: "購入馬券一覧へ戻る" });
 			expect(link).toHaveAttribute("href", "/tickets");
+		});
+	});
+
+	describe("コメント当否列", () => {
+		const comment = {
+			id: 9,
+			speaker_type: "trainer" as const,
+			speaker_id: 10,
+			speaker_name: "調教師A",
+			sentiment: "positive" as const,
+			content: "状態は最高",
+			outcome: null,
+			created_at: "2026-04-01T10:00:00+09:00",
+		};
+
+		it("当否を変更すると出走馬IDとコメント・当否を渡して onCommentOutcomeChange が呼ばれる", async () => {
+			// Arrange
+			const onCommentOutcomeChange = vi.fn();
+			const user = userEvent.setup();
+			render(
+				<RaceResultDetail
+					race={{
+						...baseProps.race,
+						finishing_horses: [
+							{ ...sampleFinishingHorse, race_entry_id: 55, comments: [comment] },
+						],
+					}}
+					onCommentOutcomeChange={onCommentOutcomeChange}
+				/>,
+			);
+
+			// Act
+			await user.click(
+				screen.getByRole("combobox", { name: "調教師Aのコメント「状態は最高」の当否" }),
+			);
+			await user.click(screen.getByRole("option", { name: "当たり" }));
+
+			// Assert
+			expect(onCommentOutcomeChange).toHaveBeenCalledWith({
+				raceEntryId: 55,
+				comment,
+				outcome: "hit",
+			});
+		});
+
+		it("出馬表データがない着順のコメント当否列は「-」になる", () => {
+			// Act
+			render(
+				<RaceResultDetail
+					race={{
+						...baseProps.race,
+						finishing_horses: [
+							{ ...sampleFinishingHorse, race_entry_id: null, comments: null },
+						],
+					}}
+				/>,
+			);
+
+			// Assert
+			expect(screen.getByRole("columnheader", { name: "コメント当否" })).toBeInTheDocument();
+			expect(screen.getByText("-")).toBeInTheDocument();
 		});
 	});
 });

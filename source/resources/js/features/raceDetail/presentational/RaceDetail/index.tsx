@@ -2,6 +2,8 @@ import { Link } from "@inertiajs/react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/shadcn/ui/button";
 import ScrollableTable from "@/components/presentational/ScrollableTable";
+import CommentStatsLabel from "@/features/entryComment/presentational/CommentStatsLabel";
+import EntryCommentIconButton from "@/features/entryComment/presentational/EntryCommentIconButton";
 import HorseNoteIconButton from "@/features/horseNote/presentational/HorseNoteIconButton";
 import RaceNominationStatusBadge from "@/features/raceNomination/presentational/RaceNominationStatusBadge";
 import { edit as raceEntryEdit } from "@/routes/races/entries";
@@ -51,6 +53,7 @@ const RaceDetail = ({
 	onChangeColumnLabel,
 	onNoteClick,
 	onTrainerNoteClick,
+	onCommentClick,
 	onMarkMemoClick,
 }: RaceDetailProps) => {
 	const sortedColumns = sortColumns(race.mark_columns);
@@ -143,6 +146,9 @@ const RaceDetail = ({
 						<th className="bg-[color-mix(in_srgb,var(--color-muted)_50%,var(--color-background))] px-4 py-3 text-left font-medium text-muted-foreground">
 							馬体重
 						</th>
+						<th className="bg-[color-mix(in_srgb,var(--color-muted)_50%,var(--color-background))] px-4 py-3 text-left font-medium text-muted-foreground">
+							コメント
+						</th>
 						{sortedColumns.map((column) => (
 							<th
 								key={column.id}
@@ -189,7 +195,12 @@ const RaceDetail = ({
 									</span>
 								</div>
 							</td>
-							<td className="px-4 py-3">{entry.jockey_name}</td>
+							<td className="px-4 py-3">
+								<div className="flex flex-col">
+									<span className="whitespace-nowrap">{entry.jockey_name}</span>
+									<CommentStatsLabel stats={entry.jockey_comment_stats ?? null} />
+								</div>
+							</td>
 							<td className="px-4 py-3">
 								{entry.trainer_name != null ? (
 									<div className="flex items-center gap-1">
@@ -218,9 +229,23 @@ const RaceDetail = ({
 								) : (
 									"-"
 								)}
+								<CommentStatsLabel
+									stats={
+										entry.trainer_id != null
+											? (entry.trainer_comment_stats ?? null)
+											: null
+									}
+								/>
 							</td>
 							<td className="px-4 py-3">
 								{entry.weight !== null ? `${entry.weight}kg` : "-"}
+							</td>
+							<td className="px-4 py-3">
+								<EntryCommentIconButton
+									commentCount={entry.comments?.length ?? 0}
+									ariaLabel={`${entry.horse_name}の調教師・騎手コメント`}
+									onClick={() => onCommentClick?.(entry.id)}
+								/>
 							</td>
 							{sortedColumns.map((column) => {
 								const markValue = findMarkValue(

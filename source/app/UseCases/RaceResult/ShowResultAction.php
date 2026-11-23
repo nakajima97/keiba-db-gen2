@@ -4,14 +4,19 @@ namespace App\UseCases\RaceResult;
 
 use App\Models\Race;
 use App\Models\User;
+use App\UseCases\EntryComment\LoadCommentsByEntryId;
 use App\UseCases\HorseNote\LoadNotesByHorseId;
 
 /**
- * uid でレースを取得し、レース結果確認・編集画面の表示用データ（払戻情報・競走馬メモを含む）を返す。
+ * uid でレースを取得し、レース結果確認・編集画面の表示用データ（払戻情報・競走馬メモ・調教師/騎手コメントを含む）を返す。
+ * コメントは着順の馬番で出走馬と対応付ける（着順側に horse_id があれば一致も確認する）。対応する出走馬がない場合は race_entry_id / comments を null にする。
  */
 class ShowResultAction
 {
-    public function __construct(private LoadNotesByHorseId $loadNotesByHorseId) {}
+    public function __construct(
+        private LoadNotesByHorseId $loadNotesByHorseId,
+        private LoadCommentsByEntryId $loadCommentsByEntryId,
+    ) {}
 
     /**
      * @return array{
@@ -38,6 +43,8 @@ class ShowResultAction
      *         jockey_name: string,
      *         race_time: string,
      *         note: array{id: int, content: string, source: string}|null,
+     *         race_entry_id: int|null,
+     *         comments: list<array<string, mixed>>|null,
      *     }>,
      * }
      */
@@ -87,8 +94,21 @@ class ShowResultAction
 
         $notesByHorseId = $this->loadNotesByHorseId->execute($user, $horseIds, (int) $race->id);
 
-        $finishingHorses = $race->raceResultHorses->map(function ($horse) use ($notesByHorseId) {
+        $entriesByHorseNumber = $race->entries()
+            ->get(['id', 'horse_number', 'horse_id'])
+            ->keyBy(fn ($entry): int => (int) $entry->horse_number);
+        $commentsByEntryId = $this->loadCommentsByEntryId->execute(
+            $user,
+            $entriesByHorseNumber->map(fn ($entry): int => (int) $entry->id)->values()->all(),
+        );
+
+        $finishingHorses = $race->raceResultHorses->map(function ($horse) use ($notesByHorseId, $entriesByHorseNumber, $commentsByEntryId) {
             $horseId = $horse->horse_id !== null ? (int) $horse->horse_id : null;
+            $entry = $entriesByHorseNumber->get((int) $horse->horse_number);
+            // 馬番が一致しても別の馬（出馬表と結果で馬番がずれた等）なら対応付けない。
+            $raceEntryId = $entry !== null && ($horseId === null || (int) $entry->horse_id === $horseId)
+                ? (int) $entry->id
+                : null;
 
             return [
                 'finishing_order' => $horse->finishing_order,
@@ -100,6 +120,8 @@ class ShowResultAction
                 'jockey_name' => $horse->jockey_name,
                 'race_time' => $horse->race_time,
                 'note' => $horseId !== null ? ($notesByHorseId[$horseId] ?? null) : null,
+                'race_entry_id' => $raceEntryId,
+                'comments' => $raceEntryId !== null ? ($commentsByEntryId[$raceEntryId] ?? []) : null,
             ];
         })->values()->all();
 

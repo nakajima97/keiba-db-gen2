@@ -366,4 +366,72 @@ describe("登録馬のチェック／消しの引き継ぎ", () => {
 		expect(screen.queryByLabelText("登録馬で消し")).not.toBeInTheDocument();
 		expect(screen.queryByLabelText("登録馬でチェック済み")).not.toBeInTheDocument();
 	});
+
+	describe("調教師・騎手コメント", () => {
+		const stats = {
+			positive: { hit: 3, judged: 10 },
+			conditional: { hit: 5, judged: 8 },
+			negative: { hit: 0, judged: 0 },
+		};
+		const raceWithComments: RaceDetailItem = {
+			...baseRace,
+			entries: [
+				{
+					...baseRace.entries[0],
+					jockey_id: 20,
+					comments: [
+						{
+							id: 1,
+							speaker_type: "jockey",
+							speaker_id: 20,
+							speaker_name: "テスト騎手",
+							sentiment: "positive",
+							content: "好感触",
+							outcome: null,
+							created_at: "2026-04-01T10:00:00+09:00",
+						},
+					],
+					trainer_comment_stats: {
+						positive: { hit: 1, judged: 2 },
+						conditional: { hit: 0, judged: 0 },
+						negative: { hit: 0, judged: 0 },
+					},
+					jockey_comment_stats: stats,
+				},
+			],
+		};
+
+		it("騎手名・調教師名の横に向き別の的中率が表示される", () => {
+			// Act
+			render(<RaceDetail race={raceWithComments} {...noopHandlers} />);
+
+			// Assert
+			expect(screen.getByText("前 3/10・条 5/8")).toBeInTheDocument();
+			expect(screen.getByText("前 1/2")).toBeInTheDocument();
+		});
+
+		it("コメント件数がバッジで表示され、アイコンのクリックで出走馬IDを渡して onCommentClick が呼ばれる", async () => {
+			// Arrange
+			const onCommentClick = vi.fn();
+			const user = userEvent.setup();
+			render(
+				<RaceDetail
+					race={raceWithComments}
+					{...noopHandlers}
+					onCommentClick={onCommentClick}
+				/>,
+			);
+
+			// Act
+			await user.click(
+				screen.getByRole("button", {
+					name: "テストホースの調教師・騎手コメント",
+				}),
+			);
+
+			// Assert
+			expect(screen.getByLabelText("1件")).toHaveTextContent("1");
+			expect(onCommentClick).toHaveBeenCalledWith(1);
+		});
+	});
 });

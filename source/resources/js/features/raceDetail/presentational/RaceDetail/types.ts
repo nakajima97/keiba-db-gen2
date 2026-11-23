@@ -1,4 +1,8 @@
 import type {
+	CommentSentimentStats,
+	EntryComment,
+} from "@/features/entryComment/types";
+import type {
 	RaceNomination,
 	RaceNominationStatus,
 } from "@/features/raceNomination/types/raceNomination";
@@ -54,6 +58,7 @@ export type RaceEntry = {
 	horse_id: number;
 	horse_uid: string;
 	horse_name: string;
+	jockey_id?: number;
 	jockey_name: string;
 	trainer_id?: number | null;
 	trainer_name?: string | null;
@@ -61,6 +66,9 @@ export type RaceEntry = {
 	trainer_note?: RaceEntryTrainerNote | null;
 	weight: number | null;
 	note?: RaceEntryNote | null;
+	comments?: EntryComment[];
+	trainer_comment_stats?: CommentSentimentStats | null;
+	jockey_comment_stats?: CommentSentimentStats;
 };
 
 export type RaceDetailItem = {
@@ -91,6 +99,7 @@ export type RaceDetailProps = {
 	onChangeColumnLabel: (columnId: number, label: string) => void;
 	onNoteClick?: (horseId: number) => void;
 	onTrainerNoteClick?: (trainerId: number) => void;
+	onCommentClick?: (raceEntryId: number) => void;
 	onMarkMemoClick?: (params: {
 		columnId: number;
 		raceEntryId: number;
