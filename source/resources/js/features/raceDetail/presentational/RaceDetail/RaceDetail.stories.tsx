@@ -112,6 +112,16 @@ export const RaceNameEmpty: Story = {
 	},
 };
 
+export const NoEntries: Story = {
+	name: "出走馬が未登録（出馬表なしで登録したレース）",
+	args: {
+		race: {
+			...emptyMarksRace,
+			entries: [],
+		},
+	},
+};
+
 export const OwnMarksPartiallySet: Story = {
 	name: "自分の印が一部設定済み",
 	args: {

@@ -66,8 +66,7 @@ const RaceInputForm = ({
 	const isFormValid =
 		venueId !== "" &&
 		raceDate !== "" &&
-		raceNumber !== "" &&
-		pasteText.trim() !== "";
+		raceNumber !== "";
 
 	return (
 		<div className="flex flex-col gap-6">
@@ -77,7 +76,7 @@ const RaceInputForm = ({
 			<div>
 				<h1 className="text-xl font-semibold">レース情報入力</h1>
 				<p className="text-sm text-muted-foreground">
-					JRA公式サイトの出馬表をコピー＆ペーストしてレース情報を登録します。
+					JRA公式サイトの出馬表をコピー＆ペーストしてレース情報を登録します。出馬表は空のままでも登録でき、出走馬はあとからレース詳細画面で登録できます。
 				</p>
 			</div>
 
@@ -136,7 +135,7 @@ const RaceInputForm = ({
 				</div>
 
 				<div className="flex flex-col gap-2">
-					<Label htmlFor="paste-text">出馬表をペースト</Label>
+					<Label htmlFor="paste-text">出馬表をペースト（任意）</Label>
 					<textarea
 						id="paste-text"
 						className="min-h-[240px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:border-ring"
