@@ -366,6 +366,32 @@ test('出馬表なしでも同じ競馬場・レース日・レース番号の�
     $this->assertDatabaseCount('races', 1);
 });
 
+test('出馬表ありで登録すると生年未設定の同名馬（登録馬）に生年を補完して再利用する', function () use ($sampleText) {
+    // Arrange
+    $user = User::factory()->create();
+    $venueId = createVenueForStoreTest();
+    $horseId = DB::table('horses')->insertGetId([
+        'uid' => NanoId::generate(),
+        'name' => 'エビスディアーナ',
+        'birth_year' => null,
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
+    // Act
+    $this->actingAs($user)->post(route('races.store'), [
+        'venue_id' => $venueId,
+        'race_date' => '2026-04-18',
+        'race_number' => 1,
+        'paste_text' => $sampleText,
+    ]);
+
+    // Assert
+    $this->assertDatabaseCount('horses', 1);
+    $this->assertDatabaseHas('horses', ['id' => $horseId, 'birth_year' => 2023]);
+    $this->assertDatabaseHas('race_entries', ['horse_id' => $horseId]);
+});
+
 test('race_name ありで登録すると races テーブルに race_name が保存される', function () use ($sampleText) {
     // Arrange
     $user = User::factory()->create();

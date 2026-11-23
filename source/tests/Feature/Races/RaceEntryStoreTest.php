@@ -1,6 +1,9 @@
 <?php
 
+use App\Models\Horse;
+use App\Models\Jockey;
 use App\Models\Race;
+use App\Models\RaceEntry;
 use App\Models\Trainer;
 use App\Models\User;
 use App\Models\Venue;
@@ -265,6 +268,35 @@ test('出馬登録 store 時に生年の異なる同名馬しかいなければ�
     $this->assertDatabaseCount('horses', 2);
     $this->assertDatabaseHas('horses', ['id' => $otherHorseId, 'birth_year' => 2010]);
     $this->assertDatabaseMissing('race_entries', ['horse_id' => $otherHorseId]);
+});
+
+test('出馬登録 store 時に生年未設定でも出走記録のある同名馬は再利用せず新規作成する', function () use ($entryStoreSampleText) {
+    // Arrange
+    $user = User::factory()->create();
+    $race = createRaceForEntryTest();
+    $pastRace = Race::create([
+        'venue_id' => $race->venue_id,
+        'race_date' => '2010-04-18',
+        'race_number' => 1,
+    ]);
+    $pastHorse = Horse::create(['name' => 'エビスディアーナ']);
+    $pastEntry = RaceEntry::create([
+        'race_id' => $pastRace->id,
+        'horse_id' => $pastHorse->id,
+        'jockey_id' => Jockey::create(['name' => '過去 騎手'])->id,
+        'frame_number' => 1,
+        'horse_number' => 1,
+        'weight' => 55.0,
+    ]);
+
+    // Act
+    $this->actingAs($user)->post(route('races.entries.store', ['race' => $race->uid]), [
+        'paste_text' => $entryStoreSampleText,
+    ]);
+
+    // Assert
+    $this->assertDatabaseHas('horses', ['id' => $pastEntry->horse_id, 'birth_year' => null]);
+    $this->assertDatabaseMissing('race_entries', ['race_id' => $race->id, 'horse_id' => $pastEntry->horse_id]);
 });
 
 test('出馬表なしで作成したレースに登録馬を追加し後から出馬表を登録すると登録馬と出走馬が同じ競走馬に紐づく', function () use ($entryStoreSampleText) {
