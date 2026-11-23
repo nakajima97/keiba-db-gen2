@@ -242,7 +242,7 @@ test('race_number が範囲外のときバリデーションエラーが返る',
     $response->assertSessionHasErrors(['race_number']);
 });
 
-test('paste_text が未指定のときバリデーションエラーが返る', function () {
+test('paste_text が未指定のとき出走馬なしでレースのみが作成される', function () {
     // Arrange
     $user = User::factory()->create();
     $venueId = createVenueForStoreTest();
@@ -255,7 +255,115 @@ test('paste_text が未指定のときバリデーションエラーが返る', 
     ]);
 
     // Assert
-    $response->assertSessionHasErrors(['paste_text']);
+    $response->assertSessionHasNoErrors();
+    $this->assertDatabaseCount('races', 1);
+    $this->assertDatabaseHas('races', [
+        'venue_id' => $venueId,
+        'race_number' => 1,
+    ]);
+    $this->assertDatabaseCount('race_entries', 0);
+    $this->assertDatabaseCount('horses', 0);
+});
+
+test('paste_text が空白のみのとき出走馬なしでレースのみが作成される', function () {
+    // Arrange
+    $user = User::factory()->create();
+    $venueId = createVenueForStoreTest();
+
+    // Act
+    $response = $this->actingAs($user)->post(route('races.store'), [
+        'venue_id' => $venueId,
+        'race_date' => '2026-04-18',
+        'race_number' => 1,
+        'paste_text' => "  \n\t  \n",
+    ]);
+
+    // Assert
+    $response->assertSessionHasNoErrors();
+    $this->assertDatabaseCount('races', 1);
+    $this->assertDatabaseCount('race_entries', 0);
+});
+
+test('出馬表なしで登録するとレース詳細画面へリダイレクトされる', function () {
+    // Arrange
+    $user = User::factory()->create();
+    $venueId = createVenueForStoreTest();
+
+    // Act
+    $response = $this->actingAs($user)->post(route('races.store'), [
+        'venue_id' => $venueId,
+        'race_date' => '2026-04-18',
+        'race_number' => 1,
+        'paste_text' => '',
+    ]);
+
+    // Assert
+    $uid = (string) DB::table('races')->value('uid');
+    $response->assertRedirect(route('races.show', ['race' => $uid]));
+});
+
+test('出馬表なしで登録してもレース名は保存される', function () {
+    // Arrange
+    $user = User::factory()->create();
+    $venueId = createVenueForStoreTest();
+
+    // Act
+    $this->actingAs($user)->post(route('races.store'), [
+        'venue_id' => $venueId,
+        'race_date' => '2026-04-18',
+        'race_number' => 11,
+        'race_name' => '天皇賞（秋）',
+    ]);
+
+    // Assert
+    $this->assertDatabaseHas('races', [
+        'race_number' => 11,
+        'race_name' => '天皇賞（秋）',
+    ]);
+});
+
+test('出馬表を入力したが形式を認識できないときはエラーになりレースは作成されない', function () {
+    // Arrange
+    $user = User::factory()->create();
+    $venueId = createVenueForStoreTest();
+
+    // Act
+    $response = $this->actingAs($user)->post(route('races.store'), [
+        'venue_id' => $venueId,
+        'race_date' => '2026-04-18',
+        'race_number' => 1,
+        'paste_text' => '出馬表ではないテキスト',
+    ]);
+
+    // Assert
+    $response->assertSessionHasErrors(['paste_text' => '出馬表の形式が認識できません。']);
+    $this->assertDatabaseCount('races', 0);
+});
+
+test('出馬表なしでも同じ競馬場・レース日・レース番号のレースがあれば重複エラーになる', function () {
+    // Arrange
+    $user = User::factory()->create();
+    $venueId = createVenueForStoreTest();
+    $now = now();
+    DB::table('races')->insert([
+        'uid' => 'existing-uid-002',
+        'venue_id' => $venueId,
+        'race_date' => '2026-04-18',
+        'race_number' => 1,
+        'created_at' => $now,
+        'updated_at' => $now,
+    ]);
+
+    // Act
+    $response = $this->actingAs($user)->post(route('races.store'), [
+        'venue_id' => $venueId,
+        'race_date' => '2026-04-18',
+        'race_number' => 1,
+    ]);
+
+    // Assert
+    $response->assertSessionHasErrors();
+    $this->assertDatabaseCount('races', 1);
 });
 
 test('race_name ありで登録すると races テーブルに race_name が保存される', function () use ($sampleText) {

@@ -23,7 +23,7 @@ class StoreRaceRequest extends FormRequest
             'race_date' => ['required', 'date'],
             'race_number' => ['required', 'integer', 'between:1,'.Race::MAX_RACE_NUMBER],
             'race_name' => ['nullable', 'string'],
-            'paste_text' => ['required', 'string'],
+            'paste_text' => ['nullable', 'string'],
         ];
     }
 }

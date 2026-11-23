@@ -2,11 +2,11 @@
 
 namespace App\UseCases\RaceEntry;
 
-use App\Models\Horse;
 use App\Models\Jockey;
 use App\Models\Race;
 use App\Models\RaceEntry;
 use App\Services\RaceEntryParser;
+use App\UseCases\Horse\FindOrCreateHorseAction;
 use App\UseCases\Trainer\FindOrCreateTrainerAction;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
@@ -17,6 +17,7 @@ use Illuminate\Validation\ValidationException;
  * 既存レースに対して JRA 出馬表テキストから出走馬情報を登録する。
  *
  * 出馬表テキストをパースし、未登録の馬・騎手・調教師を自動で新規登録したうえで race_entries を作成する。
+ * 馬は FindOrCreateHorseAction で照合し、生年未設定の同名馬（登録馬など）がいれば生年を補完して再利用する。
  * パース結果が空の場合は ValidationException を投げる。
  */
 class StoreAction
@@ -24,6 +25,7 @@ class StoreAction
     public function __construct(
         private readonly RaceEntryParser $parser,
         private readonly FindOrCreateTrainerAction $findOrCreateTrainerAction,
+        private readonly FindOrCreateHorseAction $findOrCreateHorseAction,
     ) {}
 
     /**
@@ -45,10 +47,7 @@ class StoreAction
 
         DB::transaction(function () use ($race, $entries): void {
             foreach ($entries as $entry) {
-                $horse = Horse::firstOrCreate([
-                    'name' => $entry['horse_name'],
-                    'birth_year' => $entry['birth_year'],
-                ]);
+                $horse = $this->findOrCreateHorseAction->execute($entry['horse_name'], $entry['birth_year']);
 
                 $jockey = Jockey::firstOrCreate([
                     'name' => $entry['jockey_name'],

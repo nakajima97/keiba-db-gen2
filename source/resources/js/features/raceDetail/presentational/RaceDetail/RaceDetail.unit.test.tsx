@@ -100,6 +100,29 @@ describe("RaceDetail", () => {
 	});
 
 	describe("出馬表", () => {
+		it("出走馬が0頭のとき「出走馬が登録されていません」が表示される", () => {
+			// Arrange
+			const race: RaceDetailItem = { ...baseRace, entries: [] };
+
+			// Act
+			render(<RaceDetail race={race} {...noopHandlers} />);
+
+			// Assert
+			expect(
+				screen.getByText("出走馬が登録されていません"),
+			).toBeInTheDocument();
+		});
+
+		it("出走馬がいるとき「出走馬が登録されていません」は表示されない", () => {
+			// Act
+			render(<RaceDetail race={baseRace} {...noopHandlers} />);
+
+			// Assert
+			expect(
+				screen.queryByText("出走馬が登録されていません"),
+			).not.toBeInTheDocument();
+		});
+
 		it("枠番・馬番・馬名・騎手名・馬体重が表示される", () => {
 			// Act
 			render(<RaceDetail race={baseRace} {...noopHandlers} />);
