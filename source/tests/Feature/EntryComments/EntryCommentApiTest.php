@@ -17,10 +17,13 @@ use App\Models\Venue;
  */
 function createEntryForCommentApiTest(array $options = []): RaceEntry
 {
+    static $sequence = 0;
+    $sequence++;
     $race = $options['race'] ?? Race::create([
         'venue_id' => Venue::firstOrCreate(['name' => '東京'])->id,
-        'race_date' => '2026-11-22',
-        'race_number' => fake()->unique()->numberBetween(1, 1000),
+        // races は (venue_id, race_date, race_number) が一意で race_number は 1〜12 のため、12 レースごとに日付をずらす
+        'race_date' => now()->setDate(2026, 11, 1)->addDays(intdiv($sequence - 1, 12))->toDateString(),
+        'race_number' => ($sequence - 1) % 12 + 1,
     ]);
     $trainer = array_key_exists('trainer', $options) ? $options['trainer'] : Trainer::factory()->create();
     $jockey = $options['jockey'] ?? Jockey::create(['name' => '騎手'.uniqid()]);
