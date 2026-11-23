@@ -2,10 +2,10 @@
 
 namespace App\UseCases\Race;
 
+use App\Enums\CommentSpeakerType;
 use App\Models\Race;
 use App\Models\RaceMarkColumn;
 use App\Models\RaceMarkMemo;
-use App\Enums\CommentSpeakerType;
 use App\Models\User;
 use App\UseCases\EntryComment\LoadCommentsByEntryId;
 use App\UseCases\EntryComment\LoadStatsBySpeakerId;
