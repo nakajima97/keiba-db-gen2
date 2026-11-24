@@ -1,9 +1,17 @@
 import { buildJsonHeaders } from "@/features/raceDetail/requests/csrf";
 
+/**
+ * 印メモの対象。出走馬（race_entries）または登録馬（race_nominations）。
+ */
+export type RaceMarkMemoTarget =
+	| { type: "entry"; raceEntryId: number }
+	| { type: "nomination"; raceNominationId: number };
+
 type ApiMemo = {
 	id: number;
 	race_mark_column_id: number;
-	race_entry_id: number;
+	race_entry_id?: number;
+	race_nomination_id?: number;
 	content: string;
 	created_at: string | null;
 	updated_at: string | null;
@@ -53,8 +61,14 @@ const extractErrorMessage = async (response: Response): Promise<string> => {
 	return `Request failed: ${response.status}`;
 };
 
-const memoUrl = (raceUid: string, columnId: number, raceEntryId: number) =>
-	`/api/races/${raceUid}/mark-columns/${columnId}/entries/${raceEntryId}/memo`;
+const memoUrl = (
+	raceUid: string,
+	columnId: number,
+	target: RaceMarkMemoTarget,
+): string =>
+	target.type === "entry"
+		? `/api/races/${raceUid}/mark-columns/${columnId}/entries/${target.raceEntryId}/memo`
+		: `/api/races/${raceUid}/mark-columns/${columnId}/nominations/${target.raceNominationId}/memo`;
 
 /**
  * 印メモを upsert する。新規作成は 201、更新は 200。
@@ -62,10 +76,10 @@ const memoUrl = (raceUid: string, columnId: number, raceEntryId: number) =>
 export const upsertMemo = async (
 	raceUid: string,
 	columnId: number,
-	raceEntryId: number,
+	target: RaceMarkMemoTarget,
 	content: string,
 ): Promise<ApiMemo> => {
-	const response = await fetch(memoUrl(raceUid, columnId, raceEntryId), {
+	const response = await fetch(memoUrl(raceUid, columnId, target), {
 		method: "PUT",
 		headers: buildJsonHeaders(),
 		credentials: "same-origin",
@@ -85,9 +99,9 @@ export const upsertMemo = async (
 export const deleteMemo = async (
 	raceUid: string,
 	columnId: number,
-	raceEntryId: number,
+	target: RaceMarkMemoTarget,
 ): Promise<void> => {
-	const response = await fetch(memoUrl(raceUid, columnId, raceEntryId), {
+	const response = await fetch(memoUrl(raceUid, columnId, target), {
 		method: "DELETE",
 		headers: buildJsonHeaders(),
 		credentials: "same-origin",

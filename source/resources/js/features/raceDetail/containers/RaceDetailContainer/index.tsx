@@ -16,7 +16,10 @@ import type {
 } from "@/features/raceDetail/presentational/RaceDetail/types";
 import { deleteColumn } from "@/features/raceDetail/requests/raceMarkColumns";
 import RaceMarkMemoModalContainer from "@/features/raceMarkMemo/containers/RaceMarkMemoModalContainer";
+import type { RaceMarkMemoTarget } from "@/features/raceMarkMemo/requests/raceMarkMemos";
 import RaceNominationSectionContainer from "@/features/raceNomination/containers/RaceNominationSectionContainer";
+import { useRaceNominationColumnMarks } from "@/features/raceNomination/hooks/useRaceNominationColumnMarks";
+import { useRaceNominationColumnMemos } from "@/features/raceNomination/hooks/useRaceNominationColumnMemos";
 import { useRaceNominations } from "@/features/raceNomination/hooks/useRaceNominations";
 import TrainerNoteModalContainer from "@/features/trainerNote/containers/TrainerNoteModalContainer";
 import { formatDateDisplay } from "@/utils/date";
@@ -39,12 +42,21 @@ const RaceDetailContainer = ({ race }: Props) => {
 	const marksHook = useRaceMarks(race.uid, race.marks);
 	const memosHook = useRaceMarkMemos(race.mark_memos ?? []);
 	const nominationsHook = useRaceNominations(race.uid, race.nominations ?? []);
+	const nominationMarksHook = useRaceNominationColumnMarks(
+		race.uid,
+		race.nomination_marks ?? [],
+	);
+	const nominationMemosHook = useRaceNominationColumnMemos(
+		race.nomination_mark_memos ?? [],
+	);
 	const modals = useRaceDetailModals({
 		entries,
 		markColumns: columnsHook.markColumns,
 		marks: marksHook.marks,
 		markMemos: memosHook.markMemos,
 		nominations: nominationsHook.nominations,
+		nominationMarks: nominationMarksHook.marks,
+		nominationMarkMemos: nominationMemosHook.markMemos,
 	});
 	const trainerNotes = useTrainerNotes(entries, setEntries);
 	const entryComments = useEntryComments(entries, setEntries);
@@ -54,14 +66,59 @@ const RaceDetailContainer = ({ race }: Props) => {
 		const colSnap = columnsHook.removeColumnLocally(columnId);
 		const markSnap = marksHook.removeByColumnLocally(columnId);
 		const memoSnap = memosHook.removeByColumnLocally(columnId);
+		const nominationMarkSnap =
+			nominationMarksHook.removeByColumnLocally(columnId);
+		const nominationMemoSnap =
+			nominationMemosHook.removeByColumnLocally(columnId);
 		try {
 			await deleteColumn(race.uid, columnId);
 		} catch (_e) {
 			columnsHook.restoreColumns(colSnap);
 			marksHook.restoreSnapshot(markSnap);
 			memosHook.restoreSnapshot(memoSnap);
+			nominationMarksHook.restoreSnapshot(nominationMarkSnap);
+			nominationMemosHook.restoreSnapshot(nominationMemoSnap);
 			toast.error("印列の削除に失敗しました");
 		}
+	};
+
+	const handleMemoSaved = (params: {
+		columnId: number;
+		target: RaceMarkMemoTarget;
+		content: string;
+	}) => {
+		const { columnId, target, content } = params;
+		if (target.type === "entry") {
+			memosHook.handleMemoSaved({
+				columnId,
+				raceEntryId: target.raceEntryId,
+				content,
+			});
+			return;
+		}
+		nominationMemosHook.handleMemoSaved({
+			columnId,
+			raceNominationId: target.raceNominationId,
+			content,
+		});
+	};
+
+	const handleMemoDeleted = (params: {
+		columnId: number;
+		target: RaceMarkMemoTarget;
+	}) => {
+		const { columnId, target } = params;
+		if (target.type === "entry") {
+			memosHook.handleMemoDeleted({
+				columnId,
+				raceEntryId: target.raceEntryId,
+			});
+			return;
+		}
+		nominationMemosHook.handleMemoDeleted({
+			columnId,
+			raceNominationId: target.raceNominationId,
+		});
 	};
 
 	const handleNoteSuccess = (note: HorseNote) => {
@@ -94,6 +151,8 @@ const RaceDetailContainer = ({ race }: Props) => {
 		marks: marksHook.marks,
 		mark_memos: memosHook.markMemos,
 		nominations: nominationsHook.nominations,
+		nomination_marks: nominationMarksHook.marks,
+		nomination_mark_memos: nominationMemosHook.markMemos,
 	};
 
 	return (
@@ -117,6 +176,14 @@ const RaceDetailContainer = ({ race }: Props) => {
 					onRemove={nominationsHook.removeNomination}
 					onStatusChange={nominationsHook.changeStatus}
 					onNoteClick={modals.handleNoteClick}
+					markColumns={columnsHook.markColumns}
+					marks={nominationMarksHook.marks}
+					markMemos={nominationMemosHook.markMemos}
+					onAddOtherColumn={columnsHook.handleAddOtherColumn}
+					onChangeColumnLabel={columnsHook.handleChangeColumnLabel}
+					onRemoveOtherColumn={handleRemoveOtherColumn}
+					onMarkChange={nominationMarksHook.handleMarkChange}
+					onMarkMemoClick={modals.handleNominationMarkMemoClick}
 				/>
 			</div>
 			{modals.noteModal.horseId != null && (
@@ -138,22 +205,22 @@ const RaceDetailContainer = ({ race }: Props) => {
 				/>
 			)}
 			{modals.memoModal.columnId != null &&
-				modals.memoModal.raceEntryId != null &&
+				modals.memoModal.target != null &&
 				modals.memoTargetColumn != null &&
-				modals.memoTargetEntry != null && (
+				modals.memoTargetHorseName != null && (
 					<RaceMarkMemoModalContainer
 						open={modals.memoModal.open}
-						mode={modals.memoTargetMemo != null ? "edit" : "create"}
+						mode={modals.memoTargetContent != null ? "edit" : "create"}
 						raceUid={race.uid}
 						columnId={modals.memoModal.columnId}
-						raceEntryId={modals.memoModal.raceEntryId}
-						horseName={modals.memoTargetEntry.horse_name}
+						target={modals.memoModal.target}
+						horseName={modals.memoTargetHorseName}
 						columnLabel={modals.memoTargetColumn.label ?? ""}
-						markValue={modals.memoTargetMark?.mark_value ?? null}
-						initialContent={modals.memoTargetMemo?.content ?? ""}
+						markValue={modals.memoTargetMarkValue}
+						initialContent={modals.memoTargetContent ?? ""}
 						onClose={modals.handleMemoClose}
-						onSaved={memosHook.handleMemoSaved}
-						onDeleted={memosHook.handleMemoDeleted}
+						onSaved={handleMemoSaved}
+						onDeleted={handleMemoDeleted}
 					/>
 				)}
 			{trainerNotes.trainerNoteModal.trainerId != null &&

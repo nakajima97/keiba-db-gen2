@@ -15,9 +15,9 @@ const HEADER_CELL_CLASS =
 const RaceNominationSection = ({
 	nominations,
 	addForm,
-	markColumns = [],
-	marks = [],
-	markMemos = [],
+	markColumns,
+	marks,
+	markMemos,
 	onStatusChange,
 	onNoteClick,
 	onDeleteClick,
@@ -27,7 +27,7 @@ const RaceNominationSection = ({
 	onMarkChange,
 	onMarkMemoClick,
 }: RaceNominationSectionProps) => {
-	const otherColumns = markColumns
+	const otherColumns = [...markColumns]
 		.filter((column) => column.type === "other")
 		.sort((a, b) => a.display_order - b.display_order);
 
@@ -41,7 +41,7 @@ const RaceNominationSection = ({
 					type="button"
 					variant="outline"
 					size="sm"
-					onClick={() => onAddOtherColumn?.()}
+					onClick={onAddOtherColumn}
 				>
 					<Plus className="mr-1 h-4 w-4" />
 					他人の印を追加
@@ -67,9 +67,9 @@ const RaceNominationSection = ({
 									<RaceMarkColumnHeader
 										column={column}
 										onChangeLabel={(label) =>
-											onChangeColumnLabel?.(column.id, label)
+											onChangeColumnLabel(column.id, label)
 										}
-										onRemove={() => onRemoveOtherColumn?.(column.id)}
+										onRemove={() => onRemoveOtherColumn(column.id)}
 									/>
 								</th>
 							))}
@@ -123,7 +123,7 @@ const RaceNominationSection = ({
 													value={markValue}
 													ariaLabel={`${nomination.horse_name}の印（${columnLabel}）`}
 													onChange={(nextMarkValue) =>
-														onMarkChange?.({
+														onMarkChange({
 															columnId: column.id,
 															raceNominationId: nomination.id,
 															markValue: nextMarkValue,
@@ -135,7 +135,7 @@ const RaceNominationSection = ({
 														state={memoExists ? "edit" : "add"}
 														ariaLabel={`${nomination.horse_name}の${columnLabel}の印メモ`}
 														onClick={() =>
-															onMarkMemoClick?.({
+															onMarkMemoClick({
 																columnId: column.id,
 																raceNominationId: nomination.id,
 															})

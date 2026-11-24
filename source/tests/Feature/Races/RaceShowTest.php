@@ -5,7 +5,10 @@ use App\Models\HorseNote;
 use App\Models\Jockey;
 use App\Models\Race;
 use App\Models\RaceEntry;
+use App\Models\RaceMarkColumn;
 use App\Models\RaceNomination;
+use App\Models\RaceNominationColumnMark;
+use App\Models\RaceNominationColumnMemo;
 use App\Models\RaceNominationMark;
 use App\Models\RacePayout;
 use App\Models\RaceResultHorse;
@@ -390,5 +393,53 @@ test('レース詳細は Inertia props として登録馬を登録順に自分�
         ->where('race.nominations.1.id', $secondNomination->id)
         ->where('race.nominations.1.status', null)
         ->where('race.nominations.1.note', null)
+    );
+});
+
+test('レース詳細は Inertia props として自分の印列の登録馬の印・印メモだけを返す', function () {
+    // Arrange
+    $user = User::factory()->create();
+    $otherUser = User::factory()->create();
+    $race = Race::factory()->create();
+    $nomination = RaceNomination::factory()->for($race)->create();
+    $column = RaceMarkColumn::factory()->other()->create([
+        'race_id' => $race->id,
+        'user_id' => $user->id,
+    ]);
+    $otherUserColumn = RaceMarkColumn::factory()->other()->create([
+        'race_id' => $race->id,
+        'user_id' => $otherUser->id,
+    ]);
+    RaceNominationColumnMark::factory()->create([
+        'race_mark_column_id' => $column->id,
+        'race_nomination_id' => $nomination->id,
+        'mark_value' => '▲',
+    ]);
+    RaceNominationColumnMark::factory()->create([
+        'race_mark_column_id' => $otherUserColumn->id,
+        'race_nomination_id' => $nomination->id,
+    ]);
+    RaceNominationColumnMemo::factory()->create([
+        'race_mark_column_id' => $column->id,
+        'race_nomination_id' => $nomination->id,
+        'content' => '印メモ',
+    ]);
+    RaceNominationColumnMemo::factory()->create([
+        'race_mark_column_id' => $otherUserColumn->id,
+        'race_nomination_id' => $nomination->id,
+    ]);
+
+    // Act
+    $response = $this->actingAs($user)->get(route('races.show', ['race' => $race->uid]));
+
+    // Assert
+    $response->assertInertia(fn (Assert $page) => $page
+        ->component('races/show')
+        ->where('race.nomination_marks', [
+            ['column_id' => $column->id, 'race_nomination_id' => $nomination->id, 'mark_value' => '▲'],
+        ])
+        ->where('race.nomination_mark_memos', [
+            ['column_id' => $column->id, 'race_nomination_id' => $nomination->id, 'content' => '印メモ'],
+        ])
     );
 });

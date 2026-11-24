@@ -1,6 +1,12 @@
 import { useMemo, useState } from "react";
-import type { RaceNomination } from "@/features/raceNomination/types/raceNomination";
+import type { RaceMarkMemoTarget } from "@/features/raceMarkMemo/requests/raceMarkMemos";
 import type {
+	RaceNomination,
+	RaceNominationColumnMarkValue,
+	RaceNominationColumnMemo,
+} from "@/features/raceNomination/types/raceNomination";
+import type {
+	MarkValue,
 	RaceEntry,
 	RaceEntryNote,
 	RaceMarkColumn,
@@ -17,7 +23,7 @@ type NoteModalState = {
 type MemoModalState = {
 	open: boolean;
 	columnId: number | null;
-	raceEntryId: number | null;
+	target: RaceMarkMemoTarget | null;
 };
 
 type UseRaceDetailModalsParams = {
@@ -26,6 +32,8 @@ type UseRaceDetailModalsParams = {
 	marks: ReadonlyArray<RaceMarkValue>;
 	markMemos: ReadonlyArray<RaceMarkMemo>;
 	nominations?: ReadonlyArray<RaceNomination>;
+	nominationMarks?: ReadonlyArray<RaceNominationColumnMarkValue>;
+	nominationMarkMemos?: ReadonlyArray<RaceNominationColumnMemo>;
 };
 
 type UseRaceDetailModalsReturn = {
@@ -37,12 +45,17 @@ type UseRaceDetailModalsReturn = {
 
 	memoModal: MemoModalState;
 	memoTargetColumn: RaceMarkColumn | undefined;
-	memoTargetEntry: RaceEntry | undefined;
-	memoTargetMemo: RaceMarkMemo | undefined;
-	memoTargetMark: RaceMarkValue | undefined;
+	/** 印メモ対象（出走馬または登録馬）の馬名。対象が見つからない場合は undefined。 */
+	memoTargetHorseName: string | undefined;
+	memoTargetContent: string | undefined;
+	memoTargetMarkValue: MarkValue | null;
 	handleMarkMemoClick: (params: {
 		columnId: number;
 		raceEntryId: number;
+	}) => void;
+	handleNominationMarkMemoClick: (params: {
+		columnId: number;
+		raceNominationId: number;
 	}) => void;
 	handleMemoClose: () => void;
 };
@@ -51,11 +64,20 @@ type UseRaceDetailModalsReturn = {
  * レース詳細画面の馬メモ・印メモモーダル開閉 state と、モーダル props 計算用の派生 state を管理する。
  * 派生 state は entries / markColumns / marks / markMemos から useMemo で導出するため、関係ない再レンダーで再計算されない。
  * 馬メモは出走馬に加えて登録馬（nominations）からも開ける。同じ馬が両方にいる場合は出走馬のメモを優先する。
+ * 印メモは出走馬の印・登録馬の他人の印の両方から開け、対象（target）で参照先のデータを切り替える。
  */
 export const useRaceDetailModals = (
 	params: UseRaceDetailModalsParams,
 ): UseRaceDetailModalsReturn => {
-	const { entries, markColumns, marks, markMemos, nominations = [] } = params;
+	const {
+		entries,
+		markColumns,
+		marks,
+		markMemos,
+		nominations = [],
+		nominationMarks = [],
+		nominationMarkMemos = [],
+	} = params;
 
 	const [noteModal, setNoteModal] = useState<NoteModalState>({
 		open: false,
@@ -65,7 +87,7 @@ export const useRaceDetailModals = (
 	const [memoModal, setMemoModal] = useState<MemoModalState>({
 		open: false,
 		columnId: null,
-		raceEntryId: null,
+		target: null,
 	});
 
 	const handleNoteClick = (horseId: number) => {
@@ -93,7 +115,18 @@ export const useRaceDetailModals = (
 		setMemoModal({
 			open: true,
 			columnId: params.columnId,
-			raceEntryId: params.raceEntryId,
+			target: { type: "entry", raceEntryId: params.raceEntryId },
+		});
+	};
+
+	const handleNominationMarkMemoClick = (params: {
+		columnId: number;
+		raceNominationId: number;
+	}) => {
+		setMemoModal({
+			open: true,
+			columnId: params.columnId,
+			target: { type: "nomination", raceNominationId: params.raceNominationId },
 		});
 	};
 
@@ -126,35 +159,53 @@ export const useRaceDetailModals = (
 				: undefined,
 		[markColumns, memoModal.columnId],
 	);
-	const memoTargetEntry = useMemo(
-		() =>
-			memoModal.raceEntryId != null
-				? entries.find((e) => e.id === memoModal.raceEntryId)
-				: undefined,
-		[entries, memoModal.raceEntryId],
-	);
-	const memoTargetMemo = useMemo(
-		() =>
-			memoModal.columnId != null && memoModal.raceEntryId != null
-				? markMemos.find(
+	const memoTarget = useMemo(() => {
+		const { columnId, target } = memoModal;
+		if (columnId == null || target == null) {
+			return undefined;
+		}
+		if (target.type === "entry") {
+			const entry = entries.find((e) => e.id === target.raceEntryId);
+			return {
+				horseName: entry?.horse_name,
+				content: markMemos.find(
+					(m) =>
+						m.column_id === columnId && m.race_entry_id === target.raceEntryId,
+				)?.content,
+				markValue:
+					marks.find(
 						(m) =>
-							m.column_id === memoModal.columnId &&
-							m.race_entry_id === memoModal.raceEntryId,
-					)
-				: undefined,
-		[markMemos, memoModal.columnId, memoModal.raceEntryId],
-	);
-	const memoTargetMark = useMemo(
-		() =>
-			memoModal.columnId != null && memoModal.raceEntryId != null
-				? marks.find(
-						(m) =>
-							m.column_id === memoModal.columnId &&
-							m.race_entry_id === memoModal.raceEntryId,
-					)
-				: undefined,
-		[marks, memoModal.columnId, memoModal.raceEntryId],
-	);
+							m.column_id === columnId &&
+							m.race_entry_id === target.raceEntryId,
+					)?.mark_value ?? null,
+			};
+		}
+		const nomination = nominations.find(
+			(n) => n.id === target.raceNominationId,
+		);
+		return {
+			horseName: nomination?.horse_name,
+			content: nominationMarkMemos.find(
+				(m) =>
+					m.column_id === columnId &&
+					m.race_nomination_id === target.raceNominationId,
+			)?.content,
+			markValue:
+				nominationMarks.find(
+					(m) =>
+						m.column_id === columnId &&
+						m.race_nomination_id === target.raceNominationId,
+				)?.mark_value ?? null,
+		};
+	}, [
+		memoModal,
+		entries,
+		marks,
+		markMemos,
+		nominations,
+		nominationMarks,
+		nominationMarkMemos,
+	]);
 
 	return {
 		noteModal,
@@ -164,10 +215,11 @@ export const useRaceDetailModals = (
 		handleNoteClose,
 		memoModal,
 		memoTargetColumn,
-		memoTargetEntry,
-		memoTargetMemo,
-		memoTargetMark,
+		memoTargetHorseName: memoTarget?.horseName,
+		memoTargetContent: memoTarget?.content,
+		memoTargetMarkValue: memoTarget?.markValue ?? null,
 		handleMarkMemoClick,
+		handleNominationMarkMemoClick,
 		handleMemoClose,
 	};
 };

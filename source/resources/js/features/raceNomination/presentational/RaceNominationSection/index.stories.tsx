@@ -17,9 +17,17 @@ const meta: Meta<typeof RaceNominationSection> = {
 				onSubmit={() => {}}
 			/>
 		),
+		markColumns: [],
+		marks: [],
+		markMemos: [],
 		onStatusChange: () => {},
 		onNoteClick: () => {},
 		onDeleteClick: () => {},
+		onAddOtherColumn: () => {},
+		onChangeColumnLabel: () => {},
+		onRemoveOtherColumn: () => {},
+		onMarkChange: () => {},
+		onMarkMemoClick: () => {},
 	},
 };
 

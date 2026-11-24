@@ -4,6 +4,7 @@ import RaceMarkMemoModal from "@/features/raceMarkMemo/presentational/RaceMarkMe
 import type { RaceMarkMemoModalMode } from "@/features/raceMarkMemo/presentational/RaceMarkMemoModal/types";
 import {
 	RaceMarkMemoRequestError,
+	type RaceMarkMemoTarget,
 	deleteMemo,
 	upsertMemo,
 } from "@/features/raceMarkMemo/requests/raceMarkMemos";
@@ -16,7 +17,7 @@ type Props = {
 	mode: RaceMarkMemoModalMode;
 	raceUid: string;
 	columnId: number;
-	raceEntryId: number;
+	target: RaceMarkMemoTarget;
 	horseName: string;
 	columnLabel: string;
 	markValue: MarkValue | null;
@@ -24,14 +25,14 @@ type Props = {
 	onClose: () => void;
 	onSaved: (params: {
 		columnId: number;
-		raceEntryId: number;
+		target: RaceMarkMemoTarget;
 		content: string;
 	}) => void;
-	onDeleted: (params: { columnId: number; raceEntryId: number }) => void;
+	onDeleted: (params: { columnId: number; target: RaceMarkMemoTarget }) => void;
 };
 
 /**
- * 印メモの追加・編集モーダルのコンテナ。
+ * 印メモの追加・編集モーダルのコンテナ。対象は出走馬・登録馬のどちらにも対応する。
  * 入力 state を保持し、送信時に upsert API、削除時に delete API を呼び出す。
  * 成功時は親に通知して閉じ、失敗時は errorMessage を表示しつつ toast でも通知する。
  */
@@ -40,7 +41,7 @@ const RaceMarkMemoModalContainer = ({
 	mode,
 	raceUid,
 	columnId,
-	raceEntryId,
+	target,
 	horseName,
 	columnLabel,
 	markValue,
@@ -77,10 +78,10 @@ const RaceMarkMemoModalContainer = ({
 		setErrorMessage(null);
 		setSubmitting(true);
 		try {
-			const memo = await upsertMemo(raceUid, columnId, raceEntryId, content);
+			const memo = await upsertMemo(raceUid, columnId, target, content);
 			onSaved({
 				columnId,
-				raceEntryId,
+				target,
 				content: memo.content,
 			});
 			onClose();
@@ -100,8 +101,8 @@ const RaceMarkMemoModalContainer = ({
 		setErrorMessage(null);
 		setSubmitting(true);
 		try {
-			await deleteMemo(raceUid, columnId, raceEntryId);
-			onDeleted({ columnId, raceEntryId });
+			await deleteMemo(raceUid, columnId, target);
+			onDeleted({ columnId, target });
 			onClose();
 		} catch (e) {
 			const message =

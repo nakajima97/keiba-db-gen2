@@ -3,6 +3,7 @@ import { useHorseCandidates } from "../../hooks/useHorseCandidates";
 import RaceNominationAddForm from "../../presentational/RaceNominationAddForm";
 import RaceNominationDeleteConfirmDialog from "../../presentational/RaceNominationDeleteConfirmDialog";
 import RaceNominationSection from "../../presentational/RaceNominationSection";
+import type { RaceNominationSectionProps } from "../../presentational/RaceNominationSection/types";
 import type {
 	HorseCandidate,
 	RaceNomination,
@@ -11,7 +12,19 @@ import type {
 
 type AddResult = { ok: true } | { ok: false; message: string };
 
-type Props = {
+type MarkProps = Pick<
+	RaceNominationSectionProps,
+	| "markColumns"
+	| "marks"
+	| "markMemos"
+	| "onAddOtherColumn"
+	| "onChangeColumnLabel"
+	| "onRemoveOtherColumn"
+	| "onMarkChange"
+	| "onMarkMemoClick"
+>;
+
+type Props = MarkProps & {
 	nominations: ReadonlyArray<RaceNomination>;
 	onAdd: (input: { horseId: number } | { horseName: string }) => Promise<AddResult>;
 	onRemove: (nominationId: number) => Promise<boolean>;
@@ -28,6 +41,7 @@ const RaceNominationSectionContainer = ({
 	onRemove,
 	onStatusChange,
 	onNoteClick,
+	...markProps
 }: Props) => {
 	const [horseName, setHorseName] = useState("");
 	const [submitting, setSubmitting] = useState(false);
@@ -80,6 +94,7 @@ const RaceNominationSectionContainer = ({
 	return (
 		<>
 			<RaceNominationSection
+				{...markProps}
 				nominations={nominations}
 				addForm={
 					<RaceNominationAddForm

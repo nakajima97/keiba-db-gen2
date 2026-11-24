@@ -3,6 +3,9 @@
 use App\Models\Race;
 use App\Models\RaceMark;
 use App\Models\RaceMarkColumn;
+use App\Models\RaceNomination;
+use App\Models\RaceNominationColumnMark;
+use App\Models\RaceNominationColumnMemo;
 use App\Models\User;
 use App\Models\Venue;
 use App\Support\NanoId;
@@ -176,4 +179,31 @@ test('存在しない印カラムを削除しようとすると404が返る', fu
 
     // Assert
     $response->assertNotFound();
+});
+
+test('他カテゴリの印カラム削除時に登録馬の印・印メモも削除される', function () {
+    // Arrange
+    $user = User::factory()->create();
+    $nomination = RaceNomination::factory()->create();
+    $column = RaceMarkColumn::factory()->other()->create([
+        'race_id' => $nomination->race_id,
+        'user_id' => $user->id,
+    ]);
+    $columnMark = RaceNominationColumnMark::factory()->create([
+        'race_mark_column_id' => $column->id,
+        'race_nomination_id' => $nomination->id,
+    ]);
+    $columnMemo = RaceNominationColumnMemo::factory()->create([
+        'race_mark_column_id' => $column->id,
+        'race_nomination_id' => $nomination->id,
+    ]);
+
+    // Act
+    $response = $this->actingAs($user)->deleteJson('/api/races/'.$nomination->race->uid.'/mark-columns/'.$column->id);
+
+    // Assert
+    $response->assertNoContent();
+    $this->assertDatabaseMissing('race_nomination_column_marks', ['id' => $columnMark->id]);
+    $this->assertDatabaseMissing('race_nomination_column_memos', ['id' => $columnMemo->id]);
+    $this->assertDatabaseHas('race_nominations', ['id' => $nomination->id]);
 });

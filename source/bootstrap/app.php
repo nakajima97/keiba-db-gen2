@@ -18,7 +18,10 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->convertEmptyStringsToNull(except: [
             fn ($request) => $request->isMethod('PUT')
-                && $request->is('api/races/*/mark-columns/*/entries/*/mark'),
+                && $request->is(
+                    'api/races/*/mark-columns/*/entries/*/mark',
+                    'api/races/*/mark-columns/*/nominations/*/mark',
+                ),
         ]);
 
         $middleware->web(append: [

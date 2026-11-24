@@ -44,7 +44,7 @@ describe("RaceMarkMemoModalContainer", () => {
 					mode="create"
 					raceUid="abc001"
 					columnId={101}
-					raceEntryId={5}
+					target={{ type: "entry", raceEntryId: 5 }}
 					horseName="ディープスター"
 					columnLabel="スポーツ報知"
 					markValue="◎"
@@ -67,10 +67,62 @@ describe("RaceMarkMemoModalContainer", () => {
 			expect(JSON.parse(init.body as string)).toEqual({ content: "新規メモ" });
 			expect(onSaved).toHaveBeenCalledWith({
 				columnId: 101,
-				raceEntryId: 5,
+				target: { type: "entry", raceEntryId: 5 },
 				content: "新規メモ",
 			});
 			expect(onClose).toHaveBeenCalledTimes(1);
+		});
+	});
+
+	describe("登録馬が対象のとき", () => {
+		it("追加ボタンを押すと登録馬の印メモ API が呼ばれ onSaved に対象が渡される", async () => {
+			// Arrange
+			vi.spyOn(global, "fetch").mockResolvedValue(
+				buildResponse(201, {
+					data: {
+						id: 2,
+						race_mark_column_id: 101,
+						race_nomination_id: 7,
+						content: "登録馬メモ",
+						created_at: "2026-11-24T10:00:00Z",
+						updated_at: "2026-11-24T10:00:00Z",
+					},
+				}),
+			);
+			const user = userEvent.setup();
+			const onSaved = vi.fn();
+
+			// Act
+			render(
+				<RaceMarkMemoModalContainer
+					open={true}
+					mode="create"
+					raceUid="abc001"
+					columnId={101}
+					target={{ type: "nomination", raceNominationId: 7 }}
+					horseName="ウワサノホース"
+					columnLabel="Aさん"
+					markValue={null}
+					onClose={vi.fn()}
+					onSaved={onSaved}
+					onDeleted={vi.fn()}
+				/>,
+			);
+			await user.type(screen.getByLabelText("メモ"), "登録馬メモ");
+			await user.click(screen.getByRole("button", { name: "追加" }));
+
+			// Assert
+			await waitFor(() => {
+				expect(global.fetch).toHaveBeenCalledTimes(1);
+			});
+			const [url] = (global.fetch as ReturnType<typeof vi.fn>).mock
+				.calls[0] as [string, RequestInit];
+			expect(url).toBe("/api/races/abc001/mark-columns/101/nominations/7/memo");
+			expect(onSaved).toHaveBeenCalledWith({
+				columnId: 101,
+				target: { type: "nomination", raceNominationId: 7 },
+				content: "登録馬メモ",
+			});
 		});
 	});
 
@@ -90,7 +142,7 @@ describe("RaceMarkMemoModalContainer", () => {
 					mode="edit"
 					raceUid="abc001"
 					columnId={101}
-					raceEntryId={5}
+					target={{ type: "entry", raceEntryId: 5 }}
 					horseName="ディープスター"
 					columnLabel="スポーツ報知"
 					markValue="○"
@@ -110,7 +162,10 @@ describe("RaceMarkMemoModalContainer", () => {
 				.calls[0] as [string, RequestInit];
 			expect(url).toBe("/api/races/abc001/mark-columns/101/entries/5/memo");
 			expect(init.method).toBe("DELETE");
-			expect(onDeleted).toHaveBeenCalledWith({ columnId: 101, raceEntryId: 5 });
+			expect(onDeleted).toHaveBeenCalledWith({
+				columnId: 101,
+				target: { type: "entry", raceEntryId: 5 },
+			});
 			expect(onClose).toHaveBeenCalledTimes(1);
 		});
 	});
