@@ -20,7 +20,7 @@ return new class extends Migration
 
             // race_mark_memos と同様、印と独立したライフサイクルにする。
             // 印を解除してもメモは残る。
-            $table->unique(['race_mark_column_id', 'race_nomination_id']);
+            $table->unique(['race_mark_column_id', 'race_nomination_id'], 'race_nom_col_memos_column_nomination_unique');
         });
     }
 

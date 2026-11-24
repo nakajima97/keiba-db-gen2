@@ -18,7 +18,7 @@ return new class extends Migration
             $table->enum('mark_value', ['◎', '○', '▲', '△', '☆', '✓']);
             $table->timestamps();
 
-            $table->unique(['race_mark_column_id', 'race_nomination_id']);
+            $table->unique(['race_mark_column_id', 'race_nomination_id'], 'race_nom_col_marks_column_nomination_unique');
         });
     }
 
