@@ -24,7 +24,7 @@ const isSameCell = (
 
 /**
  * 登録馬の他人の印のローカル state と楽観的 upsert を管理する。
- * markValue が null のときは該当行を削除する。API 失敗時はそのセルを元の値に戻して toast 通知する。
+ * markValue が null のときは該当行を削除する。API 失敗時は、そのセルが後続の変更で上書きされていなければ元の値に戻し、toast 通知する。
  * removeByColumnLocally / restoreSnapshot は印列削除のオーケストレーション用。
  */
 export const useRaceNominationColumnMarks = (
@@ -52,18 +52,15 @@ export const useRaceNominationColumnMarks = (
 			return nextMark === undefined ? filtered : [...filtered, nextMark];
 		};
 
-		setMarks((current) =>
-			replaceCell(
-				current,
-				markValue === null
-					? undefined
-					: {
-							column_id: columnId,
-							race_nomination_id: raceNominationId,
-							mark_value: markValue,
-						},
-			),
-		);
+		const optimisticMark: RaceNominationColumnMarkValue | undefined =
+			markValue === null
+				? undefined
+				: {
+						column_id: columnId,
+						race_nomination_id: raceNominationId,
+						mark_value: markValue,
+					};
+		setMarks((current) => replaceCell(current, optimisticMark));
 		try {
 			await upsertNominationColumnMark(
 				raceUid,
@@ -72,7 +69,15 @@ export const useRaceNominationColumnMarks = (
 				markValue,
 			);
 		} catch (_e) {
-			setMarks((current) => replaceCell(current, previousMark));
+			// 後続の変更で既にセルが別の値になっている場合は、新しい方を優先してロールバックしない。
+			setMarks((current) => {
+				const currentValue =
+					current.find((mark) => isSameCell(mark, columnId, raceNominationId))
+						?.mark_value ?? null;
+				return currentValue === markValue
+					? replaceCell(current, previousMark)
+					: current;
+			});
 			toast.error("印の更新に失敗しました");
 		}
 	};

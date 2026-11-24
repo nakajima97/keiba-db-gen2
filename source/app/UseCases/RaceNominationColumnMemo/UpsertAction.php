@@ -7,6 +7,7 @@ use App\Models\RaceNominationColumnMemo;
 use App\Models\User;
 use Carbon\CarbonInterface;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -48,7 +49,31 @@ class UpsertAction
             ]);
         }
 
-        // 並行リクエストでのユニーク制約違反を避けるため、行ロックを取って upsert する。
+        try {
+            return $this->upsert($column, $raceNominationId, $content);
+        } catch (UniqueConstraintViolationException) {
+            // 同じセルの新規作成が並行した場合、先に作成された行を更新し直す（デッドロックは DB::transaction の再試行で吸収する）。
+            return $this->upsert($column, $raceNominationId, $content);
+        }
+    }
+
+    /**
+     * @return array{
+     *     created: bool,
+     *     memo: array{
+     *         id: int,
+     *         race_mark_column_id: int,
+     *         race_nomination_id: int,
+     *         content: string,
+     *         created_at: string|null,
+     *         updated_at: string|null,
+     *     }
+     * }
+     *
+     * @throws UniqueConstraintViolationException
+     */
+    private function upsert(RaceMarkColumn $column, int $raceNominationId, string $content): array
+    {
         return DB::transaction(function () use ($column, $raceNominationId, $content): array {
             $existing = RaceNominationColumnMemo::query()
                 ->where('race_mark_column_id', $column->id)
@@ -75,7 +100,7 @@ class UpsertAction
                 'created' => true,
                 'memo' => $this->present($memo),
             ];
-        });
+        }, attempts: 2);
     }
 
     /**

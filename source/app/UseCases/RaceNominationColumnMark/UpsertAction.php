@@ -45,20 +45,21 @@ class UpsertAction
             return null;
         }
 
-        $mark = RaceNominationColumnMark::updateOrCreate(
-            [
+        // 同じセルへの並行リクエストでユニーク制約違反にならないよう、DB の upsert で 1 文にまとめる。
+        RaceNominationColumnMark::query()->upsert(
+            [[
                 'race_mark_column_id' => $column->id,
                 'race_nomination_id' => $raceNominationId,
-            ],
-            [
                 'mark_value' => $markValue,
-            ],
+            ]],
+            ['race_mark_column_id', 'race_nomination_id'],
+            ['mark_value'],
         );
 
         return [
-            'column_id' => (int) $mark->race_mark_column_id,
-            'race_nomination_id' => (int) $mark->race_nomination_id,
-            'mark_value' => $mark->mark_value,
+            'column_id' => (int) $column->id,
+            'race_nomination_id' => $raceNominationId,
+            'mark_value' => $markValue,
         ];
     }
 }
