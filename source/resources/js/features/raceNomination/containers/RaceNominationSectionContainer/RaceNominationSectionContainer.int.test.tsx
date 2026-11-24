@@ -25,6 +25,14 @@ describe("RaceNominationSectionContainer", () => {
 				onRemove={vi.fn()}
 				onStatusChange={vi.fn()}
 				onNoteClick={vi.fn()}
+				markColumns={[]}
+				marks={[]}
+				markMemos={[]}
+				onAddOtherColumn={vi.fn()}
+				onChangeColumnLabel={vi.fn()}
+				onRemoveOtherColumn={vi.fn()}
+				onMarkChange={vi.fn()}
+				onMarkMemoClick={vi.fn()}
 			/>,
 		);
 		const input = screen.getByLabelText("登録馬の馬名");

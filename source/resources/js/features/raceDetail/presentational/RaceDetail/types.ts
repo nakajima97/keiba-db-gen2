@@ -4,6 +4,8 @@ import type {
 } from "@/features/entryComment/types";
 import type {
 	RaceNomination,
+	RaceNominationColumnMarkValue,
+	RaceNominationColumnMemo,
 	RaceNominationStatus,
 } from "@/features/raceNomination/types/raceNomination";
 
@@ -82,6 +84,8 @@ export type RaceDetailItem = {
 	marks: RaceMarkValue[];
 	mark_memos?: RaceMarkMemo[];
 	nominations?: RaceNomination[];
+	nomination_marks?: RaceNominationColumnMarkValue[];
+	nomination_mark_memos?: RaceNominationColumnMemo[];
 	has_result: boolean;
 };
 

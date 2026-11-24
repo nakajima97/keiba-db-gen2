@@ -6,6 +6,8 @@ use App\Enums\CommentSpeakerType;
 use App\Models\Race;
 use App\Models\RaceMarkColumn;
 use App\Models\RaceMarkMemo;
+use App\Models\RaceNominationColumnMark;
+use App\Models\RaceNominationColumnMemo;
 use App\Models\User;
 use App\UseCases\EntryComment\LoadCommentsByEntryId;
 use App\UseCases\EntryComment\LoadStatsBySpeakerId;
@@ -16,7 +18,7 @@ use App\UseCases\TrainerNote\LoadNotesByTrainerId;
 use Carbon\CarbonInterface;
 
 /**
- * レースと出馬表（馬・騎手・調教師含む）に加え、認証ユーザーの印列・印データ・競走馬メモ・調教師メモ・調教師/騎手コメントと的中率、登録馬を取得し、
+ * レースと出馬表（馬・騎手・調教師含む）に加え、認証ユーザーの印列・印データ・競走馬メモ・調教師メモ・調教師/騎手コメントと的中率、登録馬とその他人の印・印メモを取得し、
  * レース詳細画面の表示用データを返す。
  */
 class ShowAction
@@ -69,6 +71,8 @@ class ShowAction
      *         status: string|null,
      *         note: array{id: int, content: string, source: string}|null,
      *     }>,
+     *     nomination_marks: list<array{column_id: int, race_nomination_id: int, mark_value: string}>,
+     *     nomination_mark_memos: list<array{column_id: int, race_nomination_id: int, content: string}>,
      *     has_result: bool
      * }
      */
@@ -111,6 +115,30 @@ class ShowAction
                 'race_entry_id' => (int) $memo->race_entry_id,
                 'content' => (string) $memo->content,
             ])
+            ->all();
+
+        $nominationMarks = RaceNominationColumnMark::query()
+            ->whereIn('race_mark_column_id', $columnIds)
+            ->orderBy('id')
+            ->get(['race_mark_column_id', 'race_nomination_id', 'mark_value'])
+            ->map(fn (RaceNominationColumnMark $mark): array => [
+                'column_id' => (int) $mark->race_mark_column_id,
+                'race_nomination_id' => (int) $mark->race_nomination_id,
+                'mark_value' => (string) $mark->mark_value,
+            ])
+            ->values()
+            ->all();
+
+        $nominationMarkMemos = RaceNominationColumnMemo::query()
+            ->whereIn('race_mark_column_id', $columnIds)
+            ->orderBy('id')
+            ->get(['race_mark_column_id', 'race_nomination_id', 'content'])
+            ->map(fn (RaceNominationColumnMemo $memo): array => [
+                'column_id' => (int) $memo->race_mark_column_id,
+                'race_nomination_id' => (int) $memo->race_nomination_id,
+                'content' => (string) $memo->content,
+            ])
+            ->values()
             ->all();
 
         $horseIds = $race->entries
@@ -185,6 +213,8 @@ class ShowAction
             'marks' => $marks,
             'mark_memos' => $markMemos,
             'nominations' => $this->loadNominationsAction->execute($race, $user),
+            'nomination_marks' => $nominationMarks,
+            'nomination_mark_memos' => $nominationMarkMemos,
             'has_result' => $race->raceResultHorses()->exists() || $race->racePayouts()->exists(),
         ];
     }
