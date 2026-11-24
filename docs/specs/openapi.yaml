@@ -41,6 +41,12 @@ tags:
       特別登録・出走登録など、出走確定前の登録馬（issue #305）の管理。
       登録馬リストは全ユーザー共通、チェック／消しはユーザーごと。
       登録馬のテキストメモは horse-notes（レース紐づき）を利用する。
+  - name: race-nomination-column-marks
+    description: |
+      登録馬に対する他人の印・印メモ（issue #321）の管理。
+      印列は出馬表と共通の `race_mark_columns` を使い、他人の印列（`type=other`）のみ受け付ける。
+      印メモは印と独立したライフサイクルを持つ。印を変更・解除してもメモは残る。
+      登録馬が出走馬になっても、出走馬の印（race-marks）へは引き継がない。
   - name: horses
     description: 競走馬の検索
 
@@ -167,7 +173,7 @@ paths:
       tags: [race-mark-columns]
       summary: 他人の印列を削除
       description: |
-        他人の印列とその列に紐づく印（`race_marks`）をすべて削除する。
+        他人の印列とその列に紐づく印・印メモ（出走馬・登録馬の両方）をすべて削除する。
         自分の印列（`type=own`）は削除できない（422 を返す）。
       operationId: deleteRaceMarkColumn
       security:
@@ -394,7 +400,7 @@ paths:
       tags: [race-nominations]
       summary: 登録馬を削除
       description: |
-        登録馬を削除する。全ユーザーのチェック／消しも削除される。競走馬メモは削除されない。
+        登録馬を削除する。全ユーザーのチェック／消し・他人の印・印メモも削除される。競走馬メモは削除されない。
       operationId: deleteRaceNomination
       security:
         - sessionAuth: []
@@ -455,6 +461,152 @@ paths:
           description: 解除した（status が空文字列の場合）
         "401":
           $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+  /api/races/{uid}/mark-columns/{column_id}/nominations/{nomination_id}/mark:
+    parameters:
+      - $ref: "#/components/parameters/RaceUid"
+      - name: column_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: 印列 ID（race_mark_columns.id）。`type=other` のみ受け付ける。
+      - $ref: "#/components/parameters/NominationId"
+    put:
+      tags: [race-nomination-column-marks]
+      summary: 登録馬の他人の印を設定（または解除）
+      description: |
+        指定列・指定登録馬に対する印を upsert する。
+        `mark_value` が空文字列の場合は印を解除（該当レコードを削除）し、204 を返す。
+        対象列が `type=own` の場合は 422 を返す（登録馬の自分の評価はチェック／消しで管理するため）。
+        他ユーザー所有の印列に対するリクエストは 403 を返す。
+        印列・登録馬が指定レースに属さない場合は 404 を返す。
+      operationId: putRaceNominationColumnMark
+      security:
+        - sessionAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [mark_value]
+              properties:
+                mark_value:
+                  oneOf:
+                    - $ref: "#/components/schemas/MarkValue"
+                    - type: string
+                      enum: [""]
+                      description: 空文字列を渡すと印を解除する
+      responses:
+        "200":
+          description: 印を設定または更新した
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/RaceNominationColumnMarkValue"
+        "204":
+          description: 印を解除した（mark_value が空文字列の場合）
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+  /api/races/{uid}/mark-columns/{column_id}/nominations/{nomination_id}/memo:
+    parameters:
+      - $ref: "#/components/parameters/RaceUid"
+      - name: column_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: 印列 ID（race_mark_columns.id）。`type=other` のみ受け付ける。
+      - $ref: "#/components/parameters/NominationId"
+    put:
+      tags: [race-nomination-column-marks]
+      summary: 登録馬の印メモを作成または更新
+      description: |
+        指定列・指定登録馬に対する印メモを upsert する。
+        対象列が `type=own` の場合は 422 を返す。
+        他ユーザー所有の印列に対するリクエストは 403 を返す。
+        該当の印が存在しない場合でもメモは作成可能（印を後から消してもメモは残る仕様）。
+      operationId: putRaceNominationColumnMemo
+      security:
+        - sessionAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [content]
+              properties:
+                content:
+                  type: string
+                  minLength: 1
+                  maxLength: 1000
+                  description: メモ本文。プレーンテキスト、改行可。
+      responses:
+        "200":
+          description: 印メモを更新した
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/RaceNominationColumnMemo"
+        "201":
+          description: 印メモを新規作成した
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/RaceNominationColumnMemo"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+    delete:
+      tags: [race-nomination-column-marks]
+      summary: 登録馬の印メモを削除
+      description: |
+        指定列・指定登録馬に紐づく印メモを削除する。
+        対象列が `type=own` の場合は 422 を返す。
+        他ユーザー所有の印列に対するリクエストは 403 を返す。
+        印メモが存在しない場合は 404 を返す。
+      operationId: deleteRaceNominationColumnMemo
+      security:
+        - sessionAuth: []
+      responses:
+        "204":
+          description: No Content
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/NotFound"
         "422":
@@ -978,6 +1130,55 @@ components:
           type: integer
           format: int64
           description: 出走馬 ID（race_entries.id）
+        content:
+          type: string
+          maxLength: 1000
+          description: メモ本文 プレーンテキスト
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    RaceNominationColumnMarkValue:
+      type: object
+      required: [column_id, race_nomination_id, mark_value]
+      properties:
+        column_id:
+          type: integer
+          format: int64
+          description: 印列 ID（race_mark_columns.id）
+        race_nomination_id:
+          type: integer
+          format: int64
+          description: 登録馬 ID（race_nominations.id）
+        mark_value:
+          $ref: "#/components/schemas/MarkValue"
+
+    RaceNominationColumnMemo:
+      type: object
+      required:
+        [
+          id,
+          race_mark_column_id,
+          race_nomination_id,
+          content,
+          created_at,
+          updated_at,
+        ]
+      properties:
+        id:
+          type: integer
+          format: int64
+        race_mark_column_id:
+          type: integer
+          format: int64
+          description: 印列 ID（race_mark_columns.id）
+        race_nomination_id:
+          type: integer
+          format: int64
+          description: 登録馬 ID（race_nominations.id）
         content:
           type: string
           maxLength: 1000

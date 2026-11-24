@@ -1,3 +1,5 @@
+import type { MarkValue } from "@/features/raceDetail/presentational/RaceDetail/types";
+
 /**
  * 登録馬に対するチェック（check）／消し（excluded）。
  */
@@ -20,6 +22,24 @@ export type RaceNomination = {
 	horse_name: string;
 	status: RaceNominationStatus | null;
 	note: RaceNominationNote | null;
+};
+
+/**
+ * 登録馬に対する他人の印（印列は出馬表と共通の race_mark_columns）。
+ */
+export type RaceNominationColumnMarkValue = {
+	column_id: number;
+	race_nomination_id: number;
+	mark_value: MarkValue;
+};
+
+/**
+ * 登録馬に対する他人の印の印メモ。
+ */
+export type RaceNominationColumnMemo = {
+	column_id: number;
+	race_nomination_id: number;
+	content: string;
 };
 
 /**

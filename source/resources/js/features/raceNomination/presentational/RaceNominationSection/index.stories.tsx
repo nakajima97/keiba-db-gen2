@@ -64,3 +64,34 @@ export const WithNominations: Story = {
 		],
 	},
 };
+
+export const WithOtherMarks: Story = {
+	name: "他人の印列あり（印・印メモあり／印メモのみ／未設定）",
+	args: {
+		markColumns: [
+			{ id: 1, type: "own", label: null, display_order: 0 },
+			{ id: 2, type: "other", label: "Aさん", display_order: 1 },
+			{ id: 3, type: "other", label: "新聞B", display_order: 2 },
+			{ id: 4, type: "other", label: "", display_order: 3 },
+		],
+		marks: [
+			{ column_id: 2, race_nomination_id: 1, mark_value: "◎" },
+			{ column_id: 2, race_nomination_id: 2, mark_value: "△" },
+			{ column_id: 3, race_nomination_id: 1, mark_value: "○" },
+			{ column_id: 3, race_nomination_id: 3, mark_value: "☆" },
+		],
+		markMemos: [
+			{
+				column_id: 2,
+				race_nomination_id: 1,
+				content: "登録段階から本命と明言",
+			},
+			{
+				column_id: 3,
+				race_nomination_id: 2,
+				content: "印は未定だが注目馬として言及",
+			},
+		],
+		nominations: WithNominations.args?.nominations ?? [],
+	},
+};

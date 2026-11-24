@@ -277,6 +277,29 @@ erDiagram
     horses ||--o{ race_nominations : "nominated in"
     race_nominations ||--o{ race_nomination_marks : "has"
     users ||--o{ race_nomination_marks : "owns"
+
+    race_nomination_column_marks {
+        bigint id PK
+        bigint race_mark_column_id FK "他人列(other)のみ"
+        bigint race_nomination_id FK
+        enum mark_value "◎/○/▲/△/☆/✓"
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    race_nomination_column_memos {
+        bigint id PK
+        bigint race_mark_column_id FK "他人列(other)のみ"
+        bigint race_nomination_id FK
+        string content "メモ本文 1000字以内 プレーンテキスト"
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    race_mark_columns ||--o{ race_nomination_column_marks : "has"
+    race_nominations ||--o{ race_nomination_column_marks : "marked by"
+    race_mark_columns ||--o{ race_nomination_column_memos : "has"
+    race_nominations ||--o{ race_nomination_column_memos : "noted by"
 ```
 
 ## selectionsカラムのJSONフォーマット

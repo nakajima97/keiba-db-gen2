@@ -1,8 +1,11 @@
 import { Link } from "@inertiajs/react";
-import { Trash2 } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import ScrollableTable from "@/components/presentational/ScrollableTable";
 import { Button } from "@/components/shadcn/ui/button";
 import HorseNoteIconButton from "@/features/horseNote/presentational/HorseNoteIconButton";
+import RaceMarkColumnHeader from "@/features/raceDetail/presentational/RaceDetail/RaceMarkColumnHeader";
+import RaceMarkMemoIcon from "@/features/raceDetail/presentational/RaceDetail/RaceMarkMemoIcon";
+import RaceMarkSelect from "@/features/raceDetail/presentational/RaceDetail/RaceMarkSelect";
 import RaceNominationStatusToggle from "../RaceNominationStatusToggle";
 import type { RaceNominationSectionProps } from "./types";
 
@@ -12,15 +15,38 @@ const HEADER_CELL_CLASS =
 const RaceNominationSection = ({
 	nominations,
 	addForm,
+	markColumns = [],
+	marks = [],
+	markMemos = [],
 	onStatusChange,
 	onNoteClick,
 	onDeleteClick,
+	onAddOtherColumn,
+	onChangeColumnLabel,
+	onRemoveOtherColumn,
+	onMarkChange,
+	onMarkMemoClick,
 }: RaceNominationSectionProps) => {
+	const otherColumns = markColumns
+		.filter((column) => column.type === "other")
+		.sort((a, b) => a.display_order - b.display_order);
+
 	return (
 		<section className="flex flex-col gap-2" aria-labelledby="race-nominations-heading">
-			<h2 id="race-nominations-heading" className="text-lg font-semibold">
-				登録馬
-			</h2>
+			<div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+				<h2 id="race-nominations-heading" className="text-lg font-semibold">
+					登録馬
+				</h2>
+				<Button
+					type="button"
+					variant="outline"
+					size="sm"
+					onClick={() => onAddOtherColumn?.()}
+				>
+					<Plus className="mr-1 h-4 w-4" />
+					他人の印を追加
+				</Button>
+			</div>
 			<p className="text-sm text-muted-foreground">
 				特別登録・出走登録など、出走確定前の馬を記録できます。
 			</p>
@@ -36,6 +62,17 @@ const RaceNominationSection = ({
 								馬名
 							</th>
 							<th className={HEADER_CELL_CLASS}>チェック／消し</th>
+							{otherColumns.map((column) => (
+								<th key={column.id} className={HEADER_CELL_CLASS}>
+									<RaceMarkColumnHeader
+										column={column}
+										onChangeLabel={(label) =>
+											onChangeColumnLabel?.(column.id, label)
+										}
+										onRemove={() => onRemoveOtherColumn?.(column.id)}
+									/>
+								</th>
+							))}
 							<th className={HEADER_CELL_CLASS}>操作</th>
 						</tr>
 					</thead>
@@ -66,6 +103,49 @@ const RaceNominationSection = ({
 										onChange={(status) => onStatusChange(nomination.id, status)}
 									/>
 								</td>
+								{otherColumns.map((column) => {
+									const markValue =
+										marks.find(
+											(mark) =>
+												mark.column_id === column.id &&
+												mark.race_nomination_id === nomination.id,
+										)?.mark_value ?? null;
+									const memoExists = markMemos.some(
+										(memo) =>
+											memo.column_id === column.id &&
+											memo.race_nomination_id === nomination.id,
+									);
+									const columnLabel = column.label || "他人";
+									return (
+										<td key={column.id} className="px-4 py-3">
+											<div className="flex items-center gap-1">
+												<RaceMarkSelect
+													value={markValue}
+													ariaLabel={`${nomination.horse_name}の印（${columnLabel}）`}
+													onChange={(nextMarkValue) =>
+														onMarkChange?.({
+															columnId: column.id,
+															raceNominationId: nomination.id,
+															markValue: nextMarkValue,
+														})
+													}
+												/>
+												{(markValue !== null || memoExists) && (
+													<RaceMarkMemoIcon
+														state={memoExists ? "edit" : "add"}
+														ariaLabel={`${nomination.horse_name}の${columnLabel}の印メモ`}
+														onClick={() =>
+															onMarkMemoClick?.({
+																columnId: column.id,
+																raceNominationId: nomination.id,
+															})
+														}
+													/>
+												)}
+											</div>
+										</td>
+									);
+								})}
 								<td className="px-4 py-3">
 									<Button
 										type="button"
