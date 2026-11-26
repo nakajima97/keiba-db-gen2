@@ -21,7 +21,7 @@ return new class extends Migration
 
         Schema::create('race_nomination_column_marks', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('race_nomination_mark_column_id')->constrained()->cascadeOnDelete()->comment('登録馬用の他人の印列');
+            $table->foreignId('race_nomination_mark_column_id')->constrained(indexName: 'race_nom_col_marks_nom_mark_column_foreign')->cascadeOnDelete()->comment('登録馬用の他人の印列');
             $table->foreignId('race_nomination_id')->constrained()->cascadeOnDelete()->comment('対象の登録馬');
             $table->enum('mark_value', ['◎', '○', '▲', '△', '☆', '✓']);
             $table->timestamps();
@@ -31,7 +31,7 @@ return new class extends Migration
 
         Schema::create('race_nomination_column_memos', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('race_nomination_mark_column_id')->constrained()->cascadeOnDelete()->comment('登録馬用の他人の印列');
+            $table->foreignId('race_nomination_mark_column_id')->constrained(indexName: 'race_nom_col_memos_nom_mark_column_foreign')->cascadeOnDelete()->comment('登録馬用の他人の印列');
             $table->foreignId('race_nomination_id')->constrained()->cascadeOnDelete()->comment('対象の登録馬');
             $table->string('content', 1000)->comment('メモ本文 1000文字以内 プレーンテキスト');
             $table->timestamps();
