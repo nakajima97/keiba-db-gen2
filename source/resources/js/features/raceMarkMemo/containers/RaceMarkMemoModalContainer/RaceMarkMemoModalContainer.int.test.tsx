@@ -117,7 +117,9 @@ describe("RaceMarkMemoModalContainer", () => {
 			});
 			const [url] = (global.fetch as ReturnType<typeof vi.fn>).mock
 				.calls[0] as [string, RequestInit];
-			expect(url).toBe("/api/races/abc001/mark-columns/101/nominations/7/memo");
+			expect(url).toBe(
+				"/api/races/abc001/nomination-mark-columns/101/nominations/7/memo",
+			);
 			expect(onSaved).toHaveBeenCalledWith({
 				columnId: 101,
 				target: { type: "nomination", raceNominationId: 7 },

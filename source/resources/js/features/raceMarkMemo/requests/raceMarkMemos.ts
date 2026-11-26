@@ -9,7 +9,10 @@ export type RaceMarkMemoTarget =
 
 type ApiMemo = {
 	id: number;
-	race_mark_column_id: number;
+	/** 出走馬の印メモのときのみ */
+	race_mark_column_id?: number;
+	/** 登録馬の印メモのときのみ */
+	race_nomination_mark_column_id?: number;
 	race_entry_id?: number;
 	race_nomination_id?: number;
 	content: string;
@@ -68,7 +71,7 @@ const memoUrl = (
 ): string =>
 	target.type === "entry"
 		? `/api/races/${raceUid}/mark-columns/${columnId}/entries/${target.raceEntryId}/memo`
-		: `/api/races/${raceUid}/mark-columns/${columnId}/nominations/${target.raceNominationId}/memo`;
+		: `/api/races/${raceUid}/nomination-mark-columns/${columnId}/nominations/${target.raceNominationId}/memo`;
 
 /**
  * 印メモを upsert する。新規作成は 201、更新は 200。

@@ -27,9 +27,9 @@ const RaceNominationSection = ({
 	onMarkChange,
 	onMarkMemoClick,
 }: RaceNominationSectionProps) => {
-	const otherColumns = [...markColumns]
-		.filter((column) => column.type === "other")
-		.sort((a, b) => a.display_order - b.display_order);
+	const otherColumns = [...markColumns].sort(
+		(a, b) => a.display_order - b.display_order,
+	);
 
 	return (
 		<section className="flex flex-col gap-2" aria-labelledby="race-nominations-heading">
@@ -65,7 +65,7 @@ const RaceNominationSection = ({
 							{otherColumns.map((column) => (
 								<th key={column.id} className={HEADER_CELL_CLASS}>
 									<RaceMarkColumnHeader
-										column={column}
+										column={{ ...column, type: "other" }}
 										onChangeLabel={(label) =>
 											onChangeColumnLabel(column.id, label)
 										}

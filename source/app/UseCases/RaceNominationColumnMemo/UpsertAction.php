@@ -2,18 +2,17 @@
 
 namespace App\UseCases\RaceNominationColumnMemo;
 
-use App\Models\RaceMarkColumn;
 use App\Models\RaceNominationColumnMemo;
+use App\Models\RaceNominationMarkColumn;
 use App\Models\User;
 use Carbon\CarbonInterface;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\ValidationException;
 
 /**
  * 登録馬に対する他人の印の印メモを upsert する。
- * own 列は 422、他ユーザー所有列は 403。
+ * 印列は登録馬用の race_nomination_mark_columns。他ユーザー所有列は 403。
  */
 class UpsertAction
 {
@@ -22,7 +21,7 @@ class UpsertAction
      *     created: bool,
      *     memo: array{
      *         id: int,
-     *         race_mark_column_id: int,
+     *         race_nomination_mark_column_id: int,
      *         race_nomination_id: int,
      *         content: string,
      *         created_at: string|null,
@@ -31,22 +30,15 @@ class UpsertAction
      * }
      *
      * @throws AuthorizationException
-     * @throws ValidationException
      */
     public function execute(
-        RaceMarkColumn $column,
+        RaceNominationMarkColumn $column,
         int $raceNominationId,
         User $user,
         string $content,
     ): array {
         if ((int) $column->user_id !== (int) $user->id) {
             throw new AuthorizationException('他のユーザーの印列にはメモを書き込めません。');
-        }
-
-        if ($column->column_type === 'own') {
-            throw ValidationException::withMessages([
-                'column_type' => '自分の印列にはメモを作成できません。',
-            ]);
         }
 
         try {
@@ -62,7 +54,7 @@ class UpsertAction
      *     created: bool,
      *     memo: array{
      *         id: int,
-     *         race_mark_column_id: int,
+     *         race_nomination_mark_column_id: int,
      *         race_nomination_id: int,
      *         content: string,
      *         created_at: string|null,
@@ -72,11 +64,11 @@ class UpsertAction
      *
      * @throws UniqueConstraintViolationException
      */
-    private function upsert(RaceMarkColumn $column, int $raceNominationId, string $content): array
+    private function upsert(RaceNominationMarkColumn $column, int $raceNominationId, string $content): array
     {
         return DB::transaction(function () use ($column, $raceNominationId, $content): array {
             $existing = RaceNominationColumnMemo::query()
-                ->where('race_mark_column_id', $column->id)
+                ->where('race_nomination_mark_column_id', $column->id)
                 ->where('race_nomination_id', $raceNominationId)
                 ->lockForUpdate()
                 ->first();
@@ -91,7 +83,7 @@ class UpsertAction
             }
 
             $memo = RaceNominationColumnMemo::create([
-                'race_mark_column_id' => $column->id,
+                'race_nomination_mark_column_id' => $column->id,
                 'race_nomination_id' => $raceNominationId,
                 'content' => $content,
             ]);
@@ -106,7 +98,7 @@ class UpsertAction
     /**
      * @return array{
      *     id: int,
-     *     race_mark_column_id: int,
+     *     race_nomination_mark_column_id: int,
      *     race_nomination_id: int,
      *     content: string,
      *     created_at: string|null,
@@ -117,7 +109,7 @@ class UpsertAction
     {
         return [
             'id' => (int) $memo->id,
-            'race_mark_column_id' => (int) $memo->race_mark_column_id,
+            'race_nomination_mark_column_id' => (int) $memo->race_nomination_mark_column_id,
             'race_nomination_id' => (int) $memo->race_nomination_id,
             'content' => (string) $memo->content,
             'created_at' => $memo->created_at instanceof CarbonInterface

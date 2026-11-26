@@ -1,11 +1,11 @@
 <?php
 
 use App\Models\HorseNote;
-use App\Models\RaceMarkColumn;
 use App\Models\RaceNomination;
 use App\Models\RaceNominationColumnMark;
 use App\Models\RaceNominationColumnMemo;
 use App\Models\RaceNominationMark;
+use App\Models\RaceNominationMarkColumn;
 use App\Models\User;
 
 // ===== DELETE /api/races/{uid}/nominations/{nomination_id} =====
@@ -40,16 +40,16 @@ test('登録馬を削除すると他人の印・印メモも削除される', fu
     // Arrange
     $user = User::factory()->create();
     $nomination = RaceNomination::factory()->create();
-    $column = RaceMarkColumn::factory()->other()->create([
+    $column = RaceNominationMarkColumn::factory()->create([
         'race_id' => $nomination->race_id,
         'user_id' => $user->id,
     ]);
     $columnMark = RaceNominationColumnMark::factory()->create([
-        'race_mark_column_id' => $column->id,
+        'race_nomination_mark_column_id' => $column->id,
         'race_nomination_id' => $nomination->id,
     ]);
     $columnMemo = RaceNominationColumnMemo::factory()->create([
-        'race_mark_column_id' => $column->id,
+        'race_nomination_mark_column_id' => $column->id,
         'race_nomination_id' => $nomination->id,
     ]);
 
@@ -62,5 +62,5 @@ test('登録馬を削除すると他人の印・印メモも削除される', fu
     $response->assertNoContent();
     $this->assertDatabaseMissing('race_nomination_column_marks', ['id' => $columnMark->id]);
     $this->assertDatabaseMissing('race_nomination_column_memos', ['id' => $columnMemo->id]);
-    $this->assertDatabaseHas('race_mark_columns', ['id' => $column->id]);
+    $this->assertDatabaseHas('race_nomination_mark_columns', ['id' => $column->id]);
 });

@@ -20,7 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
             fn ($request) => $request->isMethod('PUT')
                 && $request->is(
                     'api/races/*/mark-columns/*/entries/*/mark',
-                    'api/races/*/mark-columns/*/nominations/*/mark',
+                    'api/races/*/nomination-mark-columns/*/nominations/*/mark',
                 ),
         ]);
 

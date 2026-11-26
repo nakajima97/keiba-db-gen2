@@ -14,11 +14,12 @@ use App\UseCases\EntryComment\LoadStatsBySpeakerId;
 use App\UseCases\HorseNote\LoadNotesByHorseId;
 use App\UseCases\RaceMarkColumn\EnsureOwnColumnExistsAction;
 use App\UseCases\RaceNomination\LoadNominationsAction;
+use App\UseCases\RaceNominationMarkColumn\IndexAction as NominationMarkColumnIndexAction;
 use App\UseCases\TrainerNote\LoadNotesByTrainerId;
 use Carbon\CarbonInterface;
 
 /**
- * レースと出馬表（馬・騎手・調教師含む）に加え、認証ユーザーの印列・印データ・競走馬メモ・調教師メモ・調教師/騎手コメントと的中率、登録馬とその他人の印・印メモを取得し、
+ * レースと出馬表（馬・騎手・調教師含む）に加え、認証ユーザーの印列・印データ・競走馬メモ・調教師メモ・調教師/騎手コメントと的中率、登録馬とその他人の印列（出馬表とは独立）・印・印メモを取得し、
  * レース詳細画面の表示用データを返す。
  */
 class ShowAction
@@ -30,6 +31,7 @@ class ShowAction
         private LoadNominationsAction $loadNominationsAction,
         private LoadCommentsByEntryId $loadCommentsByEntryId,
         private LoadStatsBySpeakerId $loadStatsBySpeakerId,
+        private NominationMarkColumnIndexAction $nominationMarkColumnIndexAction,
     ) {}
 
     /**
@@ -71,6 +73,7 @@ class ShowAction
      *         status: string|null,
      *         note: array{id: int, content: string, source: string}|null,
      *     }>,
+     *     nomination_mark_columns: list<array{id: int, label: string, display_order: int}>,
      *     nomination_marks: list<array{column_id: int, race_nomination_id: int, mark_value: string}>,
      *     nomination_mark_memos: list<array{column_id: int, race_nomination_id: int, content: string}>,
      *     has_result: bool
@@ -117,12 +120,15 @@ class ShowAction
             ])
             ->all();
 
+        $nominationMarkColumns = $this->nominationMarkColumnIndexAction->execute($race, $user);
+        $nominationColumnIds = array_column($nominationMarkColumns, 'id');
+
         $nominationMarks = RaceNominationColumnMark::query()
-            ->whereIn('race_mark_column_id', $columnIds)
+            ->whereIn('race_nomination_mark_column_id', $nominationColumnIds)
             ->orderBy('id')
-            ->get(['race_mark_column_id', 'race_nomination_id', 'mark_value'])
+            ->get(['race_nomination_mark_column_id', 'race_nomination_id', 'mark_value'])
             ->map(fn (RaceNominationColumnMark $mark): array => [
-                'column_id' => (int) $mark->race_mark_column_id,
+                'column_id' => (int) $mark->race_nomination_mark_column_id,
                 'race_nomination_id' => (int) $mark->race_nomination_id,
                 'mark_value' => (string) $mark->mark_value,
             ])
@@ -130,11 +136,11 @@ class ShowAction
             ->all();
 
         $nominationMarkMemos = RaceNominationColumnMemo::query()
-            ->whereIn('race_mark_column_id', $columnIds)
+            ->whereIn('race_nomination_mark_column_id', $nominationColumnIds)
             ->orderBy('id')
-            ->get(['race_mark_column_id', 'race_nomination_id', 'content'])
+            ->get(['race_nomination_mark_column_id', 'race_nomination_id', 'content'])
             ->map(fn (RaceNominationColumnMemo $memo): array => [
-                'column_id' => (int) $memo->race_mark_column_id,
+                'column_id' => (int) $memo->race_nomination_mark_column_id,
                 'race_nomination_id' => (int) $memo->race_nomination_id,
                 'content' => (string) $memo->content,
             ])
@@ -213,6 +219,7 @@ class ShowAction
             'marks' => $marks,
             'mark_memos' => $markMemos,
             'nominations' => $this->loadNominationsAction->execute($race, $user),
+            'nomination_mark_columns' => $nominationMarkColumns,
             'nomination_marks' => $nominationMarks,
             'nomination_mark_memos' => $nominationMarkMemos,
             'has_result' => $race->raceResultHorses()->exists() || $race->racePayouts()->exists(),

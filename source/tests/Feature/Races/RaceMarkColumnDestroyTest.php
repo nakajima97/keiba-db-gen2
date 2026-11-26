@@ -6,6 +6,7 @@ use App\Models\RaceMarkColumn;
 use App\Models\RaceNomination;
 use App\Models\RaceNominationColumnMark;
 use App\Models\RaceNominationColumnMemo;
+use App\Models\RaceNominationMarkColumn;
 use App\Models\User;
 use App\Models\Venue;
 use App\Support\NanoId;
@@ -181,7 +182,7 @@ test('存在しない印カラムを削除しようとすると404が返る', fu
     $response->assertNotFound();
 });
 
-test('他カテゴリの印カラム削除時に登録馬の印・印メモも削除される', function () {
+test('出馬表の他人の印列を削除しても登録馬用の印列とその印・印メモは残る', function () {
     // Arrange
     $user = User::factory()->create();
     $nomination = RaceNomination::factory()->create();
@@ -189,12 +190,16 @@ test('他カテゴリの印カラム削除時に登録馬の印・印メモも�
         'race_id' => $nomination->race_id,
         'user_id' => $user->id,
     ]);
+    $nominationColumn = RaceNominationMarkColumn::factory()->create([
+        'race_id' => $nomination->race_id,
+        'user_id' => $user->id,
+    ]);
     $columnMark = RaceNominationColumnMark::factory()->create([
-        'race_mark_column_id' => $column->id,
+        'race_nomination_mark_column_id' => $nominationColumn->id,
         'race_nomination_id' => $nomination->id,
     ]);
     $columnMemo = RaceNominationColumnMemo::factory()->create([
-        'race_mark_column_id' => $column->id,
+        'race_nomination_mark_column_id' => $nominationColumn->id,
         'race_nomination_id' => $nomination->id,
     ]);
 
@@ -203,7 +208,8 @@ test('他カテゴリの印カラム削除時に登録馬の印・印メモも�
 
     // Assert
     $response->assertNoContent();
-    $this->assertDatabaseMissing('race_nomination_column_marks', ['id' => $columnMark->id]);
-    $this->assertDatabaseMissing('race_nomination_column_memos', ['id' => $columnMemo->id]);
-    $this->assertDatabaseHas('race_nominations', ['id' => $nomination->id]);
+    $this->assertDatabaseMissing('race_mark_columns', ['id' => $column->id]);
+    $this->assertDatabaseHas('race_nomination_mark_columns', ['id' => $nominationColumn->id]);
+    $this->assertDatabaseHas('race_nomination_column_marks', ['id' => $columnMark->id]);
+    $this->assertDatabaseHas('race_nomination_column_memos', ['id' => $columnMemo->id]);
 });

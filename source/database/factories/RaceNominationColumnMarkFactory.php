@@ -2,9 +2,9 @@
 
 namespace Database\Factories;
 
-use App\Models\RaceMarkColumn;
 use App\Models\RaceNomination;
 use App\Models\RaceNominationColumnMark;
+use App\Models\RaceNominationMarkColumn;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -18,7 +18,7 @@ class RaceNominationColumnMarkFactory extends Factory
     public function definition(): array
     {
         return [
-            'race_mark_column_id' => RaceMarkColumn::factory(),
+            'race_nomination_mark_column_id' => RaceNominationMarkColumn::factory(),
             'race_nomination_id' => RaceNomination::factory(),
             'mark_value' => '◎',
         ];

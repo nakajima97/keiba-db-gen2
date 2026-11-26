@@ -13,6 +13,7 @@ use App\Http\Controllers\RaceMarkMemoController;
 use App\Http\Controllers\RaceNominationColumnMarkController;
 use App\Http\Controllers\RaceNominationColumnMemoController;
 use App\Http\Controllers\RaceNominationController;
+use App\Http\Controllers\RaceNominationMarkColumnController;
 use App\Http\Controllers\RaceResultController;
 use App\Http\Controllers\TicketPurchaseController;
 use App\Http\Controllers\TrainerNoteController;
@@ -63,9 +64,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/races/{race:uid}/nominations', [RaceNominationController::class, 'store'])->name('api.races.nominations.store');
         Route::delete('/races/{race:uid}/nominations/{nomination_id}', [RaceNominationController::class, 'destroy'])->name('api.races.nominations.destroy');
         Route::put('/races/{race:uid}/nominations/{nomination_id}/mark', [RaceNominationController::class, 'upsertMark'])->name('api.races.nominations.mark.upsert');
-        Route::put('/races/{race:uid}/mark-columns/{column_id}/nominations/{nomination_id}/mark', [RaceNominationColumnMarkController::class, 'upsert'])->name('api.races.mark-columns.nominations.mark.upsert');
-        Route::put('/races/{race:uid}/mark-columns/{column_id}/nominations/{nomination_id}/memo', [RaceNominationColumnMemoController::class, 'upsert'])->name('api.races.mark-columns.nominations.memo.upsert');
-        Route::delete('/races/{race:uid}/mark-columns/{column_id}/nominations/{nomination_id}/memo', [RaceNominationColumnMemoController::class, 'destroy'])->name('api.races.mark-columns.nominations.memo.destroy');
+        Route::get('/races/{race:uid}/nomination-mark-columns', [RaceNominationMarkColumnController::class, 'index'])->name('api.races.nomination-mark-columns.index');
+        Route::post('/races/{race:uid}/nomination-mark-columns', [RaceNominationMarkColumnController::class, 'store'])->name('api.races.nomination-mark-columns.store');
+        Route::patch('/races/{race:uid}/nomination-mark-columns/{id}', [RaceNominationMarkColumnController::class, 'update'])->name('api.races.nomination-mark-columns.update');
+        Route::delete('/races/{race:uid}/nomination-mark-columns/{id}', [RaceNominationMarkColumnController::class, 'destroy'])->name('api.races.nomination-mark-columns.destroy');
+        Route::put('/races/{race:uid}/nomination-mark-columns/{column_id}/nominations/{nomination_id}/mark', [RaceNominationColumnMarkController::class, 'upsert'])->name('api.races.nomination-mark-columns.nominations.mark.upsert');
+        Route::put('/races/{race:uid}/nomination-mark-columns/{column_id}/nominations/{nomination_id}/memo', [RaceNominationColumnMemoController::class, 'upsert'])->name('api.races.nomination-mark-columns.nominations.memo.upsert');
+        Route::delete('/races/{race:uid}/nomination-mark-columns/{column_id}/nominations/{nomination_id}/memo', [RaceNominationColumnMemoController::class, 'destroy'])->name('api.races.nomination-mark-columns.nominations.memo.destroy');
 
         Route::get('/horses/search', [HorseController::class, 'search'])->name('api.horses.search');
         Route::get('/horses/{horse}/notes', [HorseNoteController::class, 'index'])->name('api.horses.notes.index');

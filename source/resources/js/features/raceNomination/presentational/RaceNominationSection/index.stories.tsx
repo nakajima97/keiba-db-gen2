@@ -77,10 +77,9 @@ export const WithOtherMarks: Story = {
 	name: "他人の印列あり（印・印メモあり／印メモのみ／未設定）",
 	args: {
 		markColumns: [
-			{ id: 1, type: "own", label: null, display_order: 0 },
-			{ id: 2, type: "other", label: "Aさん", display_order: 1 },
-			{ id: 3, type: "other", label: "新聞B", display_order: 2 },
-			{ id: 4, type: "other", label: "", display_order: 3 },
+			{ id: 2, label: "Aさん", display_order: 1 },
+			{ id: 3, label: "新聞B", display_order: 2 },
+			{ id: 4, label: "", display_order: 3 },
 		],
 		marks: [
 			{ column_id: 2, race_nomination_id: 1, mark_value: "◎" },

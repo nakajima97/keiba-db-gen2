@@ -1,20 +1,18 @@
 import type { ReactNode } from "react";
-import type {
-	MarkValue,
-	RaceMarkColumn,
-} from "@/features/raceDetail/presentational/RaceDetail/types";
+import type { MarkValue } from "@/features/raceDetail/presentational/RaceDetail/types";
 import type {
 	RaceNomination,
 	RaceNominationColumnMarkValue,
 	RaceNominationColumnMemo,
+	RaceNominationMarkColumn,
 	RaceNominationStatus,
 } from "../../types/raceNomination";
 
 export type RaceNominationSectionProps = {
 	nominations: ReadonlyArray<RaceNomination>;
 	addForm: ReactNode;
-	/** 出馬表と共通の印列。type=other の列のみ表示する。 */
-	markColumns: ReadonlyArray<RaceMarkColumn>;
+	/** 登録馬用の他人の印列（出馬表の印列とは独立） */
+	markColumns: ReadonlyArray<RaceNominationMarkColumn>;
 	marks: ReadonlyArray<RaceNominationColumnMarkValue>;
 	markMemos: ReadonlyArray<RaceNominationColumnMemo>;
 	onStatusChange: (

@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\RaceMark\UpsertRaceMarkRequest;
 use App\Models\Race;
-use App\Models\RaceMarkColumn;
 use App\Models\RaceNomination;
+use App\Models\RaceNominationMarkColumn;
 use App\UseCases\RaceNominationColumnMark\UpsertAction;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,7 +19,7 @@ class RaceNominationColumnMarkController extends Controller
         UpsertRaceMarkRequest $request,
         UpsertAction $action,
     ): JsonResponse|Response {
-        $column = RaceMarkColumn::query()
+        $column = RaceNominationMarkColumn::query()
             ->where('race_id', $race->id)
             ->findOrFail($columnId);
         RaceNomination::query()

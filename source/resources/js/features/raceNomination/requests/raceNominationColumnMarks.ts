@@ -17,7 +17,7 @@ export async function upsertNominationColumnMark(
 	markValue: MarkValue | null,
 ): Promise<RaceNominationColumnMarkValue | null> {
 	const response = await fetch(
-		`/api/races/${raceUid}/mark-columns/${columnId}/nominations/${raceNominationId}/mark`,
+		`/api/races/${raceUid}/nomination-mark-columns/${columnId}/nominations/${raceNominationId}/mark`,
 		{
 			method: "PUT",
 			headers: buildJsonHeaders(),
