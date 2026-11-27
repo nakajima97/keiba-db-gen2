@@ -20,7 +20,9 @@ import type { RaceMarkMemoTarget } from "@/features/raceMarkMemo/requests/raceMa
 import RaceNominationSectionContainer from "@/features/raceNomination/containers/RaceNominationSectionContainer";
 import { useRaceNominationColumnMarks } from "@/features/raceNomination/hooks/useRaceNominationColumnMarks";
 import { useRaceNominationColumnMemos } from "@/features/raceNomination/hooks/useRaceNominationColumnMemos";
+import { useRaceNominationMarkColumns } from "@/features/raceNomination/hooks/useRaceNominationMarkColumns";
 import { useRaceNominations } from "@/features/raceNomination/hooks/useRaceNominations";
+import { deleteNominationMarkColumn } from "@/features/raceNomination/requests/raceNominationMarkColumns";
 import TrainerNoteModalContainer from "@/features/trainerNote/containers/TrainerNoteModalContainer";
 import { formatDateDisplay } from "@/utils/date";
 
@@ -42,6 +44,10 @@ const RaceDetailContainer = ({ race }: Props) => {
 	const marksHook = useRaceMarks(race.uid, race.marks);
 	const memosHook = useRaceMarkMemos(race.mark_memos ?? []);
 	const nominationsHook = useRaceNominations(race.uid, race.nominations ?? []);
+	const nominationColumnsHook = useRaceNominationMarkColumns(
+		race.uid,
+		race.nomination_mark_columns ?? [],
+	);
 	const nominationMarksHook = useRaceNominationColumnMarks(
 		race.uid,
 		race.nomination_marks ?? [],
@@ -55,6 +61,7 @@ const RaceDetailContainer = ({ race }: Props) => {
 		marks: marksHook.marks,
 		markMemos: memosHook.markMemos,
 		nominations: nominationsHook.nominations,
+		nominationMarkColumns: nominationColumnsHook.markColumns,
 		nominationMarks: nominationMarksHook.marks,
 		nominationMarkMemos: nominationMemosHook.markMemos,
 	});
@@ -66,18 +73,27 @@ const RaceDetailContainer = ({ race }: Props) => {
 		const colSnap = columnsHook.removeColumnLocally(columnId);
 		const markSnap = marksHook.removeByColumnLocally(columnId);
 		const memoSnap = memosHook.removeByColumnLocally(columnId);
-		const nominationMarkSnap =
-			nominationMarksHook.removeByColumnLocally(columnId);
-		const nominationMemoSnap =
-			nominationMemosHook.removeByColumnLocally(columnId);
 		try {
 			await deleteColumn(race.uid, columnId);
 		} catch (_e) {
 			columnsHook.restoreColumns(colSnap);
 			marksHook.restoreSnapshot(markSnap);
 			memosHook.restoreSnapshot(memoSnap);
-			nominationMarksHook.restoreSnapshot(nominationMarkSnap);
-			nominationMemosHook.restoreSnapshot(nominationMemoSnap);
+			toast.error("印列の削除に失敗しました");
+		}
+	};
+
+	const handleRemoveNominationColumn = async (columnId: number) => {
+		nominationColumnsHook.cancelLabelDebounce(columnId);
+		const colSnap = nominationColumnsHook.removeColumnLocally(columnId);
+		const markSnap = nominationMarksHook.removeByColumnLocally(columnId);
+		const memoSnap = nominationMemosHook.removeByColumnLocally(columnId);
+		try {
+			await deleteNominationMarkColumn(race.uid, columnId);
+		} catch (_e) {
+			nominationColumnsHook.restoreColumns(colSnap);
+			nominationMarksHook.restoreSnapshot(markSnap);
+			nominationMemosHook.restoreSnapshot(memoSnap);
 			toast.error("印列の削除に失敗しました");
 		}
 	};
@@ -151,6 +167,7 @@ const RaceDetailContainer = ({ race }: Props) => {
 		marks: marksHook.marks,
 		mark_memos: memosHook.markMemos,
 		nominations: nominationsHook.nominations,
+		nomination_mark_columns: nominationColumnsHook.markColumns,
 		nomination_marks: nominationMarksHook.marks,
 		nomination_mark_memos: nominationMemosHook.markMemos,
 	};
@@ -176,12 +193,12 @@ const RaceDetailContainer = ({ race }: Props) => {
 					onRemove={nominationsHook.removeNomination}
 					onStatusChange={nominationsHook.changeStatus}
 					onNoteClick={modals.handleNoteClick}
-					markColumns={columnsHook.markColumns}
+					markColumns={nominationColumnsHook.markColumns}
 					marks={nominationMarksHook.marks}
 					markMemos={nominationMemosHook.markMemos}
-					onAddOtherColumn={columnsHook.handleAddOtherColumn}
-					onChangeColumnLabel={columnsHook.handleChangeColumnLabel}
-					onRemoveOtherColumn={handleRemoveOtherColumn}
+					onAddOtherColumn={nominationColumnsHook.handleAddColumn}
+					onChangeColumnLabel={nominationColumnsHook.handleChangeColumnLabel}
+					onRemoveOtherColumn={handleRemoveNominationColumn}
 					onMarkChange={nominationMarksHook.handleMarkChange}
 					onMarkMemoClick={modals.handleNominationMarkMemoClick}
 				/>

@@ -4,6 +4,7 @@ import type {
 	RaceNomination,
 	RaceNominationColumnMarkValue,
 	RaceNominationColumnMemo,
+	RaceNominationMarkColumn,
 } from "@/features/raceNomination/types/raceNomination";
 import type {
 	MarkValue,
@@ -32,6 +33,7 @@ type UseRaceDetailModalsParams = {
 	marks: ReadonlyArray<RaceMarkValue>;
 	markMemos: ReadonlyArray<RaceMarkMemo>;
 	nominations?: ReadonlyArray<RaceNomination>;
+	nominationMarkColumns?: ReadonlyArray<RaceNominationMarkColumn>;
 	nominationMarks?: ReadonlyArray<RaceNominationColumnMarkValue>;
 	nominationMarkMemos?: ReadonlyArray<RaceNominationColumnMemo>;
 };
@@ -44,7 +46,8 @@ type UseRaceDetailModalsReturn = {
 	handleNoteClose: () => void;
 
 	memoModal: MemoModalState;
-	memoTargetColumn: RaceMarkColumn | undefined;
+	/** 印メモ対象の印列。出走馬なら出馬表の印列、登録馬なら登録馬用の印列から引く。 */
+	memoTargetColumn: RaceMarkColumn | RaceNominationMarkColumn | undefined;
 	/** 印メモ対象（出走馬または登録馬）の馬名。対象が見つからない場合は undefined。 */
 	memoTargetHorseName: string | undefined;
 	memoTargetContent: string | undefined;
@@ -75,6 +78,7 @@ export const useRaceDetailModals = (
 		marks,
 		markMemos,
 		nominations = [],
+		nominationMarkColumns = [],
 		nominationMarks = [],
 		nominationMarkMemos = [],
 	} = params;
@@ -152,13 +156,15 @@ export const useRaceDetailModals = (
 	const selectedNote: RaceEntryNote | null =
 		selectedEntry?.note ?? selectedNominationNote;
 
-	const memoTargetColumn = useMemo(
-		() =>
-			memoModal.columnId != null
-				? markColumns.find((c) => c.id === memoModal.columnId)
-				: undefined,
-		[markColumns, memoModal.columnId],
-	);
+	const memoTargetColumn = useMemo(() => {
+		const { columnId, target } = memoModal;
+		if (columnId == null || target == null) {
+			return undefined;
+		}
+		const columns: ReadonlyArray<RaceMarkColumn | RaceNominationMarkColumn> =
+			target.type === "entry" ? markColumns : nominationMarkColumns;
+		return columns.find((c) => c.id === columnId);
+	}, [markColumns, nominationMarkColumns, memoModal]);
 	const memoTarget = useMemo(() => {
 		const { columnId, target } = memoModal;
 		if (columnId == null || target == null) {

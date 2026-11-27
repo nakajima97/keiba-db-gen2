@@ -6,6 +6,10 @@ import type {
 	RaceMarkMemo,
 	RaceMarkValue,
 } from "@/features/raceDetail/presentational/RaceDetail/types";
+import type {
+	RaceNomination,
+	RaceNominationMarkColumn,
+} from "@/features/raceNomination/types/raceNomination";
 import { useRaceDetailModals } from "./useRaceDetailModals";
 
 const entry: RaceEntry = {
@@ -43,5 +47,47 @@ describe("useRaceDetailModals", () => {
 			horseName: "テストホース",
 		});
 		expect(result.current.selectedEntry).toBe(entry);
+	});
+
+	it("登録馬の印メモを開くと memoTargetColumn は出馬表ではなく登録馬用の印列から引かれる", () => {
+		// Arrange
+		const markColumns: RaceMarkColumn[] = [
+			{ id: 5, type: "other", label: "出馬表の列", display_order: 1 },
+		];
+		const nominationMarkColumns: RaceNominationMarkColumn[] = [
+			{ id: 5, label: "登録馬の列", display_order: 1 },
+		];
+		const nominations: RaceNomination[] = [
+			{
+				id: 7,
+				horse_id: 43,
+				horse_uid: "horse-uid-43",
+				horse_name: "登録ホース",
+				status: null,
+				note: null,
+			},
+		];
+		const { result } = renderHook(() =>
+			useRaceDetailModals({
+				entries: [entry],
+				markColumns,
+				marks: [],
+				markMemos: [],
+				nominations,
+				nominationMarkColumns,
+			}),
+		);
+
+		// Act
+		act(() => {
+			result.current.handleNominationMarkMemoClick({
+				columnId: 5,
+				raceNominationId: 7,
+			});
+		});
+
+		// Assert
+		expect(result.current.memoTargetColumn).toBe(nominationMarkColumns[0]);
+		expect(result.current.memoTargetHorseName).toBe("登録ホース");
 	});
 });

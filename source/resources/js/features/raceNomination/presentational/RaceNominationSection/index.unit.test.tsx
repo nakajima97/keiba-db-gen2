@@ -1,8 +1,10 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
-import type { RaceMarkColumn } from "@/features/raceDetail/presentational/RaceDetail/types";
-import type { RaceNomination } from "../../types/raceNomination";
+import type {
+	RaceNomination,
+	RaceNominationMarkColumn,
+} from "../../types/raceNomination";
 import RaceNominationSection from "./index";
 
 vi.mock("@inertiajs/react", () => ({
@@ -101,13 +103,12 @@ describe("RaceNominationSection", () => {
 	});
 
 	describe("他人の印", () => {
-		const markColumns: RaceMarkColumn[] = [
-			{ id: 3, type: "other", label: "新聞B", display_order: 2 },
-			{ id: 1, type: "own", label: null, display_order: 0 },
-			{ id: 2, type: "other", label: "Aさん", display_order: 1 },
+		const markColumns: RaceNominationMarkColumn[] = [
+			{ id: 3, label: "新聞B", display_order: 2 },
+			{ id: 2, label: "Aさん", display_order: 1 },
 		];
 
-		it("他人の印列だけが display_order 順に表示され自分の印列は表示されない", () => {
+		it("登録馬用の他人の印列が display_order 順に表示され自分の印列は表示されない", () => {
 			// Act
 			render(
 				<RaceNominationSection
@@ -140,7 +141,7 @@ describe("RaceNominationSection", () => {
 					addForm={null}
 					markColumns={[
 						...markColumns,
-						{ id: 4, type: "other", label: "Cさん", display_order: 3 },
+						{ id: 4, label: "Cさん", display_order: 3 },
 					]}
 					marks={[{ column_id: 2, race_nomination_id: 10, mark_value: "◎" }]}
 					markMemos={[
@@ -186,7 +187,7 @@ describe("RaceNominationSection", () => {
 					{...handlers}
 					nominations={[nomination]}
 					addForm={null}
-					markColumns={[markColumns[2]]}
+					markColumns={[markColumns[1]]}
 				/>,
 			);
 

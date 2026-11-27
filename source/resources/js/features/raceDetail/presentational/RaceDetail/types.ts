@@ -6,6 +6,7 @@ import type {
 	RaceNomination,
 	RaceNominationColumnMarkValue,
 	RaceNominationColumnMemo,
+	RaceNominationMarkColumn,
 	RaceNominationStatus,
 } from "@/features/raceNomination/types/raceNomination";
 
@@ -84,6 +85,8 @@ export type RaceDetailItem = {
 	marks: RaceMarkValue[];
 	mark_memos?: RaceMarkMemo[];
 	nominations?: RaceNomination[];
+	/** 登録馬用の他人の印列（出馬表の mark_columns とは独立） */
+	nomination_mark_columns?: RaceNominationMarkColumn[];
 	nomination_marks?: RaceNominationColumnMarkValue[];
 	nomination_mark_memos?: RaceNominationColumnMemo[];
 	has_result: boolean;

@@ -16,15 +16,15 @@ class RaceNominationColumnMemo extends Model
     use HasFactory;
 
     protected $fillable = [
-        'race_mark_column_id',
+        'race_nomination_mark_column_id',
         'race_nomination_id',
         'content',
     ];
 
-    /** @return BelongsTo<RaceMarkColumn, $this> */
+    /** @return BelongsTo<RaceNominationMarkColumn, $this> */
     public function column(): BelongsTo
     {
-        return $this->belongsTo(RaceMarkColumn::class, 'race_mark_column_id');
+        return $this->belongsTo(RaceNominationMarkColumn::class, 'race_nomination_mark_column_id');
     }
 
     /** @return BelongsTo<RaceNomination, $this> */

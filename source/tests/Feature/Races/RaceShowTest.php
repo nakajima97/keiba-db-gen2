@@ -10,6 +10,7 @@ use App\Models\RaceNomination;
 use App\Models\RaceNominationColumnMark;
 use App\Models\RaceNominationColumnMemo;
 use App\Models\RaceNominationMark;
+use App\Models\RaceNominationMarkColumn;
 use App\Models\RacePayout;
 use App\Models\RaceResultHorse;
 use App\Models\Trainer;
@@ -396,36 +397,43 @@ test('レース詳細は Inertia props として登録馬を登録順に自分�
     );
 });
 
-test('レース詳細は Inertia props として自分の印列の登録馬の印・印メモだけを返す', function () {
+test('レース詳細は Inertia props として出馬表とは別に自分の登録馬用印列とその印・印メモだけを返す', function () {
     // Arrange
     $user = User::factory()->create();
     $otherUser = User::factory()->create();
     $race = Race::factory()->create();
     $nomination = RaceNomination::factory()->for($race)->create();
-    $column = RaceMarkColumn::factory()->other()->create([
+    RaceMarkColumn::factory()->other()->create([
         'race_id' => $race->id,
         'user_id' => $user->id,
+        'label' => '出馬表の列',
     ]);
-    $otherUserColumn = RaceMarkColumn::factory()->other()->create([
+    $column = RaceNominationMarkColumn::factory()->create([
+        'race_id' => $race->id,
+        'user_id' => $user->id,
+        'label' => '友人A',
+        'display_order' => 1,
+    ]);
+    $otherUserColumn = RaceNominationMarkColumn::factory()->create([
         'race_id' => $race->id,
         'user_id' => $otherUser->id,
     ]);
     RaceNominationColumnMark::factory()->create([
-        'race_mark_column_id' => $column->id,
+        'race_nomination_mark_column_id' => $column->id,
         'race_nomination_id' => $nomination->id,
         'mark_value' => '▲',
     ]);
     RaceNominationColumnMark::factory()->create([
-        'race_mark_column_id' => $otherUserColumn->id,
+        'race_nomination_mark_column_id' => $otherUserColumn->id,
         'race_nomination_id' => $nomination->id,
     ]);
     RaceNominationColumnMemo::factory()->create([
-        'race_mark_column_id' => $column->id,
+        'race_nomination_mark_column_id' => $column->id,
         'race_nomination_id' => $nomination->id,
         'content' => '印メモ',
     ]);
     RaceNominationColumnMemo::factory()->create([
-        'race_mark_column_id' => $otherUserColumn->id,
+        'race_nomination_mark_column_id' => $otherUserColumn->id,
         'race_nomination_id' => $nomination->id,
     ]);
 
@@ -435,6 +443,10 @@ test('レース詳細は Inertia props として自分の印列の登録馬の�
     // Assert
     $response->assertInertia(fn (Assert $page) => $page
         ->component('races/show')
+        ->where('race.mark_columns', fn ($columns) => collect($columns)->pluck('label')->filter()->values()->all() === ['出馬表の列'])
+        ->where('race.nomination_mark_columns', [
+            ['id' => $column->id, 'label' => '友人A', 'display_order' => 1],
+        ])
         ->where('race.nomination_marks', [
             ['column_id' => $column->id, 'race_nomination_id' => $nomination->id, 'mark_value' => '▲'],
         ])

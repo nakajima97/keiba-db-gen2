@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\RaceMarkMemo\UpsertRaceMarkMemoRequest;
 use App\Models\Race;
-use App\Models\RaceMarkColumn;
 use App\Models\RaceNomination;
+use App\Models\RaceNominationMarkColumn;
 use App\UseCases\RaceNominationColumnMemo\DestroyAction;
 use App\UseCases\RaceNominationColumnMemo\UpsertAction;
 use Illuminate\Http\JsonResponse;
@@ -21,7 +21,7 @@ class RaceNominationColumnMemoController extends Controller
         UpsertRaceMarkMemoRequest $request,
         UpsertAction $action,
     ): JsonResponse {
-        $column = RaceMarkColumn::query()
+        $column = RaceNominationMarkColumn::query()
             ->where('race_id', $race->id)
             ->findOrFail($columnId);
         RaceNomination::query()
@@ -48,7 +48,7 @@ class RaceNominationColumnMemoController extends Controller
         Request $request,
         DestroyAction $action,
     ): Response {
-        $column = RaceMarkColumn::query()
+        $column = RaceNominationMarkColumn::query()
             ->where('race_id', $race->id)
             ->findOrFail($columnId);
         RaceNomination::query()

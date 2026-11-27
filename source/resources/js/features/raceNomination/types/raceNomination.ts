@@ -25,7 +25,16 @@ export type RaceNomination = {
 };
 
 /**
- * 登録馬に対する他人の印（印列は出馬表と共通の race_mark_columns）。
+ * 登録馬用の他人の印列（race_nomination_mark_columns）。出馬表の印列とは独立している。
+ */
+export type RaceNominationMarkColumn = {
+	id: number;
+	label: string;
+	display_order: number;
+};
+
+/**
+ * 登録馬に対する他人の印（column_id は登録馬用の印列 ID）。
  */
 export type RaceNominationColumnMarkValue = {
 	column_id: number;
