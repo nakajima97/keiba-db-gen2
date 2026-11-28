@@ -310,3 +310,64 @@ test('馬主・生産者名や母名が括弧で終わる場合も調教師行�
     expect($result[0]['trainer_name'])->toBe('加藤 征弘')
         ->and($result[0]['trainer_affiliation'])->toBe('美浦');
 });
+
+test('性齢が「せん」表記（騸馬）の馬も正しくパースされる', function () {
+    // Arrange
+    $parser = new RaceEntryParser;
+    $raceDate = Carbon::create(2026, 11, 29);
+    $text = implode("\n", [
+        '枠5黄	9	',
+        'カクガイカランダガン	',
+        '5.6',
+        '(3番人気)',
+        '(1.0.0.0)',
+        '50,378万円',
+        'アガ・カーン・スタッズSCEA',
+        '',
+        'Haras De S.A. Aga Khan Scea',
+        '',
+        'F.グラファール(本会外)',
+        '',
+        '父：Gleneagles',
+        '母：Calayana',
+        '(母の父：Sinndar)',
+        '勝負服の画像',
+        '',
+        'せん5/鹿',
+        '',
+        '58.0kg',
+        '',
+        'M.バルザローナ',
+    ]);
+
+    // Act
+    $result = $parser->parse($text, $raceDate);
+
+    // Assert
+    expect($result)->toHaveCount(1)
+        ->and($result[0]['horse_name'])->toBe('カランダガン')
+        ->and($result[0]['birth_year'])->toBe(2021)
+        ->and($result[0]['weight'])->toBe(58.0)
+        ->and($result[0]['jockey_name'])->toBe('M.バルザローナ');
+});
+
+test('性齢が「セ」表記の馬も正しくパースされる', function () {
+    // Arrange
+    $parser = new RaceEntryParser;
+    $raceDate = Carbon::create(2026, 4, 18);
+    $text = implode("\n", [
+        '枠1白	1	',
+        'エビスディアーナ	',
+        '加藤 征弘(美浦)',
+        'セ4/鹿毛',
+        '55.0kg',
+        'M.ディー',
+    ]);
+
+    // Act
+    $result = $parser->parse($text, $raceDate);
+
+    // Assert
+    expect($result)->toHaveCount(1)
+        ->and($result[0]['birth_year'])->toBe(2022);
+});

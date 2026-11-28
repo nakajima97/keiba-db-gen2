@@ -19,8 +19,8 @@ class RaceEntryParser
     /** 馬体重（例: "426kg(-2)", "500kg(初出走)", "500kg(0)") */
     private const HORSE_WEIGHT_PATTERN = '/^(\d+)kg\(/u';
 
-    /** 性齢（例: "牝3/黒鹿", "牡5/栗毛", "セ4/鹿毛") */
-    private const SEX_AGE_PATTERN = '/^[牡牝セせん]\s*(\d+)\s*\//u';
+    /** 性齢（例: "牝3/黒鹿", "牡5/栗毛", "セ4/鹿毛", "せん5/鹿") */
+    private const SEX_AGE_PATTERN = '/^(?:牡|牝|セ|せん)\s*(\d+)\s*\//u';
 
     /** 血統行（例: "父：ディープインパクト", "母：オーシャンウェーブ"） */
     private const PEDIGREE_LINE_PATTERN = '/^[父母]：/u';
